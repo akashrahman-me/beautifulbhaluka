@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,12 +23,15 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.akash.beautifulbhaluka.R
 
+@Preview(showBackground = true)
 @Composable
-fun LinkCard(modifier: Modifier = Modifier, navController: NavHostController? = null, link: String, text: String, icon: Int) {
+fun LinkCard(modifier: Modifier = Modifier, navController: NavHostController? = null, link: String = "", text: String = "Title", icon: Int = R.drawable.government_seal_of_bangladesh) {
     Column(
         modifier = modifier
             .drawBehind {
@@ -39,9 +43,8 @@ fun LinkCard(modifier: Modifier = Modifier, navController: NavHostController? = 
                 drawIntoCanvas { canvas ->
                     val paint = Paint().apply {
                         color = shadowColor
-                        asFrameworkPaint().setMaskFilter(
+                        asFrameworkPaint().maskFilter =
                             android.graphics.BlurMaskFilter(blur, android.graphics.BlurMaskFilter.Blur.NORMAL)
-                        )
                     }
                     canvas.drawRoundRect(
                         left = offsetX,
@@ -57,10 +60,9 @@ fun LinkCard(modifier: Modifier = Modifier, navController: NavHostController? = 
             .clip(RoundedCornerShape(20.dp))
             .background(Color.White)
             .heightIn(min = 128.dp)
+            .widthIn(max = 300.dp)
             .clickable(enabled = true) {
-                if (navController != null) {
-                    navController.navigate(link)
-                }
+                navController?.navigate(link)
             }
             .padding(start = 8.dp, end = 8.dp, bottom = 10.dp, top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally

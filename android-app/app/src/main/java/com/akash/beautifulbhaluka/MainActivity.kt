@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,9 +38,11 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val startDestination = Destination.Home
 
-            BeautifulBhalukaTheme {
+            BeautifulBhalukaTheme(dynamicColor = false) {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
                     bottomBar = { Bottombar(navController) },
                     topBar = { Topbar() },
                 ) { innerPadding ->

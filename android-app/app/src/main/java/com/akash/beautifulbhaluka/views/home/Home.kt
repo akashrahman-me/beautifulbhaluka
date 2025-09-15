@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,16 +40,19 @@ fun Home(navController: NavHostController? = null) {
                 .verticalScroll(scrollState)
                 .fillMaxSize()
         ) {
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
                 Carousel()
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     linkSections.forEach { section ->
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(horizontal = 8.dp)
                         ) {
                             Text(
                                 text = section.name,
@@ -58,7 +62,8 @@ fun Home(navController: NavHostController? = null) {
                             Spacer(modifier = Modifier.height(8.dp))
 
                             val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                            val itemWidth = (screenWidth - 16.dp * 2 - 20.dp * 2) / 3 // padding + gaps
+                            val itemWidth =
+                                (screenWidth - (16.dp) - 20.dp * 2) / 3 // padding + gaps
 
                             FlowRow(
                                 modifier = Modifier
