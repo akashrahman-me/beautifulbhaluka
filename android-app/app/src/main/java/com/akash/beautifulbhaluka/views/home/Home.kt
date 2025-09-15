@@ -36,14 +36,17 @@ fun Home(navController: NavHostController? = null) {
         // MAIN CONTENT
         Box(
             modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp, top = 0.dp)
                 .verticalScroll(scrollState)
                 .fillMaxSize()
+                .padding(vertical = 16.dp, horizontal = 8.dp)
+
         ) {
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Carousel()
+
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -68,7 +71,7 @@ fun Home(navController: NavHostController? = null) {
                             FlowRow(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 section.values.forEach { link ->

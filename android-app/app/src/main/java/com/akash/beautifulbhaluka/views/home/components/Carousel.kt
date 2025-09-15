@@ -64,7 +64,7 @@ fun Carousel() {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(top = 16.dp, bottom = 12.dp),
+                .padding(bottom = 12.dp),
             preferredItemWidth = (LocalConfiguration.current.screenWidthDp * 0.8f).dp,
             itemSpacing = 8.dp,
         ) { i ->
@@ -82,8 +82,7 @@ fun Carousel() {
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             items.forEachIndexed { index, _ ->

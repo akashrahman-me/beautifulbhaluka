@@ -4,11 +4,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.WorkOutline
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -19,22 +22,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 
 @Composable
-fun Bottombar(navController: NavHostController) {
+fun Bottombar(
+    navController: NavHostController,
+    drawerState: DrawerState
+) {
     var selectedDestination by remember { mutableStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
 
-    NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+    NavigationBar(
+        windowInsets = NavigationBarDefaults.windowInsets,
+    ) {
         Destination.entries.forEachIndexed { index, destination ->
             NavigationBarItem(
                 selected = selectedDestination == index,
                 onClick = {
-                    navController.navigate(route = destination.route)
-                    selectedDestination = index
+                    if (destination == Destination.Menu) {
+                        // Open drawer when Menu is clicked
+                        coroutineScope.launch {
+                            drawerState.open()
+                        }
+                    } else {
+                        // Navigate to other destinations
+                        navController.navigate(route = destination.route)
+                        selectedDestination = index
+                    }
                 },
                 icon = {
                     Icon(
@@ -47,7 +66,7 @@ fun Bottombar(navController: NavHostController) {
                     selectedIconColor = Color(0xFF007BFF),
                     selectedTextColor = Color(0xFF007BFF),
                     indicatorColor = Color.Transparent,
-                )
+                ),
             )
         }
     }
@@ -64,5 +83,6 @@ enum class Destination(
     Home("home", "Home", Icons.Outlined.Home, Icons.Default.Home, "Home"),
     Social("social", "Social", Icons.Outlined.Public, Icons.Default.Public, "Social"),
     Jobs("jobs", "Jobs", Icons.Outlined.WorkOutline, Icons.Default.Work, "Jobs"),
+    Shops("shops", "Shops", Icons.Outlined.ShoppingCart, Icons.Default.ShoppingCart, "Shops"),
     Menu("menu", "Menu", Icons.Outlined.Menu, Icons.Default.Menu, "Menu"),
 }
