@@ -38,6 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.akash.beautifulbhaluka.R
 import com.akash.beautifulbhaluka.presentation.screens.shops.ProductCondition
 
@@ -448,11 +450,16 @@ private fun ModernSelectedImageCard(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Real image display using AsyncImage
-            Image(
-                painter = painterResource(R.drawable.government_seal_of_bangladesh),
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(imageUri)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Selected Image",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                error = painterResource(R.drawable.government_seal_of_bangladesh),
+                placeholder = painterResource(R.drawable.government_seal_of_bangladesh)
             )
 
             // Gradient overlay for better button visibility
