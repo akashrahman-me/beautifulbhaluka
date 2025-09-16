@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -100,18 +101,75 @@ private fun PublishProductContent(
         }
     }
 
+    // Scroll state and top bar visibility
+    val lazyColumnState = rememberLazyListState()
+    var isTopBarVisible by remember { mutableStateOf(true) }
+    var lastScrollIndex by remember { mutableStateOf(0) }
+    var lastScrollOffset by remember { mutableStateOf(0) }
+
+    // Dynamic top bar visibility based on scroll direction
+    LaunchedEffect(lazyColumnState) {
+        snapshotFlow {
+            Pair(
+                lazyColumnState.firstVisibleItemIndex,
+                lazyColumnState.firstVisibleItemScrollOffset
+            )
+        }.collect { (currentIndex, currentOffset) ->
+            // Show top bar when at the very top
+            if (currentIndex == 0 && currentOffset == 0) {
+                isTopBarVisible = true
+            }
+            // Hide/show based on scroll direction
+            else if (currentIndex >= lastScrollIndex) {
+                // Scrolling down or same position
+                when {
+                    // If we moved to a new item, we're scrolling down
+                    currentIndex > lastScrollIndex -> isTopBarVisible = false
+                    // Same item but different offset, check scroll direction
+                    currentOffset > lastScrollOffset -> {
+                        // Scrolling down within the same item
+                        isTopBarVisible = false
+                    }
+                    // Scrolling up within the same item
+                    currentOffset < lastScrollOffset -> {
+                        // Scrolling up within the same item
+                        isTopBarVisible = true
+                    }
+                }
+            } else {
+                // Scrolling up to a previous item
+                isTopBarVisible = true
+            }
+
+            lastScrollIndex = currentIndex
+            lastScrollOffset = currentOffset
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Modern Professional Top Bar
-        ModernTopBar(
-            progress = progress,
-            onNavigateBack = onNavigateBack,
-            onClearForm = { onAction(PublishProductAction.ClearForm) },
-            isPublishing = uiState.isPublishing
-        )
+        // Dynamic Modern Professional Top Bar with smooth animation
+        AnimatedVisibility(
+            visible = isTopBarVisible,
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(durationMillis = 300, easing = EaseOutCubic)
+            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(durationMillis = 300, easing = EaseInCubic)
+            ) + fadeOut(animationSpec = tween(durationMillis = 300))
+        ) {
+            ModernTopBar(
+                progress = progress,
+                onNavigateBack = onNavigateBack,
+                onClearForm = { onAction(PublishProductAction.ClearForm) },
+                isPublishing = uiState.isPublishing
+            )
+        }
 
         when {
             uiState.isLoading -> {
@@ -120,6 +178,7 @@ private fun PublishProductContent(
 
             else -> {
                 LazyColumn(
+                    state = lazyColumnState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(20.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -606,7 +665,7 @@ private fun ModernCategoryConditionSection(
                 }
             }
 
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            HorizontalDivider()
 
             // Condition Selection
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
