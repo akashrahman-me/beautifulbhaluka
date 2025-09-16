@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import com.akash.beautifulbhaluka.R
@@ -17,7 +18,7 @@ class ProductDetailsViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProductDetailsUiState())
     val uiState: StateFlow<ProductDetailsUiState> = _uiState.asStateFlow()
 
-    // Mock data - in real app this would come from repository
+    // Mock data - in real app this would come from repository/usecase
     private val mockProducts = listOf(
         Product(
             id = "1",
@@ -26,11 +27,16 @@ class ProductDetailsViewModel : ViewModel() {
             price = 35000.0,
             originalPrice = 40000.0,
             imageUrl = "https://via.placeholder.com/300",
+            imageUrls = listOf(
+                "https://via.placeholder.com/300x300/FF0000",
+                "https://via.placeholder.com/300x300/00FF00",
+                "https://via.placeholder.com/300x300/0000FF"
+            ),
             category = ProductCategory(
                 "5",
                 "মোবাইল",
                 "Mobile",
-                R.drawable.ic_launcher_foreground,
+                R.drawable.government_seal_of_bangladesh,
                 1
             ),
             stock = 5,
@@ -49,86 +55,114 @@ class ProductDetailsViewModel : ViewModel() {
             description = "২০২২ মডেল হোন্ডা বাইক, খুবই ভালো কন্ডিশন। নিয়মিত সার্ভিসিং করা হয়েছে। কোনো দুর্ঘটনার ইতিহাস নেই।",
             price = 125000.0,
             imageUrl = "https://via.placeholder.com/300",
+            imageUrls = listOf("https://via.placeholder.com/300"),
             category = ProductCategory(
                 "6",
-                "গাড়ি",
-                "Vehicles",
-                R.drawable.ic_launcher_foreground,
+                "যানবাহন",
+                "Vehicle",
+                R.drawable.government_seal_of_bangladesh,
                 1
             ),
             stock = 1,
             sellerName = "আব্দুল করিম",
-            sellerContact = "+880 1712 654321",
-            location = "ভালুকা বাজার",
+            sellerContact = "+880 1812 987654",
+            location = "ভালুকা, ময়মনসিংহ",
             rating = 4.2f,
-            reviewCount = 8,
-            isFeatured = true,
+            reviewCount = 15,
             condition = ProductCondition.USED
+        ),
+        Product(
+            id = "3",
+            name = "ল্যাপটপ Dell Inspiron",
+            description = "Dell Inspiron 15 3000 সিরিজ। Intel Core i5 প্রসেসর, 8GB RAM, 1TB HDD। অফিস ও পড়াশোনার জন্য পারফেক্ট।",
+            price = 45000.0,
+            originalPrice = 55000.0,
+            imageUrl = "https://via.placeholder.com/300",
+            imageUrls = listOf("https://via.placeholder.com/300"),
+            category = ProductCategory(
+                "7",
+                "কম্পিউটার",
+                "Computer",
+                R.drawable.government_seal_of_bangladesh,
+                1
+            ),
+            stock = 2,
+            sellerName = "নাসির আহমেদ",
+            sellerContact = "+880 1916 555777",
+            location = "ভালুকা, ময়মনসিংহ",
+            rating = 4.7f,
+            reviewCount = 31,
+            condition = ProductCondition.REFURBISHED
         )
     )
 
+    // Action handler following architecture pattern
+    fun onAction(action: ProductDetailsAction) {
+        when (action) {
+            is ProductDetailsAction.LoadProduct -> loadProductDetails(action.productId)
+            is ProductDetailsAction.ToggleFavorite -> toggleFavorite()
+            is ProductDetailsAction.ContactSeller -> contactSeller()
+            is ProductDetailsAction.ShareProduct -> shareProduct()
+            is ProductDetailsAction.ReportProduct -> reportProduct()
+        }
+    }
+
     fun loadProductDetails(productId: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
                 // Simulate network delay
                 delay(1000)
 
                 val product = mockProducts.find { it.id == productId }
-
                 if (product != null) {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        product = product,
-                        error = null
-                    )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            product = product,
+                            error = null
+                        )
+                    }
                 } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        product = null,
-                        error = "পণ্যটি খুঁজে পাওয়া যায়নি"
-                    )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = "পণ্য পাওয়া যায়নি"
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "পণ্য লোড করতে সমস্যা হয়েছে: ${e.message}"
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "ডেটা লোড করতে সমস্যা হয়েছে: ${e.message}"
+                    )
+                }
             }
         }
     }
 
-    fun onAction(action: ProductDetailsAction) {
-        when (action) {
-            is ProductDetailsAction.LoadProduct -> loadProductDetails(action.productId)
-            ProductDetailsAction.ToggleFavorite -> toggleFavorite()
-            ProductDetailsAction.ContactSeller -> contactSeller()
-            ProductDetailsAction.ShareProduct -> shareProduct()
-            ProductDetailsAction.ReportProduct -> reportProduct()
+    private fun toggleFavorite() {
+        _uiState.update {
+            it.copy(isFavorite = !it.isFavorite)
         }
     }
 
-    private fun toggleFavorite() {
-        _uiState.value = _uiState.value.copy(
-            isFavorite = !_uiState.value.isFavorite
-        )
-    }
-
     private fun contactSeller() {
-        // In real app, this would open phone dialer or messaging app
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isContactingSeller = true)
+            _uiState.update { it.copy(isContactingSeller = true) }
+            // Simulate contact action
             delay(500)
-            _uiState.value = _uiState.value.copy(isContactingSeller = false)
+            _uiState.update { it.copy(isContactingSeller = false) }
         }
     }
 
     private fun shareProduct() {
-        // In real app, this would open share intent
+        // Handle product sharing
     }
 
     private fun reportProduct() {
-        // In real app, this would open report functionality
+        // Handle product reporting
     }
 }

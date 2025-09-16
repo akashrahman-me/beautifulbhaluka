@@ -59,12 +59,30 @@ class PublishProductViewModel : ViewModel() {
             is PublishProductAction.UpdateSellerContact -> updateSellerContact(action.contact)
             is PublishProductAction.UpdateLocation -> updateLocation(action.location)
             is PublishProductAction.SelectCategory -> selectCategory(action.category)
-            is PublishProductAction.AddImage -> addImage(action.imageUri)
+            PublishProductAction.AddImage -> addImage() // Fixed: AddImage is an object, no parameters
             is PublishProductAction.RemoveImage -> removeImage(action.imageUri)
             PublishProductAction.PublishProduct -> publishProduct()
             PublishProductAction.ClearForm -> clearForm()
             PublishProductAction.DismissSuccessMessage -> dismissSuccessMessage()
         }
+    }
+
+    private fun addImage() {
+        // Simulate image picker functionality - in real app this would open image picker
+        val mockImageUri = "mock_image_${System.currentTimeMillis()}"
+        val currentImages = _uiState.value.selectedImages
+
+        if (currentImages.size < 5) {
+            _uiState.value = _uiState.value.copy(
+                selectedImages = currentImages + mockImageUri
+            )
+        }
+    }
+
+    private fun removeImage(imageUri: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedImages = _uiState.value.selectedImages - imageUri
+        )
     }
 
     private fun updateProductName(name: String) {
@@ -131,50 +149,25 @@ class PublishProductViewModel : ViewModel() {
         )
     }
 
-    private fun addImage(imageUri: String) {
-        val currentImages = _uiState.value.selectedImages
-        if (currentImages.size < 5 && !currentImages.contains(imageUri)) {
-            _uiState.value = _uiState.value.copy(
-                selectedImages = currentImages + imageUri
-            )
-        }
-    }
-
-    private fun removeImage(imageUri: String) {
-        _uiState.value = _uiState.value.copy(
-            selectedImages = _uiState.value.selectedImages - imageUri
-        )
-    }
-
     private fun publishProduct() {
-        val currentState = _uiState.value
-        val validationErrors = validateForm(currentState)
+        val validationErrors = validateForm()
 
         if (validationErrors.isNotEmpty()) {
-            _uiState.value = currentState.copy(
-                validationErrors = validationErrors,
-                error = "ফর্মে ভুল রয়েছে। দয়া করে সংশোধন করুন।"
-            )
+            _uiState.value = _uiState.value.copy(validationErrors = validationErrors)
             return
         }
 
         viewModelScope.launch {
-            _uiState.value = currentState.copy(
-                isPublishing = true,
-                error = null,
-                validationErrors = emptyMap()
-            )
+            _uiState.value = _uiState.value.copy(isPublishing = true)
 
             try {
-                // Simulate API call
+                // Simulate network request
                 delay(2000)
 
-                // Success
                 _uiState.value = _uiState.value.copy(
                     isPublishing = false,
                     isPublishSuccessful = true
                 )
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isPublishing = false,
@@ -184,57 +177,55 @@ class PublishProductViewModel : ViewModel() {
         }
     }
 
-    private fun validateForm(state: PublishProductUiState): Map<String, String> {
+    private fun validateForm(): Map<String, String> {
         val errors = mutableMapOf<String, String>()
 
-        if (state.productName.isBlank()) {
-            errors["productName"] = "পণ্যের নাম লিখুন"
+        if (_uiState.value.productName.isBlank()) {
+            errors["productName"] = "পণ্যের নাম দিতে হবে"
         }
 
-        if (state.productDescription.isBlank()) {
-            errors["productDescription"] = "পণ্যের বিবরণ লিখুন"
+        if (_uiState.value.productDescription.isBlank()) {
+            errors["productDescription"] = "পণ্যের বিবরণ দিতে হবে"
         }
 
-        if (state.price.isBlank()) {
-            errors["price"] = "দাম লিখুন"
+        if (_uiState.value.price.isBlank()) {
+            errors["price"] = "দাম দিতে হবে"
         } else {
             try {
-                val price = state.price.toDouble()
-                if (price <= 0) {
-                    errors["price"] = "দাম ০ এর চেয়ে বেশি হতে হবে"
-                }
+                _uiState.value.price.toDouble()
             } catch (e: NumberFormatException) {
-                errors["price"] = "সঠিক দাম লিখুন"
+                errors["price"] = "সঠিক দাম দিন"
             }
         }
 
-        if (state.stock.isBlank()) {
-            errors["stock"] = "স্টকের পরিমাণ লিখুন"
+        if (_uiState.value.stock.isBlank()) {
+            errors["stock"] = "স্টক পরিমাণ দিতে হবে"
         } else {
             try {
-                val stock = state.stock.toInt()
-                if (stock < 0) {
-                    errors["stock"] = "স্টক ০ বা তার চেয়ে বেশি হতে হবে"
-                }
+                _uiState.value.stock.toInt()
             } catch (e: NumberFormatException) {
-                errors["stock"] = "সঠিক স্টকের পরিমাণ লিখুন"
+                errors["stock"] = "সঠিক স্টক সংখ্যা দিন"
             }
         }
 
-        if (state.selectedCategory == null) {
+        if (_uiState.value.sellerName.isBlank()) {
+            errors["sellerName"] = "বিক্রেতার নাম দিতে হবে"
+        }
+
+        if (_uiState.value.sellerContact.isBlank()) {
+            errors["sellerContact"] = "যোগাযোগের নম্বর দিতে হবে"
+        }
+
+        if (_uiState.value.location.isBlank()) {
+            errors["location"] = "ঠিকানা দিতে হবে"
+        }
+
+        if (_uiState.value.selectedCategory == null) {
             errors["category"] = "ক্যাটেগরি নির্বাচন করুন"
         }
 
-        if (state.sellerName.isBlank()) {
-            errors["sellerName"] = "বিক্রেতার নাম লিখুন"
-        }
-
-        if (state.sellerContact.isBlank()) {
-            errors["sellerContact"] = "যোগাযোগের নম্বর লিখুন"
-        }
-
-        if (state.location.isBlank()) {
-            errors["location"] = "ঠিকানা লিখুন"
+        if (_uiState.value.selectedImages.isEmpty()) {
+            errors["images"] = "কমপক্ষে একটি ছবি যোগ করুন"
         }
 
         return errors

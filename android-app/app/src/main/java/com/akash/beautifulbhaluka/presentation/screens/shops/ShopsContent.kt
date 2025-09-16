@@ -114,7 +114,7 @@ fun ShopsContent(
                         ProductGridSection(
                             products = filteredProducts,
                             onProductClick = { onNavigateToDetails?.invoke(it.id) },
-                            onFavoriteClick = { onAction(ShopsAction.ToggleFavorite(it)) }
+                            onFavoriteClick = { onAction(ShopsAction.ToggleFavorite(it.id)) }
                         )
                     }
 
@@ -199,72 +199,60 @@ private fun CategorySection(
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "ক্যাটেগরি",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            TextButton(
-                onClick = { onCategorySelected(null) }
-            ) {
-                Text("সব দেখুন")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "বিভাগসমূহ",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 4.dp)
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+            item {
+                FilterChip(
+                    onClick = { onCategorySelected(null) },
+                    label = { Text("সব") },
+                    selected = selectedCategory == null,
+                    leadingIcon = if (selectedCategory == null) {
+                        {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else null
+                )
+            }
+
             items(categories) { category ->
-                CategoryChip(
-                    category = category,
-                    isSelected = selectedCategory?.id == category.id,
-                    onClick = {
-                        if (selectedCategory?.id == category.id) {
-                            onCategorySelected(null)
-                        } else {
-                            onCategorySelected(category)
+                FilterChip(
+                    onClick = { onCategorySelected(category) },
+                    label = { Text(category.name) },
+                    selected = selectedCategory == category,
+                    leadingIcon = if (selectedCategory == category) {
+                        {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else {
+                        {
+                            Icon(
+                                painter = painterResource(category.icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                     }
                 )
             }
         }
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-}
-
-@Composable
-private fun CategoryChip(
-    category: ProductCategory,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    FilterChip(
-        selected = isSelected,
-        onClick = onClick,
-        label = {
-            Text(
-                text = "${category.name} (${category.productCount})",
-                fontSize = 12.sp
-            )
-        },
-        leadingIcon = {
-            Image(
-                painter = painterResource(category.icon),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-        }
-    )
 }
 
 @Composable
@@ -273,33 +261,20 @@ private fun FeaturedProductsSection(
     onProductClick: (Product) -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = null,
-                tint = Color(0xFFFFD700),
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "ফিচার্ড পণ্য",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = "বিশেষ পণ্য",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 4.dp)
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            items(products.take(5)) { product ->
+            items(products) { product ->
                 FeaturedProductCard(
                     product = product,
                     onClick = { onProductClick(product) }
@@ -307,8 +282,76 @@ private fun FeaturedProductsSection(
             }
         }
     }
+}
 
-    Spacer(modifier = Modifier.height(24.dp))
+@Composable
+private fun ProductGridSection(
+    products: List<Product>,
+    onProductClick: (Product) -> Unit,
+    onFavoriteClick: (Product) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Text(
+            text = "সকল পণ্য (${products.size})",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.heightIn(max = 2000.dp) // Prevent infinite height
+        ) {
+            items(products) { product ->
+                ProductCard(
+                    product = product,
+                    onClick = { onProductClick(product) },
+                    onFavoriteClick = { onFavoriteClick(product) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyStateSection(
+    onAddProductClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.ShoppingCart,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "কোনো পণ্য পাওয়া যায়নি",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "প্রথম পণ্য যোগ করুন",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onAddProductClick) {
+            Icon(Icons.Default.Add, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("পণ্য যোগ করুন")
+        }
+    }
 }
 
 @Composable
@@ -318,7 +361,7 @@ private fun FeaturedProductCard(
 ) {
     Card(
         modifier = Modifier
-            .width(200.dp)
+            .width(180.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -329,31 +372,23 @@ private fun FeaturedProductCard(
                     .height(120.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                // Placeholder image
-                Icon(
-                    imageVector = Icons.Default.Image,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                Image(
+                    painter = painterResource(R.drawable.government_seal_of_bangladesh), // Placeholder
+                    contentDescription = product.name,
+                    modifier = Modifier.fillMaxSize()
                 )
 
                 // Featured badge
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFFD700)
-                    )
+                Surface(
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
                 ) {
                     Text(
-                        text = "ফিচার্ড",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        text = "বিশেষ",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -362,9 +397,89 @@ private fun FeaturedProductCard(
                 modifier = Modifier.padding(12.dp)
             ) {
                 Text(
-                    text = product.title,
-                    style = MaterialTheme.typography.titleSmall,
+                    text = product.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${product.currency}${product.price.toInt()}",
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductCard(
+    product: Product,
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.government_seal_of_bangladesh), // Placeholder
+                    contentDescription = product.name,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // Favorite button
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // New badge
+                if (product.isNew) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "নতুন",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -376,7 +491,7 @@ private fun FeaturedProductCard(
                 ) {
                     Text(
                         text = "${product.currency}${product.price.toInt()}",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -407,263 +522,11 @@ private fun FeaturedProductCard(
                     Text(
                         text = product.location,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProductGridSection(
-    products: List<Product>,
-    onProductClick: (Product) -> Unit,
-    onFavoriteClick: (String) -> Unit
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Text(
-            text = "সব পণ্য (${products.size})",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.heightIn(min = 200.dp, max = 2000.dp),
-            userScrollEnabled = false
-        ) {
-            items(products) { product ->
-                ProductCard(
-                    product = product,
-                    onClick = { onProductClick(product) },
-                    onFavoriteClick = { onFavoriteClick(product.id) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProductCard(
-    product: Product,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                // Placeholder image
-                Icon(
-                    imageVector = Icons.Default.Image,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-
-                // Favorite button
-                IconButton(
-                    onClick = onFavoriteClick,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to favorites",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                // Stock status
-                if (!product.isInStock) {
-                    Card(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text(
-                            text = "স্টকে নেই",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = MaterialTheme.colorScheme.onError
-                        )
-                    }
-                } else if (product.stock < 5) {
-                    Card(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF9800)
-                        )
-                    ) {
-                        Text(
-                            text = "মাত্র ${product.stock}টি বাকি",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-
-            Column(
-                modifier = Modifier.padding(12.dp)
-            ) {
-                Text(
-                    text = product.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = product.condition.displayName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 10.sp
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "${product.currency}${product.price.toInt()}",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            if (product.originalPrice != null) {
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "${product.currency}${product.originalPrice.toInt()}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    textDecoration = TextDecoration.LineThrough,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                modifier = Modifier.size(10.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Text(
-                                text = product.location,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = 10.sp
-                            )
-                        }
-                    }
-
-                    if (product.rating > 0) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                                tint = Color(0xFFFFD700)
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Text(
-                                text = product.rating.toString(),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontSize = 10.sp
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateSection(
-    onAddProductClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingBag,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "কোন পণ্য পাওয়া যায়নি",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "নতুন পণ্য যোগ করুন বা ভিন্ন ক্যাটেগরিতে খুঁজুন",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = onAddProductClick
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("পণ্য যোগ করুন")
             }
         }
     }

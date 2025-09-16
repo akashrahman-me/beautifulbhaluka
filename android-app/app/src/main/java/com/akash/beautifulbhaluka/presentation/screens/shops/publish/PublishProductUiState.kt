@@ -17,7 +17,7 @@ data class PublishProductUiState(
     val sellerName: String = "",
     val sellerContact: String = "",
     val location: String = "",
-    val selectedImages: List<String> = emptyList(),
+    val selectedImages: Set<String> = emptySet(),
     val error: String? = null,
     val validationErrors: Map<String, String> = emptyMap(),
     val isPublishSuccessful: Boolean = false
@@ -34,7 +34,7 @@ sealed class PublishProductAction {
     data class UpdateSellerContact(val contact: String) : PublishProductAction()
     data class UpdateLocation(val location: String) : PublishProductAction()
     data class SelectCategory(val category: ProductCategory) : PublishProductAction()
-    data class AddImage(val imageUri: String) : PublishProductAction()
+    object AddImage : PublishProductAction() // Changed to object since image picker will handle URI
     data class RemoveImage(val imageUri: String) : PublishProductAction()
     object PublishProduct : PublishProductAction()
     object ClearForm : PublishProductAction()
