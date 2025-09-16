@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -79,7 +82,14 @@ private fun HomeContentLoaded(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 // Carousel section
-                Carousel(items = uiState.carouselItems)
+                Carousel(
+                    items = uiState.carouselItems,
+                    onItemClick = { carouselItem ->
+                        // Handle carousel item click - could navigate or show details
+                        // For now, we'll just trigger a generic action
+                        onAction(HomeAction.LoadData) // Or create a specific CarouselItemClicked action
+                    }
+                )
 
                 // Link sections
                 Column(
@@ -88,24 +98,32 @@ private fun HomeContentLoaded(
                 ) {
                     uiState.linkSections.forEach { section ->
                         Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = section.title,
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                                text = section.name,
+                                style = MaterialTheme.typography.titleLarge,
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                            val itemWidth =
+                                (screenWidth - (16.dp) - 20.dp * 2) / 3 // padding + gaps
 
                             FlowRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                section.links.forEach { link ->
+                                section.values.forEach { link ->
                                     LinkCard(
                                         linkItem = link,
                                         onClick = { onAction(HomeAction.NavigateToLink(link)) },
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.width(itemWidth - 6.dp) // force equal width
                                     )
                                 }
                             }

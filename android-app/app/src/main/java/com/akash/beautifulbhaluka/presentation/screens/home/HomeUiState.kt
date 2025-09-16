@@ -15,17 +15,14 @@ data class CarouselItem(
 )
 
 data class LinkSection(
-    val title: String,
-    val links: List<LinkItem>
+    val name: String,
+    val values: List<LinkItem>
 )
 
 data class LinkItem(
-    val id: String,
-    val title: String,
-    val description: String,
-    val iconRes: Int? = null,
-    val route: String? = null,
-    val externalUrl: String? = null
+    val link: String,
+    val icon: Int,
+    val label: String
 )
 
 sealed class HomeAction {
