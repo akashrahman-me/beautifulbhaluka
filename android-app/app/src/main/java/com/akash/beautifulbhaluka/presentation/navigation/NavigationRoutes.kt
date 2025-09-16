@@ -13,4 +13,10 @@ object NavigationRoutes {
     const val NOTIFICATIONS = "notifications"
     const val ABOUT = "about"
     const val HELP = "help"
+
+    // Shops related routes
+    const val PRODUCT_DETAILS = "product_details/{productId}"
+    const val PUBLISH_PRODUCT = "publish_product"
+
+    fun productDetails(productId: String): String = "product_details/$productId"
 }

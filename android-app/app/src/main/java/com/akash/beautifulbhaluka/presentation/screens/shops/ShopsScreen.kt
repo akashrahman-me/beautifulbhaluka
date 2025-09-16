@@ -1,24 +1,23 @@
 package com.akash.beautifulbhaluka.presentation.screens.shops
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun ShopsScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = "Shops is in development".uppercase(),
-            style = MaterialTheme.typography.displaySmall.copy(
-                fontWeight = FontWeight.Black,
-            ),
-            textAlign = TextAlign.Center,
-        )
-    }
+fun ShopsScreen(
+    viewModel: ShopsViewModel = viewModel(),
+    onNavigateToDetails: ((String) -> Unit)? = null,
+    onNavigateToPublish: (() -> Unit)? = null
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    ShopsContent(
+        uiState = uiState,
+        filteredProducts = uiState.filteredProducts,
+        onAction = viewModel::onAction,
+        onNavigateToDetails = onNavigateToDetails,
+        onNavigateToPublish = onNavigateToPublish
+    )
 }
