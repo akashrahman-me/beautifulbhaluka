@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.componets.layout
+package com.akash.beautifulbhaluka.presentation.components.layout
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import com.akash.beautifulbhaluka.presentation.navigation.NavigationRoutes
 
 @Composable
 fun Bottombar(
@@ -72,7 +73,6 @@ fun Bottombar(
     }
 }
 
-
 enum class Destination(
     val route: String,
     val label: String,
@@ -80,9 +80,21 @@ enum class Destination(
     val icon2: ImageVector,
     val contentDescription: String
 ) {
-    Home("home", "Home", Icons.Outlined.Home, Icons.Default.Home, "Home"),
-    Social("social", "Social", Icons.Outlined.Public, Icons.Default.Public, "Social"),
-    Jobs("jobs", "Jobs", Icons.Outlined.WorkOutline, Icons.Default.Work, "Jobs"),
-    Shops("shops", "Shops", Icons.Outlined.ShoppingCart, Icons.Default.ShoppingCart, "Shops"),
-    Menu("menu", "Menu", Icons.Outlined.Menu, Icons.Default.Menu, "Menu"),
+    Home(NavigationRoutes.HOME, "Home", Icons.Outlined.Home, Icons.Default.Home, "Home"),
+    Social(
+        NavigationRoutes.SOCIAL,
+        "Social",
+        Icons.Outlined.Public,
+        Icons.Default.Public,
+        "Social"
+    ),
+    Jobs(NavigationRoutes.JOBS, "Jobs", Icons.Outlined.WorkOutline, Icons.Default.Work, "Jobs"),
+    Shops(
+        NavigationRoutes.SHOPS,
+        "Shops",
+        Icons.Outlined.ShoppingCart,
+        Icons.Default.ShoppingCart,
+        "Shops"
+    ),
+    Menu(NavigationRoutes.MENU, "Menu", Icons.Outlined.Menu, Icons.Default.Menu, "Menu"),
 }

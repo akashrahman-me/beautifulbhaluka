@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.ui.theme
+package com.akash.beautifulbhaluka.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

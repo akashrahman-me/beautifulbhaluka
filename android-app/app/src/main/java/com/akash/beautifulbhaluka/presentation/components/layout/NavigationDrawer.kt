@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.componets.layout
+package com.akash.beautifulbhaluka.presentation.components.layout
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import com.akash.beautifulbhaluka.presentation.navigation.NavigationRoutes
 
 @Composable
 fun NavigationDrawer(
@@ -49,53 +50,68 @@ fun NavigationDrawer(
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+        HorizontalDivider()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Navigation items
+        val drawerItems = listOf(
+            DrawerItem(
+                route = NavigationRoutes.PROFILE,
+                label = "Profile",
+                icon = Icons.Default.AccountCircle
+            ),
+            DrawerItem(
+                route = NavigationRoutes.SETTINGS,
+                label = "Settings",
+                icon = Icons.Default.Settings
+            ),
+            DrawerItem(
+                route = NavigationRoutes.NOTIFICATIONS,
+                label = "Notifications",
+                icon = Icons.Default.Notifications
+            ),
+            DrawerItem(
+                route = NavigationRoutes.ABOUT,
+                label = "About",
+                icon = Icons.Default.Info
+            ),
+            DrawerItem(
+                route = NavigationRoutes.HELP,
+                label = "Help & Support",
+                icon = Icons.AutoMirrored.Filled.Help
+            )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Drawer Items
-        DrawerMenuItem.entries.forEach { item ->
+        drawerItems.forEach { item ->
             NavigationDrawerItem(
+                label = { Text(item.label) },
                 icon = {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.contentDescription
+                        contentDescription = item.label
                     )
                 },
-                label = { Text(item.label) },
                 selected = false,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
-                        // Navigate to the route if needed
-                        if (item.route.isNotEmpty()) {
-                            navController.navigate(item.route)
-                        }
+                        navController.navigate(item.route)
                     }
                 },
-                modifier = Modifier.padding(horizontal = 12.dp),
                 colors = NavigationDrawerItemDefaults.colors(
                     selectedContainerColor = Color(0xFF007BFF).copy(alpha = 0.1f),
-                    selectedTextColor = Color(0xFF007BFF),
-                    selectedIconColor = Color(0xFF007BFF)
-                )
+                    selectedIconColor = Color(0xFF007BFF),
+                    selectedTextColor = Color(0xFF007BFF)
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
     }
 }
 
-enum class DrawerMenuItem(
+data class DrawerItem(
     val route: String,
     val label: String,
-    val icon: ImageVector,
-    val contentDescription: String
-) {
-    Profile("profile", "Profile", Icons.Default.AccountCircle, "Profile"),
-    Settings("settings", "Settings", Icons.Default.Settings, "Settings"),
-    Notifications("notifications", "Notifications", Icons.Default.Notifications, "Notifications"),
-    About("about", "About", Icons.Default.Info, "About"),
-    Help("help", "Help & Support", Icons.AutoMirrored.Filled.Help, "Help & Support"),
-}
+    val icon: ImageVector
+)
