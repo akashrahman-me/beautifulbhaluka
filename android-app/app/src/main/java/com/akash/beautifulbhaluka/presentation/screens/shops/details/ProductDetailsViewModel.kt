@@ -99,28 +99,42 @@ class ProductDetailsViewModel : ViewModel() {
     // Action handler following architecture pattern
     fun onAction(action: ProductDetailsAction) {
         when (action) {
-            is ProductDetailsAction.LoadProduct -> loadProductDetails(action.productId)
-            is ProductDetailsAction.ToggleFavorite -> toggleFavorite()
-            is ProductDetailsAction.ContactSeller -> contactSeller()
-            is ProductDetailsAction.ShareProduct -> shareProduct()
-            is ProductDetailsAction.ReportProduct -> reportProduct()
+            is ProductDetailsAction.LoadProduct -> {
+                loadProduct(action.productId)
+            }
+
+            ProductDetailsAction.ShareProduct -> {
+                shareProduct()
+            }
+
+            ProductDetailsAction.ToggleFavorite -> {
+                toggleFavorite()
+            }
+
+            ProductDetailsAction.ContactSeller -> {
+                contactSeller()
+            }
+
+            ProductDetailsAction.DismissSuccessMessage -> {
+                dismissSuccessMessage()
+            }
         }
     }
 
-    fun loadProductDetails(productId: String) {
+    private fun loadProduct(productId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
                 // Simulate network delay
-                delay(1000)
+                delay(1500)
 
                 val product = mockProducts.find { it.id == productId }
                 if (product != null) {
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
                             product = product,
+                            isLoading = false,
                             error = null
                         )
                     }
@@ -128,7 +142,7 @@ class ProductDetailsViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = "পণ্য পাওয়া যায়নি"
+                            error = "পণ্যটি পাওয়া যায়নি"
                         )
                     }
                 }
@@ -136,11 +150,16 @@ class ProductDetailsViewModel : ViewModel() {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "ডেটা লোড করতে সমস্যা হয়েছে: ${e.message}"
+                        error = "পণ্য লোড করতে সমস্যা হয়েছে: ${e.message}"
                     )
                 }
             }
         }
+    }
+
+    private fun shareProduct() {
+        // Implementation for sharing product
+        // This would typically involve Android's Intent system
     }
 
     private fun toggleFavorite() {
@@ -152,17 +171,22 @@ class ProductDetailsViewModel : ViewModel() {
     private fun contactSeller() {
         viewModelScope.launch {
             _uiState.update { it.copy(isContactingSeller = true) }
-            // Simulate contact action
-            delay(500)
-            _uiState.update { it.copy(isContactingSeller = false) }
+
+            // Simulate contacting seller
+            delay(2000)
+
+            _uiState.update {
+                it.copy(
+                    isContactingSeller = false,
+                    contactSellerSuccess = true
+                )
+            }
         }
     }
 
-    private fun shareProduct() {
-        // Handle product sharing
-    }
-
-    private fun reportProduct() {
-        // Handle product reporting
+    private fun dismissSuccessMessage() {
+        _uiState.update {
+            it.copy(contactSellerSuccess = false)
+        }
     }
 }
