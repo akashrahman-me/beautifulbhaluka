@@ -14,9 +14,14 @@ object NavigationRoutes {
     const val ABOUT = "about"
     const val HELP = "help"
 
+    // Jobs related routes
+    const val JOB_DETAILS = "job_details/{jobId}"
+    const val PUBLISH_JOB = "publish_job"
+
     // Shops related routes
     const val PRODUCT_DETAILS = "product_details/{productId}"
     const val PUBLISH_PRODUCT = "publish_product"
 
+    fun jobDetails(jobId: String): String = "job_details/$jobId"
     fun productDetails(productId: String): String = "product_details/$productId"
 }

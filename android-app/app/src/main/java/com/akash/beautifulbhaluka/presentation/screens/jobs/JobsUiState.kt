@@ -3,6 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.jobs
 data class JobsUiState(
     val isLoading: Boolean = false,
     val jobs: List<JobItem> = emptyList(),
+    val appliedJobs: List<AppliedJob> = emptyList(),
     val categories: List<JobCategory> = emptyList(),
     val carouselItems: List<CarouselItem> = emptyList(),
     val favoriteJobs: Set<String> = emptySet(),
@@ -29,7 +30,12 @@ data class JobItem(
     val contactInfo: String,
     val imageUrl: String? = null,
     val categoryId: String,
-    val isFeatured: Boolean = false
+    val isFeatured: Boolean = false,
+    // Additional fields for complete job details
+    val positionCount: String = "১০০ টি",
+    val jobType: String = "ফুল-টাইম",
+    val workingHours: String = "৮ ঘন্টা",
+    val workLocation: String = "অন-সাইট"
 )
 
 data class JobCategory(
@@ -63,4 +69,19 @@ sealed class JobsAction {
     object LoadNextPage : JobsAction()
     object LoadPreviousPage : JobsAction()
     data class ViewCarouselItem(val itemId: String) : JobsAction()
+    object NavigateToPublishJob : JobsAction()
+}
+
+data class AppliedJob(
+    val jobItem: JobItem,
+    val applicationStatus: ApplicationStatus,
+    val appliedDate: String
+)
+
+enum class ApplicationStatus {
+    APPLIED,
+    REVIEWED,
+    SHORTLISTED,
+    REJECTED,
+    ACCEPTED
 }

@@ -39,6 +39,40 @@ fun JobsContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Publish Job Button
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onAction(JobsAction.NavigateToPublishJob) }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Publish New Job",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
         // Tab Row
         TabRow(
             selectedTabIndex = if (uiState.selectedTab == JobTab.JOB_FEEDS) 0 else 1
@@ -558,49 +592,244 @@ private fun ManageJobsContent(
     uiState: JobsUiState,
     onAction: (JobsAction) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Work,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Manage Jobs",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "This section will allow you to create, edit, and manage your job postings",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { /* TODO: Navigate to create job */ },
-            modifier = Modifier.fillMaxWidth()
+    if (uiState.appliedJobs.isEmpty()) {
+        // Empty state when no applied jobs
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Add,
+                imageVector = Icons.Default.WorkOff,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(80.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Create New Job")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "No Applied Jobs",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "You haven't applied to any jobs yet. Browse job feeds and start applying!",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { onAction(JobsAction.SelectTab(JobTab.JOB_FEEDS)) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Browse Jobs")
+            }
         }
+    } else {
+        // Display applied jobs in a grid layout
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Text(
+                    text = "My Applied Jobs (${uiState.appliedJobs.size})",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(600.dp), // Fixed height for better performance
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(uiState.appliedJobs, key = { it.jobItem.id }) { appliedJob ->
+                        AppliedJobCard(
+                            appliedJob = appliedJob,
+                            onJobClick = { onAction(JobsAction.ViewJobDetails(appliedJob.jobItem.id)) }
+                        )
+                    }
+                }
+            }
+
+            // Add publish job button at the bottom
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { onAction(JobsAction.NavigateToPublishJob) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Post a New Job")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppliedJobCard(
+    appliedJob: AppliedJob,
+    onJobClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onJobClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            Box {
+                AsyncImage(
+                    model = appliedJob.jobItem.imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Status badge
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = getStatusColor(appliedJob.applicationStatus)
+                    )
+                ) {
+                    Text(
+                        text = getStatusText(appliedJob.applicationStatus),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Featured badge (if applicable)
+                if (appliedJob.jobItem.isFeatured) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = "Featured",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = appliedJob.jobItem.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = appliedJob.jobItem.company,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = appliedJob.jobItem.location,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 2.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Text(
+                    text = appliedJob.jobItem.salary,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Applied date
+                Text(
+                    text = "Applied: ${appliedJob.appliedDate}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun getStatusColor(status: ApplicationStatus): Color {
+    return when (status) {
+        ApplicationStatus.APPLIED -> Color(0xFF2196F3) // Blue
+        ApplicationStatus.REVIEWED -> Color(0xFFFF9800) // Orange
+        ApplicationStatus.SHORTLISTED -> Color(0xFF9C27B0) // Purple
+        ApplicationStatus.REJECTED -> Color(0xFFF44336) // Red
+        ApplicationStatus.ACCEPTED -> Color(0xFF4CAF50) // Green
+    }
+}
+
+private fun getStatusText(status: ApplicationStatus): String {
+    return when (status) {
+        ApplicationStatus.APPLIED -> "Applied"
+        ApplicationStatus.REVIEWED -> "Reviewed"
+        ApplicationStatus.SHORTLISTED -> "Shortlisted"
+        ApplicationStatus.REJECTED -> "Rejected"
+        ApplicationStatus.ACCEPTED -> "Accepted"
     }
 }

@@ -7,12 +7,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun JobsScreen(
+    onNavigateToJobDetails: (String) -> Unit = {},
+    onNavigateToPublishJob: () -> Unit = {},
     viewModel: JobsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     JobsContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is JobsAction.ViewJobDetails -> {
+                    onNavigateToJobDetails(action.jobId)
+                }
+
+                is JobsAction.NavigateToPublishJob -> {
+                    onNavigateToPublishJob()
+                }
+
+                else -> viewModel.onAction(action)
+            }
+        }
     )
 }

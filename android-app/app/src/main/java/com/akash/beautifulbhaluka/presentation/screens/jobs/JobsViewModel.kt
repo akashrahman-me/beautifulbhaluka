@@ -22,7 +22,16 @@ class JobsViewModel : ViewModel() {
         when (action) {
             is JobsAction.LoadJobs -> loadJobs()
             is JobsAction.Refresh -> refresh()
-            is JobsAction.ViewJobDetails -> viewJobDetails(action.jobId)
+            is JobsAction.ViewJobDetails -> {
+                // Navigation is now handled at the screen level, not in ViewModel
+                // This case is handled in JobsScreen.kt
+            }
+
+            is JobsAction.NavigateToPublishJob -> {
+                // Navigation is now handled at the screen level, not in ViewModel
+                // This case is handled in JobsScreen.kt
+            }
+
             is JobsAction.SelectTab -> selectTab(action.tab)
             is JobsAction.SelectCategory -> selectCategory(action.categoryId)
             is JobsAction.ToggleFavorite -> toggleFavorite(action.jobId)
@@ -40,12 +49,14 @@ class JobsViewModel : ViewModel() {
             // Load all initial data
             val categories = getMockCategories()
             val carouselItems = getMockCarouselItems()
+            val appliedJobs = getMockAppliedJobs()
             loadJobsForPage(1)
 
             _uiState.update { currentState ->
                 currentState.copy(
                     categories = categories,
                     carouselItems = carouselItems,
+                    appliedJobs = appliedJobs,
                     isLoading = false
                 )
             }
@@ -94,11 +105,6 @@ class JobsViewModel : ViewModel() {
             loadInitialData()
             _uiState.update { it.copy(isRefreshing = false) }
         }
-    }
-
-    private fun viewJobDetails(jobId: String) {
-        // Handle navigation to job details - will be implemented when navigation is setup
-        println("Navigate to job details: $jobId")
     }
 
     private fun selectTab(tab: JobTab) {
@@ -225,8 +231,14 @@ class JobsViewModel : ViewModel() {
             "Data Scientist",
             "QA Engineer"
         )
-        val locations = listOf("Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna", "Barishal")
+        val locations = listOf("ঢাকা", "চট্টগ্রাম", "সিলেট", "রাজশাহী", "খুলনা", "বরিশাল")
         val categories = listOf("1", "2", "3", "4", "5", "6", "7", "8")
+        val experiences = listOf("ফ্রেশার", "১-২ বছর", "২-৩ বছর", "৩-৫ বছর", "৫+ বছর")
+        val educations = listOf("এস এস সি/ সমমান", "এইচ এস সি/ সমমান", "স্নাতক", "স্নাতকোত্তর")
+        val jobTypes = listOf("ফুল-টাইম", "পার্ট-টাইম", "চুক্তিভিত্তিক", "ইন্টার্নশিপ")
+        val workingHours = listOf("৮ ঘন্টা", "৬ ঘন্টা", "১০ ঘন্টা", "ফ্লেক্সিবল")
+        val workLocations = listOf("অন-সাইট", "রিমোট", "হাইব্রিড")
+        val positionCounts = listOf("৫ টি", "১০ টি", "২০ টি", "৫০ টি", "১০০ টি")
 
         return (1..50).map { index ->
             JobItem(
@@ -234,18 +246,42 @@ class JobsViewModel : ViewModel() {
                 title = jobTitles[index % jobTitles.size],
                 company = companies[index % companies.size],
                 location = locations[index % locations.size],
-                salary = "${(30 + index * 2)}K - ${(50 + index * 3)}K BDT",
-                experience = "${1 + index % 5}-${2 + index % 5} years",
-                education = "Bachelor's in CSE/IT/EEE",
-                description = "We are looking for an experienced ${jobTitles[index % jobTitles.size]} to join our team. Great opportunity for career growth with competitive salary and benefits.",
-                postedDate = "${1 + index % 30} days ago",
-                deadline = "${15 + index % 15}th ${if (index % 2 == 0) "Oct" else "Nov"}, 2025",
-                contactInfo = "hr@${
+                salary = "${(19 + index * 2)},০০০-${(25 + index * 3)},০০০ টাকা",
+                experience = experiences[index % experiences.size],
+                education = educations[index % educations.size],
+                description = "আমরা একজন অভিজ্ঞ ${jobTitles[index % jobTitles.size]} খুঁজছি যিনি আমাদের দলে যোগ দেবেন।",
+                postedDate = "${1 + index % 30} দিন আগে",
+                deadline = "${15 + index % 15}/${if (index % 2 == 0) "০৯" else "১০"}/২০২৫",
+                contactInfo = "+০১৮১২৩৪৫৬৭৮৯\nadmin@${
                     companies[index % companies.size].lowercase().replace(" ", "")
                 }.com",
                 imageUrl = "https://picsum.photos/300/200?random=${20 + index}",
                 categoryId = categories[index % categories.size],
-                isFeatured = index % 7 == 0
+                isFeatured = index % 7 == 0,
+                positionCount = positionCounts[index % positionCounts.size],
+                jobType = jobTypes[index % jobTypes.size],
+                workingHours = workingHours[index % workingHours.size],
+                workLocation = workLocations[index % workLocations.size]
+            )
+        }
+    }
+
+    private fun getMockAppliedJobs(): List<AppliedJob> {
+        val allJobs = generateMockJobs()
+        val appliedStatuses = listOf(
+            ApplicationStatus.APPLIED,
+            ApplicationStatus.REVIEWED,
+            ApplicationStatus.SHORTLISTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.ACCEPTED
+        )
+
+        // Simulate user has applied to first 8 jobs with different statuses
+        return allJobs.take(8).mapIndexed { index, job ->
+            AppliedJob(
+                jobItem = job,
+                applicationStatus = appliedStatuses[index % appliedStatuses.size],
+                appliedDate = "${(index + 1) * 2} দিন আগে"
             )
         }
     }

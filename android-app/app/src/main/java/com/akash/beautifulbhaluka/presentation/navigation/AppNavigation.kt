@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.akash.beautifulbhaluka.presentation.screens.home.HomeScreen
 import com.akash.beautifulbhaluka.presentation.screens.jobs.JobsScreen
+import com.akash.beautifulbhaluka.presentation.screens.jobs.details.JobDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.jobs.publish.PublishJobScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.SocialScreen
 import com.akash.beautifulbhaluka.presentation.screens.shops.ShopsScreen
 import com.akash.beautifulbhaluka.presentation.screens.shops.details.ProductDetailsScreen
@@ -37,7 +39,14 @@ fun AppNavigation(
         }
 
         composable(NavigationRoutes.JOBS) {
-            JobsScreen()
+            JobsScreen(
+                onNavigateToJobDetails = { jobId ->
+                    navController.navigate(NavigationRoutes.jobDetails(jobId))
+                },
+                onNavigateToPublishJob = {
+                    navController.navigate(NavigationRoutes.PUBLISH_JOB)
+                }
+            )
         }
 
         composable(NavigationRoutes.SHOPS) {
@@ -47,6 +56,36 @@ fun AppNavigation(
                 },
                 onNavigateToPublish = {
                     navController.navigate(NavigationRoutes.PUBLISH_PRODUCT)
+                }
+            )
+        }
+
+        // Job Details Screen
+        composable(
+            route = NavigationRoutes.JOB_DETAILS,
+            arguments = listOf(
+                navArgument("jobId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            JobDetailsScreen(
+                jobId = jobId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Publish Job Screen
+        composable(NavigationRoutes.PUBLISH_JOB) {
+            PublishJobScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onJobPublished = {
+                    navController.popBackStack()
                 }
             )
         }
