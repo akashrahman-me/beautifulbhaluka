@@ -1,9 +1,16 @@
 package com.akash.beautifulbhaluka.presentation.navigation
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.akash.beautifulbhaluka.presentation.screens.about.AboutScreen
 import com.akash.beautifulbhaluka.presentation.screens.accommodation.AccommodationScreen
 import com.akash.beautifulbhaluka.presentation.screens.achiever.AchieverScreen
@@ -64,6 +71,7 @@ import com.akash.beautifulbhaluka.presentation.screens.services.ServicesScreen
 import com.akash.beautifulbhaluka.presentation.screens.settings.SettingsScreen
 import com.akash.beautifulbhaluka.presentation.screens.shopping.ShoppingScreen
 import com.akash.beautifulbhaluka.presentation.screens.shops.ShopsScreen
+import com.akash.beautifulbhaluka.presentation.screens.shops.details.ProductDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.SocialScreen
 import com.akash.beautifulbhaluka.presentation.screens.tourism.TourismScreen
 import com.akash.beautifulbhaluka.presentation.screens.tours.ToursScreen
@@ -194,7 +202,14 @@ fun AppNavigation(
             JobsScreen()
         }
         composable(NavigationRoutes.SHOPS) {
-            ShopsScreen()
+            ShopsScreen(
+                onNavigateToDetails = { productId ->
+                    navController.navigate("product_details/$productId")
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.PRODUCT_PUBLISH)
+                }
+            )
         }
         composable(NavigationRoutes.SOCIAL) {
             SocialScreen()
@@ -336,6 +351,44 @@ fun AppNavigation(
         }
         composable(NavigationRoutes.HELP) {
             HelpScreen()
+        }
+
+        // Product Details Screen
+        composable(
+            route = NavigationRoutes.PRODUCT_DETAILS,
+            arguments = listOf(
+                navArgument("productId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailsScreen(
+                productId = productId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Product Publish Screen (placeholder - you can implement this later)
+        composable(NavigationRoutes.PRODUCT_PUBLISH) {
+            // For now, just show a simple placeholder
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "পণ্য প্রকাশ করুন",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Button(onClick = { navController.popBackStack() }) {
+                        Text("ফিরে যান")
+                    }
+                }
+            }
         }
     }
 }

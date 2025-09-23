@@ -188,6 +188,76 @@ class ShopsViewModel : ViewModel() {
         loadInitialData()
     }
 
+    fun onAction(action: ShopsAction) {
+        when (action) {
+            is ShopsAction.SearchProducts -> {
+                _uiState.value = _uiState.value.copy(
+                    searchQuery = action.query,
+                    filteredProducts = filterProducts(action.query, _uiState.value.selectedCategory)
+                )
+            }
+
+            is ShopsAction.SelectCategory -> {
+                _uiState.value = _uiState.value.copy(
+                    selectedCategory = action.category,
+                    filteredProducts = filterProducts(_uiState.value.searchQuery, action.category)
+                )
+            }
+
+            is ShopsAction.ToggleFavorite -> {
+                // Handle favorite toggle - could update local storage or backend
+                // For now, just a placeholder
+            }
+
+            is ShopsAction.SortProducts -> {
+                // Handle product sorting
+                val sortedProducts = when (action.sortOption) {
+                    SortOption.PRICE_LOW_TO_HIGH -> _uiState.value.filteredProducts.sortedBy { it.price }
+                    SortOption.PRICE_HIGH_TO_LOW -> _uiState.value.filteredProducts.sortedByDescending { it.price }
+                    SortOption.NAME -> _uiState.value.filteredProducts.sortedBy { it.name }
+                    SortOption.NEWEST -> _uiState.value.filteredProducts.sortedByDescending { it.createdAt }
+                    SortOption.RATING -> _uiState.value.filteredProducts.sortedByDescending { it.rating }
+                }
+                _uiState.value = _uiState.value.copy(filteredProducts = sortedProducts)
+            }
+
+            ShopsAction.Refresh -> {
+                loadInitialData()
+            }
+
+            ShopsAction.ClearFilters -> {
+                _uiState.value = _uiState.value.copy(
+                    selectedCategory = null,
+                    searchQuery = "",
+                    filteredProducts = _uiState.value.products
+                )
+            }
+        }
+    }
+
+    private fun filterProducts(
+        searchQuery: String,
+        selectedCategory: ProductCategory?
+    ): List<Product> {
+        var filtered = _uiState.value.products
+
+        // Filter by category
+        if (selectedCategory != null) {
+            filtered = filtered.filter { it.category.id == selectedCategory.id }
+        }
+
+        // Filter by search query
+        if (searchQuery.isNotEmpty()) {
+            filtered = filtered.filter {
+                it.name.contains(searchQuery, ignoreCase = true) ||
+                        it.description.contains(searchQuery, ignoreCase = true) ||
+                        it.location.contains(searchQuery, ignoreCase = true)
+            }
+        }
+
+        return filtered
+    }
+
     private fun loadInitialData() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
@@ -202,77 +272,5 @@ class ShopsViewModel : ViewModel() {
                 filteredProducts = mockProducts
             )
         }
-    }
-
-    fun onSearchQueryChanged(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        filterProducts()
-    }
-
-    fun onCategorySelected(category: ProductCategory?) {
-        _uiState.value = _uiState.value.copy(selectedCategory = category)
-        filterProducts()
-    }
-
-    private fun filterProducts() {
-        val currentState = _uiState.value
-        var filtered = currentState.products
-
-        // Filter by category
-        currentState.selectedCategory?.let { category ->
-            filtered = filtered.filter { it.category.id == category.id }
-        }
-
-        // Filter by search query
-        if (currentState.searchQuery.isNotBlank()) {
-            filtered = filtered.filter { product ->
-                product.name.contains(currentState.searchQuery, ignoreCase = true) ||
-                        product.description.contains(currentState.searchQuery, ignoreCase = true) ||
-                        product.sellerName.contains(currentState.searchQuery, ignoreCase = true)
-            }
-        }
-
-        _uiState.value = _uiState.value.copy(filteredProducts = filtered)
-    }
-
-    fun sortProducts(sortOption: SortOption) {
-        val currentProducts = _uiState.value.filteredProducts
-        val sortedProducts = when (sortOption) {
-            SortOption.NEWEST -> currentProducts.sortedByDescending { it.createdAt }
-            SortOption.PRICE_LOW_TO_HIGH -> currentProducts.sortedBy { it.price }
-            SortOption.PRICE_HIGH_TO_LOW -> currentProducts.sortedByDescending { it.price }
-            SortOption.RATING -> currentProducts.sortedByDescending { it.rating }
-            SortOption.NAME -> currentProducts.sortedBy { it.name }
-        }
-
-        _uiState.value = _uiState.value.copy(filteredProducts = sortedProducts)
-    }
-
-    fun clearFilters() {
-        _uiState.value = _uiState.value.copy(
-            selectedCategory = null,
-            searchQuery = "",
-            filteredProducts = _uiState.value.products
-        )
-    }
-
-    fun refreshProducts() {
-        loadInitialData()
-    }
-
-    fun onAction(action: ShopsAction) {
-        when (action) {
-            is ShopsAction.SearchProducts -> onSearchQueryChanged(action.query)
-            is ShopsAction.SelectCategory -> onCategorySelected(action.category)
-            is ShopsAction.ToggleFavorite -> toggleFavorite(action.productId)
-            is ShopsAction.SortProducts -> sortProducts(action.sortOption)
-            ShopsAction.Refresh -> refreshProducts()
-            ShopsAction.ClearFilters -> clearFilters()
-        }
-    }
-
-    private fun toggleFavorite(productId: String) {
-        // Implementation for toggling favorite
-        // For now, just a placeholder as we don't have favorite functionality yet
     }
 }
