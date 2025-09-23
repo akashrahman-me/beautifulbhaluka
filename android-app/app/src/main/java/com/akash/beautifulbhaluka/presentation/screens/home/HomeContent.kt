@@ -69,22 +69,21 @@ private fun HomeContentLoaded(
     onAction: (HomeAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val configuration = LocalConfiguration.current
 
     Column {
         Box(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .fillMaxSize()
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .padding(vertical = 16.dp, horizontal = 16.dp)
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(28.dp)
             ) {
                 // Carousel section
                 Carousel(
                     items = uiState.carouselItems,
-                    onItemClick = { carouselItem ->
+                    onItemClick = { carouselItem: CarouselItem ->
                         // Handle carousel item click - could navigate or show details
                         // For now, we'll just trigger a generic action
                         onAction(HomeAction.LoadData) // Or create a specific CarouselItemClicked action
@@ -94,13 +93,12 @@ private fun HomeContentLoaded(
                 // Link sections
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     uiState.linkSections.forEach { section ->
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
+                                .fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
@@ -108,11 +106,8 @@ private fun HomeContentLoaded(
                                 style = MaterialTheme.typography.titleLarge,
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
-
                             val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                            val itemWidth =
-                                (screenWidth - (16.dp) - 20.dp * 2) / 3 // padding + gaps
+                            val itemWidth = (screenWidth - (16 * 3).dp) / 3 // padding + gaps
 
                             FlowRow(
                                 modifier = Modifier.fillMaxWidth(),

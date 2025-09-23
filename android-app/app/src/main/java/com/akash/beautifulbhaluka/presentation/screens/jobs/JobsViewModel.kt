@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.akash.beautifulbhaluka.presentation.screens.home.CarouselItem
 
 class JobsViewModel : ViewModel() {
 
@@ -108,7 +109,7 @@ class JobsViewModel : ViewModel() {
     }
 
     private fun selectTab(tab: JobTab) {
-        _uiState.update { it.copy(selectedTab = tab) }
+        _uiState.update { it.copy(currentTab = tab) }
     }
 
     private fun selectCategory(categoryId: String) {

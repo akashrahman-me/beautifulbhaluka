@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 fun AboutScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "About Screen",
+            text = "ভালুকার পরিচিতি স্ক্রিন খুব শীঘ্রই আসছে",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
             ),

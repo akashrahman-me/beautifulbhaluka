@@ -966,6 +966,10 @@ private fun ProductImageCarousel(product: Product) {
 
     Carousel(
         items = carouselItems,
+        onItemClick = { carouselItem ->
+            // Handle carousel item click - could be used for full-screen image view
+            // For now, we'll just do nothing or add future functionality
+        },
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(24.dp))

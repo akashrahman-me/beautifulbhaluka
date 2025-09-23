@@ -1,19 +1,22 @@
 package com.akash.beautifulbhaluka.presentation.screens.jobs
 
+import com.akash.beautifulbhaluka.presentation.screens.home.CarouselItem
+
 data class JobsUiState(
     val isLoading: Boolean = false,
     val jobs: List<JobItem> = emptyList(),
-    val appliedJobs: List<AppliedJob> = emptyList(),
-    val categories: List<JobCategory> = emptyList(),
     val carouselItems: List<CarouselItem> = emptyList(),
-    val favoriteJobs: Set<String> = emptySet(),
-    val selectedTab: JobTab = JobTab.JOB_FEEDS,
+    val categories: List<JobCategory> = emptyList(),
+    val selectedCategory: String? = null,
+    val currentTab: JobTab = JobTab.JOB_FEEDS,
+    val error: String? = null,
+    val isRefreshing: Boolean = false,
     val currentPage: Int = 1,
     val totalPages: Int = 1,
     val hasNextPage: Boolean = false,
     val hasPreviousPage: Boolean = false,
-    val error: String? = null,
-    val isRefreshing: Boolean = false
+    val appliedJobs: List<AppliedJob> = emptyList(),
+    val favoriteJobs: Set<String> = emptySet() // Added missing property
 )
 
 data class JobItem(
@@ -43,14 +46,6 @@ data class JobCategory(
     val name: String,
     val imageUrl: String,
     val jobCount: Int
-)
-
-data class CarouselItem(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val imageUrl: String,
-    val actionUrl: String? = null
 )
 
 enum class JobTab {

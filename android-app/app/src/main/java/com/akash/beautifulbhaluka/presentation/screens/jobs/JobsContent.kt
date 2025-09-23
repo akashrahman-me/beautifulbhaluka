@@ -1,7 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.jobs
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +13,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.akash.beautifulbhaluka.presentation.screens.home.CarouselItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,24 +74,24 @@ fun JobsContent(
             }
         }
 
-        // Tab Row
-        TabRow(
-            selectedTabIndex = if (uiState.selectedTab == JobTab.JOB_FEEDS) 0 else 1
+        // Tab Row - Updated to PrimaryTabRow
+        PrimaryTabRow(
+            selectedTabIndex = if (uiState.currentTab == JobTab.JOB_FEEDS) 0 else 1
         ) {
             Tab(
-                selected = uiState.selectedTab == JobTab.JOB_FEEDS,
+                selected = uiState.currentTab == JobTab.JOB_FEEDS,
                 onClick = { onAction(JobsAction.SelectTab(JobTab.JOB_FEEDS)) },
                 text = { Text("Job Feeds") }
             )
             Tab(
-                selected = uiState.selectedTab == JobTab.MANAGE_JOBS,
+                selected = uiState.currentTab == JobTab.MANAGE_JOBS,
                 onClick = { onAction(JobsAction.SelectTab(JobTab.MANAGE_JOBS)) },
                 text = { Text("Manage Jobs") }
             )
         }
 
         // Content based on selected tab
-        when (uiState.selectedTab) {
+        when (uiState.currentTab) {
             JobTab.JOB_FEEDS -> JobFeedsContent(uiState = uiState, onAction = onAction)
             JobTab.MANAGE_JOBS -> ManageJobsContent(uiState = uiState, onAction = onAction)
         }
@@ -194,7 +195,6 @@ private fun JobFeedsContent(
                     hasNextPage = uiState.hasNextPage,
                     hasPreviousPage = uiState.hasPreviousPage,
                     isLoading = uiState.isLoading,
-                    onPageClick = { page -> onAction(JobsAction.LoadPage(page)) },
                     onNextClick = { onAction(JobsAction.LoadNextPage) },
                     onPreviousClick = { onAction(JobsAction.LoadPreviousPage) }
                 )
@@ -386,7 +386,7 @@ private fun CarouselCard(
                     color = Color.White
                 )
                 Text(
-                    text = item.subtitle,
+                    text = item.description, // Changed from subtitle to description
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -518,7 +518,6 @@ private fun PaginationSection(
     hasNextPage: Boolean,
     hasPreviousPage: Boolean,
     isLoading: Boolean,
-    onPageClick: (Int) -> Unit,
     onNextClick: () -> Unit,
     onPreviousClick: () -> Unit
 ) {
@@ -543,7 +542,7 @@ private fun PaginationSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -571,7 +570,7 @@ private fun PaginationSection(
                 ) {
                     Text("Next")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
