@@ -72,6 +72,7 @@ import com.akash.beautifulbhaluka.presentation.screens.settings.SettingsScreen
 import com.akash.beautifulbhaluka.presentation.screens.shopping.ShoppingScreen
 import com.akash.beautifulbhaluka.presentation.screens.shops.ShopsScreen
 import com.akash.beautifulbhaluka.presentation.screens.shops.details.ProductDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.shops.publish.PublishProductScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.SocialScreen
 import com.akash.beautifulbhaluka.presentation.screens.tourism.TourismScreen
 import com.akash.beautifulbhaluka.presentation.screens.tours.ToursScreen
@@ -369,26 +370,13 @@ fun AppNavigation(
             )
         }
 
-        // Product Publish Screen (placeholder - you can implement this later)
+        // Product Publish Screen
         composable(NavigationRoutes.PRODUCT_PUBLISH) {
-            // For now, just show a simple placeholder
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = "পণ্য প্রকাশ করুন",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Button(onClick = { navController.popBackStack() }) {
-                        Text("ফিরে যান")
-                    }
+            PublishProductScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
-            }
+            )
         }
     }
 }
