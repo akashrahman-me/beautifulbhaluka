@@ -52,6 +52,7 @@ import com.akash.beautifulbhaluka.presentation.screens.home.HomeScreen
 import com.akash.beautifulbhaluka.presentation.screens.hospital.HospitalScreen
 import com.akash.beautifulbhaluka.presentation.screens.hotels.HotelsScreen
 import com.akash.beautifulbhaluka.presentation.screens.jobs.JobsScreen
+import com.akash.beautifulbhaluka.presentation.screens.jobs.details.JobDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.kazioffice.KaziOfficeScreen
 import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.LadiesParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.LawyerScreen
@@ -200,15 +201,12 @@ fun AppNavigation(
 
         // Existing screens
         composable(NavigationRoutes.JOBS) {
-            JobsScreen()
-        }
-        composable(NavigationRoutes.SHOPS) {
-            ShopsScreen(
-                onNavigateToDetails = { productId ->
-                    navController.navigate("product_details/$productId")
+            JobsScreen(
+                onNavigateToJobDetails = { jobId ->
+                    navController.navigate("job_details/$jobId")
                 },
-                onNavigateToPublish = {
-                    navController.navigate(NavigationRoutes.PRODUCT_PUBLISH)
+                onNavigateToPublishJob = {
+                    navController.navigate(NavigationRoutes.PUBLISH_JOB)
                 }
             )
         }
@@ -373,6 +371,32 @@ fun AppNavigation(
         // Product Publish Screen
         composable(NavigationRoutes.PRODUCT_PUBLISH) {
             PublishProductScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Publish Job Screen
+        composable(NavigationRoutes.PUBLISH_JOB) {
+            com.akash.beautifulbhaluka.presentation.screens.jobs.publish.PublishJobScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onJobPublished = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Job Details Screen
+        composable(
+            route = NavigationRoutes.JOB_DETAILS,
+            arguments = listOf(navArgument("jobId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            JobDetailsScreen(
+                jobId = jobId,
                 onNavigateBack = {
                     navController.popBackStack()
                 }

@@ -46,6 +46,8 @@ object NavigationRoutes {
 
     // Existing screens
     const val JOBS = "jobs"
+    const val PUBLISH_JOB = "publish_job"
+    const val JOB_DETAILS = "job_details/{jobId}"
     const val SHOPS = "shops"
     const val PRODUCT_DETAILS = "product_details/{productId}"
     const val PRODUCT_PUBLISH = "product_publish"
