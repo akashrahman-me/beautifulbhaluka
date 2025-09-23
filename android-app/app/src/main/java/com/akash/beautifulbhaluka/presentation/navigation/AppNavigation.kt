@@ -203,10 +203,20 @@ fun AppNavigation(
         composable(NavigationRoutes.JOBS) {
             JobsScreen(
                 onNavigateToJobDetails = { jobId ->
-                    navController.navigate("job_details/$jobId")
+                    navController.navigate(NavigationRoutes.jobDetails(jobId))
                 },
                 onNavigateToPublishJob = {
                     navController.navigate(NavigationRoutes.PUBLISH_JOB)
+                }
+            )
+        }
+        composable(NavigationRoutes.SHOPS) {
+            ShopsScreen(
+                onNavigateToDetails = { productId ->
+                    navController.navigate(NavigationRoutes.productDetails(productId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.PRODUCT_PUBLISH)
                 }
             )
         }

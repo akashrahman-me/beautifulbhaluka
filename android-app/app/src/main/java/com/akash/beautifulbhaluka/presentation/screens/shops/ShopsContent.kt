@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,6 +181,13 @@ private fun ProductCard(
     product: Product,
     onClick: () -> Unit
 ) {
+    // Provide a dummy image like Jobs screen if the product has no image (blank string)
+    val placeholderChar = product.name.firstOrNull()?.uppercaseChar() ?: 'P'
+    val imageModel = product.imageUrl.ifBlank {
+        // Similar style to job placeholders: light background color with primary accent text
+        "https://via.placeholder.com/400x300/E8F5E8/4CAF50?text=$placeholderChar"
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +196,7 @@ private fun ProductCard(
     ) {
         Column {
             AsyncImage(
-                model = product.imageUrl,
+                model = imageModel,
                 contentDescription = product.name,
                 modifier = Modifier
                     .fillMaxWidth()

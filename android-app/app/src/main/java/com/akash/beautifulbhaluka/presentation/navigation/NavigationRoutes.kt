@@ -47,6 +47,8 @@ object NavigationRoutes {
     // Existing screens
     const val JOBS = "jobs"
     const val PUBLISH_JOB = "publish_job"
+
+    // Pattern route with argument placeholder
     const val JOB_DETAILS = "job_details/{jobId}"
     const val SHOPS = "shops"
     const val PRODUCT_DETAILS = "product_details/{productId}"
@@ -120,4 +122,8 @@ object NavigationRoutes {
     fun createRouteWithTitle(baseRoute: String, title: String): String {
         return "$baseRoute?title=${java.net.URLEncoder.encode(title, "UTF-8")}"
     }
+
+    // Helper builder for concrete detail routes (avoids hardcoding pattern everywhere)
+    fun jobDetails(jobId: String) = "job_details/$jobId"
+    fun productDetails(productId: String) = "product_details/$productId"
 }
