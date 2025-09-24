@@ -6,8 +6,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
@@ -79,305 +80,260 @@ private fun PublishJobContent(
             }
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Page Header with Back Button
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                IconButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(12.dp)
+                        )
                 ) {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-                    Column {
-                        Text(
-                            text = "Create Job Posting",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Fill in the details to post your job",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                Column {
+                    Text(
+                        text = "Create Job Posting",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Fill in the details to post your job",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
             // Header Section
-            item {
-                SectionHeader(
-                    title = "Job Details",
-                    subtitle = "Provide clear and compelling job information",
-                    icon = Icons.Outlined.Work
-                )
-            }
+            SectionHeader(
+                title = "Job Details",
+                subtitle = "Provide clear and compelling job information",
+                icon = Icons.Outlined.Work
+            )
 
             // Image Selection
-            item {
-                ImageSelector(
-                    selectedImageUri = uiState.selectedImageUri,
-                    onSelectImage = { imageLauncher.launch("image/*") }
-                )
-            }
+            ImageSelector(
+                selectedImageUri = uiState.selectedImageUri,
+                onSelectImage = { imageLauncher.launch("image/*") }
+            )
 
             // Basic Information
-            item {
-                TextField(
-                    value = uiState.title,
-                    onValueChange = { onAction(PublishJobAction.UpdateTitle(it)) },
-                    label = "Job Title",
-                    placeholder = "e.g., Senior Android Developer",
-                    leadingIcon = Icons.Outlined.Badge,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.title,
+                onValueChange = { onAction(PublishJobAction.UpdateTitle(it)) },
+                label = "Job Title",
+                placeholder = "e.g., Senior Android Developer",
+                leadingIcon = Icons.Outlined.Badge,
+                isRequired = true
+            )
 
-            item {
-                TextField(
-                    value = uiState.company,
-                    onValueChange = { onAction(PublishJobAction.UpdateCompany(it)) },
-                    label = "Company Name",
-                    placeholder = "e.g., Tech Innovations Ltd.",
-                    leadingIcon = Icons.Outlined.Business,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.company,
+                onValueChange = { onAction(PublishJobAction.UpdateCompany(it)) },
+                label = "Company Name",
+                placeholder = "e.g., Tech Innovations Ltd.",
+                leadingIcon = Icons.Outlined.Business,
+                isRequired = true
+            )
 
             // Category Selection
-            item {
-                CategorySelector(
-                    categories = uiState.categories,
-                    selectedCategory = uiState.selectedCategory,
-                    onCategorySelect = { onAction(PublishJobAction.SelectCategory(it)) }
-                )
-            }
+            CategorySelector(
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelect = { onAction(PublishJobAction.SelectCategory(it)) }
+            )
 
             // Location and Compensation
-            item {
-                SectionHeader(
-                    title = "Location & Compensation",
-                    subtitle = "Define where and how much",
-                    icon = Icons.Outlined.LocationOn
-                )
-            }
+            SectionHeader(
+                title = "Location & Compensation",
+                subtitle = "Define where and how much",
+                icon = Icons.Outlined.LocationOn
+            )
 
-            item {
-                LocationDropdown(
-                    selectedLocation = uiState.location,
-                    onLocationSelect = { onAction(PublishJobAction.UpdateLocation(it)) }
-                )
-            }
+            LocationDropdown(
+                selectedLocation = uiState.location,
+                onLocationSelect = { onAction(PublishJobAction.UpdateLocation(it)) }
+            )
 
-            item {
-                TextField(
-                    value = uiState.positionCount,
-                    onValueChange = {
-                        onAction(
-                            PublishJobAction.UpdatePositionCount(
-                                it
-                            )
+            TextField(
+                value = uiState.positionCount,
+                onValueChange = {
+                    onAction(
+                        PublishJobAction.UpdatePositionCount(
+                            it
                         )
-                    },
-                    label = "Positions",
-                    placeholder = "e.g., 5",
-                    leadingIcon = Icons.Outlined.Group,
-                    isRequired = true
-                )
-            }
+                    )
+                },
+                label = "Positions",
+                placeholder = "e.g., 5",
+                leadingIcon = Icons.Outlined.Group,
+                isRequired = true
+            )
 
-            item {
-                TextField(
-                    value = uiState.salary,
-                    onValueChange = { onAction(PublishJobAction.UpdateSalary(it)) },
-                    label = "Salary Range",
-                    placeholder = "e.g., $50,000 - $70,000",
-                    leadingIcon = Icons.Outlined.AttachMoney,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.salary,
+                onValueChange = { onAction(PublishJobAction.UpdateSalary(it)) },
+                label = "Salary Range",
+                placeholder = "e.g., $50,000 - $70,000",
+                leadingIcon = Icons.Outlined.AttachMoney,
+                isRequired = true
+            )
 
-            item {
-                TextField(
-                    value = uiState.deadline,
-                    onValueChange = { onAction(PublishJobAction.UpdateDeadline(it)) },
-                    label = "Application Deadline",
-                    placeholder = "e.g., December 31, 2024",
-                    leadingIcon = Icons.Outlined.Schedule,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.deadline,
+                onValueChange = { onAction(PublishJobAction.UpdateDeadline(it)) },
+                label = "Application Deadline",
+                placeholder = "e.g., December 31, 2024",
+                leadingIcon = Icons.Outlined.Schedule,
+                isRequired = true
+            )
 
             // Requirements Section
-            item {
-                SectionHeader(
-                    title = "Requirements",
-                    subtitle = "Set candidate qualifications",
-                    icon = Icons.Outlined.School
-                )
-            }
+            SectionHeader(
+                title = "Requirements",
+                subtitle = "Set candidate qualifications",
+                icon = Icons.Outlined.School
+            )
 
-            item {
-                EducationDropdown(
-                    selectedEducation = uiState.education,
-                    onEducationSelect = {
-                        onAction(
-                            PublishJobAction.UpdateEducation(
-                                it
-                            )
+            EducationDropdown(
+                selectedEducation = uiState.education,
+                onEducationSelect = {
+                    onAction(
+                        PublishJobAction.UpdateEducation(
+                            it
                         )
-                    }
-                )
-            }
+                    )
+                }
+            )
 
-            item {
-                ExperienceDropdown(
-                    selectedExperience = uiState.experience,
-                    onExperienceSelect = {
-                        onAction(
-                            PublishJobAction.UpdateExperience(
-                                it
-                            )
+            ExperienceDropdown(
+                selectedExperience = uiState.experience,
+                onExperienceSelect = {
+                    onAction(
+                        PublishJobAction.UpdateExperience(
+                            it
                         )
-                    }
-                )
-            }
+                    )
+                }
+            )
 
             // Work Details Section
-            item {
-                SectionHeader(
-                    title = "Work Details",
-                    subtitle = "Define work arrangements",
-                    icon = Icons.Outlined.Settings
-                )
-            }
+            SectionHeader(
+                title = "Work Details",
+                subtitle = "Define work arrangements",
+                icon = Icons.Outlined.Settings
+            )
 
-            item {
-                JobTypeDropdown(
-                    selectedJobType = uiState.jobType,
-                    onJobTypeSelect = { onAction(PublishJobAction.UpdateJobType(it)) }
-                )
-            }
+            JobTypeDropdown(
+                selectedJobType = uiState.jobType,
+                onJobTypeSelect = { onAction(PublishJobAction.UpdateJobType(it)) }
+            )
 
-            item {
-                WorkLocationDropdown(
-                    selectedWorkLocation = uiState.workLocation,
-                    onWorkLocationSelect = {
-                        onAction(
-                            PublishJobAction.UpdateWorkLocation(
-                                it
-                            )
+            WorkLocationDropdown(
+                selectedWorkLocation = uiState.workLocation,
+                onWorkLocationSelect = {
+                    onAction(
+                        PublishJobAction.UpdateWorkLocation(
+                            it
                         )
-                    }
-                )
-            }
+                    )
+                }
+            )
 
-            item {
-                WorkingHoursDropdown(
-                    selectedWorkingHours = uiState.workingHours,
-                    onWorkingHoursSelect = { onAction(PublishJobAction.UpdateWorkingHours(it)) }
-                )
-            }
+            WorkingHoursDropdown(
+                selectedWorkingHours = uiState.workingHours,
+                onWorkingHoursSelect = { onAction(PublishJobAction.UpdateWorkingHours(it)) }
+            )
 
             // Contact Information
-            item {
-                SectionHeader(
-                    title = "Contact Information",
-                    subtitle = "How candidates can reach you",
-                    icon = Icons.Outlined.ContactPhone
-                )
-            }
+            SectionHeader(
+                title = "Contact Information",
+                subtitle = "How candidates can reach you",
+                icon = Icons.Outlined.ContactPhone
+            )
 
-            item {
-                TextField(
-                    value = uiState.phoneNumber,
-                    onValueChange = { onAction(PublishJobAction.UpdatePhoneNumber(it)) },
-                    label = "Phone Number",
-                    placeholder = "e.g., +1 (555) 123-4567",
-                    leadingIcon = Icons.Outlined.Phone,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.phoneNumber,
+                onValueChange = { onAction(PublishJobAction.UpdatePhoneNumber(it)) },
+                label = "Phone Number",
+                placeholder = "e.g., +1 (555) 123-4567",
+                leadingIcon = Icons.Outlined.Phone,
+                isRequired = true
+            )
 
-            item {
-                TextField(
-                    value = uiState.email,
-                    onValueChange = { onAction(PublishJobAction.UpdateEmail(it)) },
-                    label = "Email Address",
-                    placeholder = "e.g., hr@company.com",
-                    leadingIcon = Icons.Outlined.Email,
-                    isRequired = true
-                )
-            }
+            TextField(
+                value = uiState.email,
+                onValueChange = { onAction(PublishJobAction.UpdateEmail(it)) },
+                label = "Email Address",
+                placeholder = "e.g., hr@company.com",
+                leadingIcon = Icons.Outlined.Email,
+                isRequired = true
+            )
 
             // Error Display
             if (uiState.error != null) {
-                item {
-                    ErrorCard(error = uiState.error)
-                }
+                ErrorCard(error = uiState.error)
             }
 
-            // Publish Button (now inside the scrollable content)
-            item {
-                Button(
-                    onClick = { onAction(PublishJobAction.PublishJob) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    enabled = !uiState.isPublishing,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+            // Publish Button
+            Button(
+                onClick = { onAction(PublishJobAction.PublishJob) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isPublishing,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                if (uiState.isPublishing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
-                ) {
-                    if (uiState.isPublishing) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Publishing...",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Outlined.Publish,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Publish Job Posting",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Publishing...",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.Publish,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Publish Job Posting",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
-
         }
     }
 }
