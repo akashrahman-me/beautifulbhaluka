@@ -1,8 +1,8 @@
 package com.akash.beautifulbhaluka.presentation.screens.jobs
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,12 +26,13 @@ fun JobsContent(
     onAction: (JobsAction) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Button(
             onClick = { onAction(JobsAction.NavigateToPublishJob) },
             modifier = Modifier
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
                 .height(56.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -56,6 +56,8 @@ fun JobsContent(
                 fontWeight = FontWeight.Medium
             )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Job Content
         when {
@@ -90,12 +92,13 @@ fun JobsContent(
             }
 
             else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(uiState.jobs, key = { it.id }) { job ->
+                    uiState.jobs.forEach { job ->
                         JobCard(
                             job = job,
                             isFavorite = uiState.favoriteJobs.contains(job.id),
