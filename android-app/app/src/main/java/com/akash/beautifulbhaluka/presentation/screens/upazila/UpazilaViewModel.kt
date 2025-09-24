@@ -31,7 +31,7 @@ class UpazilaViewModel : ViewModel() {
         val mockData = UpazilaInfo(
             title = "ভালুকা উপজেলার পরিচিতি",
             description = "ভালুকা বাংলাদেশের ময়মনসিংহ জেলার অন্তর্গত একটি উপজেলা। এটি বাংলাদেশের প্রথম মডেল থানা এবং দেশের অন্যতম বিসিক শিল্প নগরী।সাক্ষরতার হার 96% বেকারত্বের হার 4% শিক্ষার হার 72% প্রবাসী রেমিটেন্স 7% এটি সারা বাংলাদেশের সবকয়টা থানাকে পিছনে ফেলে ভালুকা এক নম্বর অবস্থানে এসেছে। ইসলাম 95% হিন্দু 3% খ্রিস্টান 2% এ উপজেলায় ৮৭টি মৌজা ও ১১০টি গ্রাম রয়েছে।",
-            imageUrl = "https://via.placeholder.com/400x200/2196F3/FFFFFF?text=ভালুকা+উপজেলা", // Placeholder image
+            imageUrl = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/Unions_of_Bhaluka_Upazila-1024x805.jpg", // Placeholder image
             sections = getSections()
         )
 
