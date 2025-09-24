@@ -3,17 +3,24 @@ package com.akash.beautifulbhaluka.presentation.screens.jobs.details
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,35 +66,32 @@ private fun JobDetailsContent(
     onAction: (JobDetailsAction) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .verticalScroll(rememberScrollState())
     ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = uiState.job?.title ?: "Job Details",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }
-        )
-
         when {
             uiState.isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            strokeWidth = 4.dp
+                        )
+                        Text(
+                            text = "Loading job details...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
 
@@ -98,27 +102,182 @@ private fun JobDetailsContent(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = Modifier.padding(32.dp)
                     ) {
+                        Icon(
+                            imageVector = Icons.Outlined.ErrorOutline,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Text(
+                            text = "Something went wrong",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                         Text(
                             text = uiState.error,
-                            color = MaterialTheme.colorScheme.error,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center
                         )
-                        Button(onClick = { /* Retry logic */ }) {
-                            Text("Retry")
+                        FilledTonalButton(
+                            onClick = { /* Retry logic */ },
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Try Again")
                         }
                     }
                 }
             }
 
             uiState.job != null -> {
-                JobDetailsBody(
-                    job = uiState.job,
-                    onApplyClick = { onAction(JobDetailsAction.ShowApplicationDialog) }
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    //  Header with gradient
+                    JobHeader(
+                        job = uiState.job,
+                        onNavigateBack = onNavigateBack
+                    )
+
+                    JobDetailsBody(
+                        job = uiState.job,
+                        onApplyClick = { onAction(JobDetailsAction.ShowApplicationDialog) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun JobHeader(
+    job: JobItem,
+    onNavigateBack: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+    ) {
+        // Background image with overlay
+        AsyncImage(
+            model = job.imageUrl
+                ?: "https://via.placeholder.com/400x300/6366F1/FFFFFF?text=Company",
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Gradient overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.3f),
+                            Color.Black.copy(alpha = 0.7f)
+                        )
+                    )
+                )
+        )
+
+        // Back button
+        IconButton(
+            onClick = onNavigateBack,
+            modifier = Modifier
+                .padding(16.dp)
+                .size(40.dp)
+                .background(
+                    Color.White.copy(alpha = 0.9f),
+                    CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black
+            )
+        }
+
+        // Job info overlay
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(24.dp)
+        ) {
+            Text(
+                text = job.title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = job.company,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White.copy(alpha = 0.9f),
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Chip(
+                    icon = Icons.Outlined.LocationOn,
+                    text = job.location
+                )
+                Chip(
+                    icon = Icons.Outlined.AttachMoney,
+                    text = job.salary
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun Chip(
+    icon: ImageVector,
+    text: String
+) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White.copy(alpha = 0.15f),
+        modifier = Modifier.border(
+            1.dp,
+            Color.White.copy(alpha = 0.3f),
+            RoundedCornerShape(20.dp)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Color.White
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -128,111 +287,131 @@ private fun JobDetailsBody(
     job: JobItem,
     onApplyClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Scrollable content
+    Column() {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
         ) {
-            // Job Image
-            AsyncImage(
-                model = job.imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop
-            )
-
-            // Job Details
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Company Name
-                Text(
-                    text = job.company,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                // Quick Info Section
+                InfoSection(
+                    title = "Quick Information",
+                    icon = Icons.Outlined.Info
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        InfoRow(
+                            icon = Icons.Outlined.Work,
+                            label = "Job Type",
+                            value = job.jobType
+                        )
+                        InfoRow(
+                            icon = Icons.Outlined.Schedule,
+                            label = "Working Hours",
+                            value = job.workingHours
+                        )
+                        InfoRow(
+                            icon = Icons.Outlined.Groups,
+                            label = "Positions",
+                            value = job.positionCount
+                        )
+                        InfoRow(
+                            icon = Icons.Outlined.DateRange,
+                            label = "Application Deadline",
+                            value = job.deadline
+                        )
+                    }
+                }
 
-                // Job Details Cards - Using data from JobItem
-                JobDetailCard(
-                    title = "বেতন",
-                    value = job.salary
-                )
+                // Requirements Section
+                InfoSection(
+                    title = "Requirements",
+                    icon = Icons.Outlined.School
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        InfoRow(
+                            icon = Icons.Outlined.School,
+                            label = "Education",
+                            value = job.education
+                        )
+                        InfoRow(
+                            icon = Icons.Outlined.TrendingUp,
+                            label = "Experience",
+                            value = job.experience
+                        )
+                    }
+                }
 
-                JobDetailCard(
-                    title = "পদ সংখ্যা",
-                    value = job.positionCount
-                )
+                // Work Details Section
+                InfoSection(
+                    title = "Work Details",
+                    icon = Icons.Outlined.BusinessCenter
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        InfoRow(
+                            icon = Icons.Outlined.Place,
+                            label = "Work Location",
+                            value = job.workLocation
+                        )
+                        InfoRow(
+                            icon = Icons.Outlined.AttachMoney,
+                            label = "Salary Range",
+                            value = job.salary,
+                            highlighted = true
+                        )
+                    }
+                }
 
-                JobDetailCard(
-                    title = "লোকেশন",
-                    value = job.location
-                )
-
-                JobDetailCard(
-                    title = "আবেদনের শেষ তারিখ",
-                    value = job.deadline
-                )
-
-                JobDetailCard(
-                    title = "ন্যূনতম শিক্ষাগত যোগ্যতা",
-                    value = job.education
-                )
-
-                JobDetailCard(
-                    title = "অভিজ্ঞতা",
-                    value = job.experience
-                )
-
-                JobDetailCard(
-                    title = "চাকরির ধরন",
-                    value = job.jobType
-                )
-
-                JobDetailCard(
-                    title = "কাজের সময়",
-                    value = job.workingHours
-                )
-
-                JobDetailCard(
-                    title = "কাজের স্থান",
-                    value = job.workLocation
-                )
-
-                JobDetailCard(
-                    title = "যোগাযোগ",
-                    value = job.contactInfo
-                )
-
-                // Extra spacing at bottom
-                Spacer(modifier = Modifier.height(80.dp))
+                // Contact Section
+                InfoSection(
+                    title = "Contact Information",
+                    icon = Icons.Outlined.ContactPhone
+                ) {
+                    InfoRow(
+                        icon = Icons.Outlined.Phone,
+                        label = "Contact",
+                        value = job.contactInfo
+                    )
+                }
             }
         }
 
-        // Apply Button (Fixed at bottom)
+        //  Apply Button (Fixed at bottom)
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shadowElevation = 8.dp
+            modifier = Modifier
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface
         ) {
             Button(
                 onClick = onApplyClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(24.dp)
                     .height(56.dp),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 2.dp
+                )
             ) {
+                Icon(
+                    imageVector = Icons.Outlined.Send,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Apply Now",
+                    text = "Apply for this Job",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
@@ -240,28 +419,111 @@ private fun JobDetailsBody(
 }
 
 @Composable
-private fun JobDetailCard(
+private fun InfoSection(
     title: String,
-    value: String
+    icon: ImageVector,
+    content: @Composable () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    highlighted: Boolean = false
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = if (highlighted)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            else
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+            modifier = Modifier.size(32.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = if (highlighted)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.outline
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.outline,
+                fontWeight = FontWeight.Medium
+            )
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (highlighted)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (highlighted) FontWeight.SemiBold else FontWeight.Normal
             )
         }
     }
@@ -285,17 +547,17 @@ private fun JobApplicationDialog(
             }
         }
     ) {
-        Card(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 24.dp
         ) {
             when (uiState.applicationState) {
                 ApplicationState.Success -> {
-                    SuccessContent()
+                    SuccessContent(onAction)
                 }
 
                 else -> {
@@ -317,112 +579,179 @@ private fun ApplicationFormContent(
     onSelectPdf: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.padding(32.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Header
-        Text(
-            text = "Apply for Job",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        // PDF Upload Section
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            )
+        //  Header
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(48.dp)
             ) {
-                Text(
-                    text = "Upload Resume/CV (PDF) *",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = onSelectPdf,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.outline
-                    )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PictureAsPdf,
+                        imageVector = Icons.Outlined.Send,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+            Column {
+                Text(
+                    text = "Submit Application",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Upload your resume and apply",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // PDF Upload Section
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PictureAsPdf,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Resume/CV (Required)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                FilledTonalButton(
+                    onClick = onSelectPdf,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = if (uiState.selectedPdfUri != null) Icons.Outlined.CheckCircle else Icons.Outlined.Upload,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = if (uiState.selectedPdfUri != null) "PDF Selected" else "Select PDF File"
+                        text = if (uiState.selectedPdfUri != null) "PDF Selected ✓" else "Choose PDF File",
+                        fontWeight = FontWeight.Medium
                     )
                 }
 
                 if (uiState.selectedPdfUri != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "File selected successfully",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Resume uploaded successfully",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             }
         }
 
         // Optional Note Section
-        Column {
-            Text(
-                text = "Additional Note (Optional)",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.EditNote,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.outline
+                )
+                Text(
+                    text = "Additional Note (Optional)",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
 
             OutlinedTextField(
                 value = uiState.applicationNote,
                 onValueChange = { onAction(JobDetailsAction.UpdateApplicationNote(it)) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Enter any additional information...") },
+                placeholder = {
+                    Text(
+                        "Tell us why you're perfect for this role...",
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)
+                    )
+                },
                 minLines = 3,
-                maxLines = 5
+                maxLines = 5,
+                shape = RoundedCornerShape(12.dp)
             )
         }
 
         // Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedButton(
                 onClick = { onAction(JobDetailsAction.HideApplicationDialog) },
                 modifier = Modifier.weight(1f),
-                enabled = uiState.applicationState != ApplicationState.Submitting
+                enabled = uiState.applicationState != ApplicationState.Submitting,
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Cancel")
+                Text(
+                    "Cancel",
+                    fontWeight = FontWeight.Medium
+                )
             }
 
             Button(
                 onClick = { onAction(JobDetailsAction.SubmitApplication) },
                 modifier = Modifier.weight(1f),
-                enabled = uiState.selectedPdfUri != null && uiState.applicationState != ApplicationState.Submitting
+                enabled = uiState.selectedPdfUri != null && uiState.applicationState != ApplicationState.Submitting,
+                shape = RoundedCornerShape(12.dp)
             ) {
                 if (uiState.applicationState == ApplicationState.Submitting) {
                     CircularProgressIndicator(
@@ -430,52 +759,100 @@ private fun ApplicationFormContent(
                         strokeWidth = 2.dp,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
-                } else {
-                    Text("Submit")
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
+                Text(
+                    "Submit Application",
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
 
         // Error state
         if (uiState.applicationState == ApplicationState.Error) {
-            Text(
-                text = "Failed to submit application. Please try again.",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "Failed to submit application. Please try again.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun SuccessContent() {
+private fun SuccessContent(onAction: (JobDetailsAction) -> Unit) {
     Column(
-        modifier = Modifier.padding(24.dp),
+        modifier = Modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(64.dp)
-        )
+        // Success Animation Placeholder
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.size(80.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CheckCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+        }
 
-        Text(
-            text = "Application Submitted Successfully!",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Application Sent!",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "Your application has been submitted successfully. We'll review it and get back to you soon.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
+            )
+        }
 
-        Text(
-            text = "Your application has been submitted. We will contact you soon.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+        Button(
+            onClick = { onAction(JobDetailsAction.HideApplicationDialog) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                "Done",
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
