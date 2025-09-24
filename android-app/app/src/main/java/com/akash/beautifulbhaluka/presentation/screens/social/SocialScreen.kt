@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 fun SocialScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "বিবাহ স্ক্রিন খুব শীঘ্রই আসছে",
+            text = "সোশ্যাল স্ক্রিন খুব শীঘ্রই আসছে",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
             ),
