@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.akash.beautifulbhaluka.presentation.screens.upazila.components.ModernCollapsibleSection
+import com.akash.beautifulbhaluka.presentation.components.common.CollapsibleSection
+import com.akash.beautifulbhaluka.presentation.components.common.MarkdownText
 
 @Composable
 fun UpazilaScreen(
@@ -185,16 +186,21 @@ fun UpazilaContent(
                             )
                         }
 
-                        // Collapsible sections
+                        // Collapsible sections using reusable component
                         uiState.upazilaInfo.sections.forEachIndexed { index, section ->
-                            ModernCollapsibleSection(
-                                section = section,
+                            CollapsibleSection(
+                                title = section.title,
+                                content = {
+                                    MarkdownText(
+                                        text = section.content,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                },
                                 isExpanded = uiState.expandedSections.contains(index),
                                 onToggle = { onAction(UpazilaAction.ToggleSection(index)) },
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
                         }
-
                     }
                 }
             }
