@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.akash.beautifulbhaluka.R
 
 @Composable
 fun FireServiceScreen(
@@ -301,13 +302,34 @@ private fun FireServiceCard(
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                 ) {
                     AsyncImage(
-                        model = station.avatarUrl,
+                        model = R.drawable.a364617,
                         contentDescription = station.stationName,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        onError = { error ->
+                            Log.e(
+                                "FireServiceScreen",
+                                "Image loading failed: ${error.result.throwable}"
+                            )
+                        }
                     )
+
+                    // Overlay fallback icon when image fails to load
+                    if (station.avatarUrl.isBlank()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocalFireDepartment,
+                                contentDescription = "Fire Service",
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
