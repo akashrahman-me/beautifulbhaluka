@@ -77,6 +77,50 @@ fun MarkdownText(
             val line = lines[i].trim()
 
             when {
+                // Handle markdown tables
+                line.startsWith("|") && line.endsWith("|") -> {
+                    val tableLines = mutableListOf<String>()
+                    var j = i
+
+                    // Collect all table lines
+                    while (j < lines.size && lines[j].trim()
+                            .let { it.startsWith("|") && it.endsWith("|") }
+                    ) {
+                        tableLines.add(lines[j].trim())
+                        j++
+                    }
+
+                    if (tableLines.size >= 2) {
+                        // Parse table
+                        val headers = parseTableRow(tableLines[0])
+                        val rows = mutableListOf<List<String>>()
+
+                        // Skip separator line (usually contains |---|---|)
+                        var dataStartIndex = 1
+                        if (tableLines.size > 1 && tableLines[1].contains("---")) {
+                            dataStartIndex = 2
+                        }
+
+                        // Parse data rows
+                        for (k in dataStartIndex until tableLines.size) {
+                            rows.add(parseTableRow(tableLines[k]))
+                        }
+
+                        // Render table using ModernTable
+                        ModernTable(
+                            title = "",
+                            headers = headers,
+                            rows = rows,
+                            showTitle = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
+                        )
+                    }
+
+                    i = j - 1 // Skip processed table lines
+                }
+
                 // Handle main headers (##)
                 line.startsWith("## ") -> {
                     val headerText = line.removePrefix("## ")
@@ -246,4 +290,15 @@ fun MarkdownText(
             i++
         }
     }
+}
+
+/**
+ * Parse a markdown table row into individual cells
+ */
+private fun parseTableRow(row: String): List<String> {
+    return row
+        .removePrefix("|")
+        .removeSuffix("|")
+        .split("|")
+        .map { it.trim() }
 }
