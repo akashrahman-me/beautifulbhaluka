@@ -182,7 +182,8 @@ fun UpazilaContent(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = (-0.5).sp
                                 ),
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f)
                             )
                         }
 
@@ -196,8 +197,6 @@ fun UpazilaContent(
                             )
                         }
 
-                        // Bottom spacing
-                        Spacer(modifier = Modifier.height(40.dp))
                     }
                 }
             }

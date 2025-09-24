@@ -8,6 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -35,14 +36,10 @@ fun ModernCollapsibleSection(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isExpanded) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.05f)
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isExpanded) 8.dp else 2.dp
+            defaultElevation = if (isExpanded) 3.dp else 2.dp
         )
     ) {
         Column {
@@ -52,7 +49,7 @@ fun ModernCollapsibleSection(
                     .fillMaxWidth()
                     .clickable { onToggle() }
                     .padding(20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left side with indicator
@@ -71,12 +68,12 @@ fun ModernCollapsibleSection(
                             )
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     Text(
                         text = section.title,
                         style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = if (isExpanded) FontWeight.Bold else FontWeight.SemiBold,
+                            fontWeight = FontWeight.SemiBold,
                             letterSpacing = (-0.2).sp
                         ),
                         color = if (isExpanded) {
@@ -124,7 +121,7 @@ fun ModernCollapsibleSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
-                            .padding(horizontal = 20.dp)
+                            .padding(end = 20.dp)
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(
@@ -143,12 +140,7 @@ fun ModernCollapsibleSection(
                             .background(
                                 MaterialTheme.colorScheme.surface
                             )
-                            .padding(
-                                start = 44.dp,
-                                end = 20.dp,
-                                top = 20.dp,
-                                bottom = 24.dp
-                            )
+                            .padding(16.dp)
                     ) {
                         ModernMarkdownText(
                             text = section.content,
