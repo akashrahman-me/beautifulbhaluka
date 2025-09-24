@@ -579,7 +579,7 @@ private fun ApplicationFormContent(
     onSelectPdf: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(32.dp),
+        modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         //  Header
@@ -606,7 +606,7 @@ private fun ApplicationFormContent(
             }
             Column {
                 Text(
-                    text = "Submit Application",
+                    text = "Submit",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -762,7 +762,7 @@ private fun ApplicationFormContent(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
                 Text(
-                    "Submit Application",
+                    "Submit ",
                     fontWeight = FontWeight.SemiBold
                 )
             }

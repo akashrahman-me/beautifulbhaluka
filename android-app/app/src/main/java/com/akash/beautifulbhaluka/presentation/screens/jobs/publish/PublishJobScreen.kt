@@ -7,12 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -65,317 +61,337 @@ private fun PublishJobContent(
         onAction(PublishJobAction.SelectImage(uri))
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Create Job Posting",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                CircularProgressIndicator(strokeWidth = 3.dp)
+                Text(
+                    text = "Creating your job posting...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Page Header with Back Button
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(12.dp)
+                            )
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+
+                    Column {
+                        Text(
+                            text = "Create Job Posting",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Fill in the details to post your job",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Header Section
+            item {
+                SectionHeader(
+                    title = "Job Details",
+                    subtitle = "Provide clear and compelling job information",
+                    icon = Icons.Outlined.Work
                 )
-            )
-        }
-    ) { paddingValues ->
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    CircularProgressIndicator(strokeWidth = 3.dp)
-                    Text(
-                        text = "Creating your job posting...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            }
+
+            // Image Selection
+            item {
+                ImageSelector(
+                    selectedImageUri = uiState.selectedImageUri,
+                    onSelectImage = { imageLauncher.launch("image/*") }
+                )
+            }
+
+            // Basic Information
+            item {
+                TextField(
+                    value = uiState.title,
+                    onValueChange = { onAction(PublishJobAction.UpdateTitle(it)) },
+                    label = "Job Title",
+                    placeholder = "e.g., Senior Android Developer",
+                    leadingIcon = Icons.Outlined.Badge,
+                    isRequired = true
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.company,
+                    onValueChange = { onAction(PublishJobAction.UpdateCompany(it)) },
+                    label = "Company Name",
+                    placeholder = "e.g., Tech Innovations Ltd.",
+                    leadingIcon = Icons.Outlined.Business,
+                    isRequired = true
+                )
+            }
+
+            // Category Selection
+            item {
+                CategorySelector(
+                    categories = uiState.categories,
+                    selectedCategory = uiState.selectedCategory,
+                    onCategorySelect = { onAction(PublishJobAction.SelectCategory(it)) }
+                )
+            }
+
+            // Location and Compensation
+            item {
+                SectionHeader(
+                    title = "Location & Compensation",
+                    subtitle = "Define where and how much",
+                    icon = Icons.Outlined.LocationOn
+                )
+            }
+
+            item {
+                LocationDropdown(
+                    selectedLocation = uiState.location,
+                    onLocationSelect = { onAction(PublishJobAction.UpdateLocation(it)) }
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.positionCount,
+                    onValueChange = {
+                        onAction(
+                            PublishJobAction.UpdatePositionCount(
+                                it
+                            )
+                        )
+                    },
+                    label = "Positions",
+                    placeholder = "e.g., 5",
+                    leadingIcon = Icons.Outlined.Group,
+                    isRequired = true
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.salary,
+                    onValueChange = { onAction(PublishJobAction.UpdateSalary(it)) },
+                    label = "Salary Range",
+                    placeholder = "e.g., $50,000 - $70,000",
+                    leadingIcon = Icons.Outlined.AttachMoney,
+                    isRequired = true
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.deadline,
+                    onValueChange = { onAction(PublishJobAction.UpdateDeadline(it)) },
+                    label = "Application Deadline",
+                    placeholder = "e.g., December 31, 2024",
+                    leadingIcon = Icons.Outlined.Schedule,
+                    isRequired = true
+                )
+            }
+
+            // Requirements Section
+            item {
+                SectionHeader(
+                    title = "Requirements",
+                    subtitle = "Set candidate qualifications",
+                    icon = Icons.Outlined.School
+                )
+            }
+
+            item {
+                EducationDropdown(
+                    selectedEducation = uiState.education,
+                    onEducationSelect = {
+                        onAction(
+                            PublishJobAction.UpdateEducation(
+                                it
+                            )
+                        )
+                    }
+                )
+            }
+
+            item {
+                ExperienceDropdown(
+                    selectedExperience = uiState.experience,
+                    onExperienceSelect = {
+                        onAction(
+                            PublishJobAction.UpdateExperience(
+                                it
+                            )
+                        )
+                    }
+                )
+            }
+
+            // Work Details Section
+            item {
+                SectionHeader(
+                    title = "Work Details",
+                    subtitle = "Define work arrangements",
+                    icon = Icons.Outlined.Settings
+                )
+            }
+
+            item {
+                JobTypeDropdown(
+                    selectedJobType = uiState.jobType,
+                    onJobTypeSelect = { onAction(PublishJobAction.UpdateJobType(it)) }
+                )
+            }
+
+            item {
+                WorkLocationDropdown(
+                    selectedWorkLocation = uiState.workLocation,
+                    onWorkLocationSelect = {
+                        onAction(
+                            PublishJobAction.UpdateWorkLocation(
+                                it
+                            )
+                        )
+                    }
+                )
+            }
+
+            item {
+                WorkingHoursDropdown(
+                    selectedWorkingHours = uiState.workingHours,
+                    onWorkingHoursSelect = { onAction(PublishJobAction.UpdateWorkingHours(it)) }
+                )
+            }
+
+            // Contact Information
+            item {
+                SectionHeader(
+                    title = "Contact Information",
+                    subtitle = "How candidates can reach you",
+                    icon = Icons.Outlined.ContactPhone
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.phoneNumber,
+                    onValueChange = { onAction(PublishJobAction.UpdatePhoneNumber(it)) },
+                    label = "Phone Number",
+                    placeholder = "e.g., +1 (555) 123-4567",
+                    leadingIcon = Icons.Outlined.Phone,
+                    isRequired = true
+                )
+            }
+
+            item {
+                TextField(
+                    value = uiState.email,
+                    onValueChange = { onAction(PublishJobAction.UpdateEmail(it)) },
+                    label = "Email Address",
+                    placeholder = "e.g., hr@company.com",
+                    leadingIcon = Icons.Outlined.Email,
+                    isRequired = true
+                )
+            }
+
+            // Error Display
+            if (uiState.error != null) {
+                item {
+                    ErrorCard(error = uiState.error)
+                }
+            }
+
+            // Publish Button (now inside the scrollable content)
+            item {
+                Button(
+                    onClick = { onAction(PublishJobAction.PublishJob) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = !uiState.isPublishing,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
-                }
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                // Form content
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    // Header Section
-                    item {
-                        ModernSectionHeader(
-                            title = "Job Details",
-                            subtitle = "Provide clear and compelling job information",
-                            icon = Icons.Outlined.Work
+                    if (uiState.isPublishing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
-                    }
-
-                    // Image Selection
-                    item {
-                        ModernImageSelector(
-                            selectedImageUri = uiState.selectedImageUri,
-                            onSelectImage = { imageLauncher.launch("image/*") }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Publishing...",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium
                         )
-                    }
-
-                    // Basic Information
-                    item {
-                        ModernTextField(
-                            value = uiState.title,
-                            onValueChange = { onAction(PublishJobAction.UpdateTitle(it)) },
-                            label = "Job Title",
-                            placeholder = "e.g., Senior Android Developer",
-                            leadingIcon = Icons.Outlined.Badge,
-                            isRequired = true
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.Publish,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
                         )
-                    }
-
-                    item {
-                        ModernTextField(
-                            value = uiState.company,
-                            onValueChange = { onAction(PublishJobAction.UpdateCompany(it)) },
-                            label = "Company Name",
-                            placeholder = "e.g., Tech Innovations Ltd.",
-                            leadingIcon = Icons.Outlined.Business,
-                            isRequired = true
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Publish Job Posting",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
                         )
-                    }
-
-                    // Category Selection
-                    item {
-                        ModernCategorySelector(
-                            categories = uiState.categories,
-                            selectedCategory = uiState.selectedCategory,
-                            onCategorySelect = { onAction(PublishJobAction.SelectCategory(it)) }
-                        )
-                    }
-
-                    // Location and Compensation
-                    item {
-                        ModernSectionHeader(
-                            title = "Location & Compensation",
-                            subtitle = "Define where and how much",
-                            icon = Icons.Outlined.LocationOn
-                        )
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernLocationDropdown(
-                                    selectedLocation = uiState.location,
-                                    onLocationSelect = { onAction(PublishJobAction.UpdateLocation(it)) }
-                                )
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernTextField(
-                                    value = uiState.positionCount,
-                                    onValueChange = {
-                                        onAction(
-                                            PublishJobAction.UpdatePositionCount(
-                                                it
-                                            )
-                                        )
-                                    },
-                                    label = "Positions",
-                                    placeholder = "e.g., 5",
-                                    leadingIcon = Icons.Outlined.Group,
-                                    isRequired = true
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        ModernTextField(
-                            value = uiState.salary,
-                            onValueChange = { onAction(PublishJobAction.UpdateSalary(it)) },
-                            label = "Salary Range",
-                            placeholder = "e.g., $50,000 - $70,000",
-                            leadingIcon = Icons.Outlined.AttachMoney,
-                            isRequired = true
-                        )
-                    }
-
-                    item {
-                        ModernTextField(
-                            value = uiState.deadline,
-                            onValueChange = { onAction(PublishJobAction.UpdateDeadline(it)) },
-                            label = "Application Deadline",
-                            placeholder = "e.g., December 31, 2024",
-                            leadingIcon = Icons.Outlined.Schedule,
-                            isRequired = true
-                        )
-                    }
-
-                    // Requirements Section
-                    item {
-                        ModernSectionHeader(
-                            title = "Requirements",
-                            subtitle = "Set candidate qualifications",
-                            icon = Icons.Outlined.School
-                        )
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernEducationDropdown(
-                                    selectedEducation = uiState.education,
-                                    onEducationSelect = {
-                                        onAction(
-                                            PublishJobAction.UpdateEducation(
-                                                it
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernExperienceDropdown(
-                                    selectedExperience = uiState.experience,
-                                    onExperienceSelect = {
-                                        onAction(
-                                            PublishJobAction.UpdateExperience(
-                                                it
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    // Work Details Section
-                    item {
-                        ModernSectionHeader(
-                            title = "Work Details",
-                            subtitle = "Define work arrangements",
-                            icon = Icons.Outlined.Settings
-                        )
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernJobTypeDropdown(
-                                    selectedJobType = uiState.jobType,
-                                    onJobTypeSelect = { onAction(PublishJobAction.UpdateJobType(it)) }
-                                )
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                ModernWorkLocationDropdown(
-                                    selectedWorkLocation = uiState.workLocation,
-                                    onWorkLocationSelect = {
-                                        onAction(
-                                            PublishJobAction.UpdateWorkLocation(
-                                                it
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        ModernWorkingHoursDropdown(
-                            selectedWorkingHours = uiState.workingHours,
-                            onWorkingHoursSelect = { onAction(PublishJobAction.UpdateWorkingHours(it)) }
-                        )
-                    }
-
-                    // Contact Information
-                    item {
-                        ModernSectionHeader(
-                            title = "Contact Information",
-                            subtitle = "How candidates can reach you",
-                            icon = Icons.Outlined.ContactPhone
-                        )
-                    }
-
-                    item {
-                        ModernTextField(
-                            value = uiState.phoneNumber,
-                            onValueChange = { onAction(PublishJobAction.UpdatePhoneNumber(it)) },
-                            label = "Phone Number",
-                            placeholder = "e.g., +1 (555) 123-4567",
-                            leadingIcon = Icons.Outlined.Phone,
-                            isRequired = true
-                        )
-                    }
-
-                    item {
-                        ModernTextField(
-                            value = uiState.email,
-                            onValueChange = { onAction(PublishJobAction.UpdateEmail(it)) },
-                            label = "Email Address",
-                            placeholder = "e.g., hr@company.com",
-                            leadingIcon = Icons.Outlined.Email,
-                            isRequired = true
-                        )
-                    }
-
-                    // Error Display
-                    if (uiState.error != null) {
-                        item {
-                            ModernErrorCard(error = uiState.error)
-                        }
-                    }
-
-                    // Bottom spacing
-                    item {
-                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
-
-                // Modern Publish Button
-                ModernPublishButton(
-                    isPublishing = uiState.isPublishing,
-                    onPublish = { onAction(PublishJobAction.PublishJob) }
-                )
             }
+
         }
     }
 }
 
 @Composable
-private fun ModernSectionHeader(
+private fun SectionHeader(
     title: String,
     subtitle: String,
     icon: ImageVector
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -414,7 +430,7 @@ private fun ModernSectionHeader(
 }
 
 @Composable
-private fun ModernImageSelector(
+private fun ImageSelector(
     selectedImageUri: Uri?,
     onSelectImage: () -> Unit
 ) {
@@ -513,7 +529,7 @@ private fun ModernImageSelector(
 }
 
 @Composable
-private fun ModernTextField(
+private fun TextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -558,7 +574,7 @@ private fun ModernTextField(
 // Continue with modernized dropdown components...
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernCategorySelector(
+private fun CategorySelector(
     categories: List<JobCategory>,
     selectedCategory: JobCategory?,
     onCategorySelect: (JobCategory) -> Unit
@@ -592,7 +608,7 @@ private fun ModernCategorySelector(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -615,7 +631,7 @@ private fun ModernCategorySelector(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernLocationDropdown(
+private fun LocationDropdown(
     selectedLocation: String,
     onLocationSelect: (String) -> Unit
 ) {
@@ -656,7 +672,7 @@ private fun ModernLocationDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -679,7 +695,7 @@ private fun ModernLocationDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernEducationDropdown(
+private fun EducationDropdown(
     selectedEducation: String,
     onEducationSelect: (String) -> Unit
 ) {
@@ -711,7 +727,7 @@ private fun ModernEducationDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -734,7 +750,7 @@ private fun ModernEducationDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernExperienceDropdown(
+private fun ExperienceDropdown(
     selectedExperience: String,
     onExperienceSelect: (String) -> Unit
 ) {
@@ -766,7 +782,7 @@ private fun ModernExperienceDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -789,7 +805,7 @@ private fun ModernExperienceDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernJobTypeDropdown(
+private fun JobTypeDropdown(
     selectedJobType: String,
     onJobTypeSelect: (String) -> Unit
 ) {
@@ -820,7 +836,7 @@ private fun ModernJobTypeDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -843,7 +859,7 @@ private fun ModernJobTypeDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernWorkingHoursDropdown(
+private fun WorkingHoursDropdown(
     selectedWorkingHours: String,
     onWorkingHoursSelect: (String) -> Unit
 ) {
@@ -874,7 +890,7 @@ private fun ModernWorkingHoursDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -897,7 +913,7 @@ private fun ModernWorkingHoursDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernWorkLocationDropdown(
+private fun WorkLocationDropdown(
     selectedWorkLocation: String,
     onWorkLocationSelect: (String) -> Unit
 ) {
@@ -928,7 +944,7 @@ private fun ModernWorkLocationDropdown(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             ),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
 
@@ -950,7 +966,7 @@ private fun ModernWorkLocationDropdown(
 }
 
 @Composable
-private fun ModernErrorCard(error: String) {
+private fun ErrorCard(error: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -974,58 +990,6 @@ private fun ModernErrorCard(error: String) {
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 style = MaterialTheme.typography.bodyMedium
             )
-        }
-    }
-}
-
-@Composable
-private fun ModernPublishButton(
-    isPublishing: Boolean,
-    onPublish: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shadowElevation = 8.dp,
-        color = MaterialTheme.colorScheme.surface
-    ) {
-        Button(
-            onClick = onPublish,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            enabled = !isPublishing,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            if (isPublishing) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Publishing...",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Outlined.Publish,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Publish Job Posting",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
         }
     }
 }
