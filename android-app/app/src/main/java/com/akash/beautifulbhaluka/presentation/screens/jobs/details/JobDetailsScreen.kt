@@ -200,14 +200,14 @@ private fun JobHeader(
                 .padding(16.dp)
                 .size(40.dp)
                 .background(
-                    Color.White.copy(alpha = 0.9f),
+                    Color.Black.copy(alpha = 0.25f),
                     CircleShape
                 )
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.Black
+                tint = Color.White
             )
         }
 
@@ -287,100 +287,98 @@ private fun JobDetailsBody(
     job: JobItem,
     onApplyClick: () -> Unit
 ) {
-    Column() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+            // Quick Info Section
+            InfoSection(
+                title = "Quick Information",
+                icon = Icons.Outlined.Info
             ) {
-                // Quick Info Section
-                InfoSection(
-                    title = "Quick Information",
-                    icon = Icons.Outlined.Info
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        InfoRow(
-                            icon = Icons.Outlined.Work,
-                            label = "Job Type",
-                            value = job.jobType
-                        )
-                        InfoRow(
-                            icon = Icons.Outlined.Schedule,
-                            label = "Working Hours",
-                            value = job.workingHours
-                        )
-                        InfoRow(
-                            icon = Icons.Outlined.Groups,
-                            label = "Positions",
-                            value = job.positionCount
-                        )
-                        InfoRow(
-                            icon = Icons.Outlined.DateRange,
-                            label = "Application Deadline",
-                            value = job.deadline
-                        )
-                    }
-                }
-
-                // Requirements Section
-                InfoSection(
-                    title = "Requirements",
-                    icon = Icons.Outlined.School
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        InfoRow(
-                            icon = Icons.Outlined.School,
-                            label = "Education",
-                            value = job.education
-                        )
-                        InfoRow(
-                            icon = Icons.Outlined.TrendingUp,
-                            label = "Experience",
-                            value = job.experience
-                        )
-                    }
-                }
-
-                // Work Details Section
-                InfoSection(
-                    title = "Work Details",
-                    icon = Icons.Outlined.BusinessCenter
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        InfoRow(
-                            icon = Icons.Outlined.Place,
-                            label = "Work Location",
-                            value = job.workLocation
-                        )
-                        InfoRow(
-                            icon = Icons.Outlined.AttachMoney,
-                            label = "Salary Range",
-                            value = job.salary,
-                            highlighted = true
-                        )
-                    }
-                }
-
-                // Contact Section
-                InfoSection(
-                    title = "Contact Information",
-                    icon = Icons.Outlined.ContactPhone
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     InfoRow(
-                        icon = Icons.Outlined.Phone,
-                        label = "Contact",
-                        value = job.contactInfo
+                        icon = Icons.Outlined.Work,
+                        label = "Job Type",
+                        value = job.jobType
+                    )
+                    InfoRow(
+                        icon = Icons.Outlined.Schedule,
+                        label = "Working Hours",
+                        value = job.workingHours
+                    )
+                    InfoRow(
+                        icon = Icons.Outlined.Groups,
+                        label = "Positions",
+                        value = job.positionCount
+                    )
+                    InfoRow(
+                        icon = Icons.Outlined.DateRange,
+                        label = "Application Deadline",
+                        value = job.deadline
                     )
                 }
+            }
+
+            // Requirements Section
+            InfoSection(
+                title = "Requirements",
+                icon = Icons.Outlined.School
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    InfoRow(
+                        icon = Icons.Outlined.School,
+                        label = "Education",
+                        value = job.education
+                    )
+                    InfoRow(
+                        icon = Icons.Outlined.TrendingUp,
+                        label = "Experience",
+                        value = job.experience
+                    )
+                }
+            }
+
+            // Work Details Section
+            InfoSection(
+                title = "Work Details",
+                icon = Icons.Outlined.BusinessCenter
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    InfoRow(
+                        icon = Icons.Outlined.Place,
+                        label = "Work Location",
+                        value = job.workLocation
+                    )
+                    InfoRow(
+                        icon = Icons.Outlined.AttachMoney,
+                        label = "Salary Range",
+                        value = job.salary,
+                        highlighted = true
+                    )
+                }
+            }
+
+            // Contact Section
+            InfoSection(
+                title = "Contact Information",
+                icon = Icons.Outlined.ContactPhone
+            ) {
+                InfoRow(
+                    icon = Icons.Outlined.Phone,
+                    label = "Contact",
+                    value = job.contactInfo
+                )
             }
         }
 
@@ -394,7 +392,7 @@ private fun JobDetailsBody(
                 onClick = onApplyClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 elevation = ButtonDefaults.buttonElevation(
@@ -415,6 +413,8 @@ private fun JobDetailsBody(
                 )
             }
         }
+
+
     }
 }
 
