@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.components.common.DoctorCard
+import com.akash.beautifulbhaluka.presentation.components.common.VerifiedDoctorCard
 import com.akash.beautifulbhaluka.presentation.components.common.ModernTable
 
 @Composable
@@ -82,6 +83,18 @@ fun DoctorContent(
             }
 
             else -> {
+                // Verified Doctors Section
+                uiState.verifiedDoctors.forEach { verifiedDoctor ->
+                    VerifiedDoctorCard(
+                        name = verifiedDoctor.name,
+                        specialist = verifiedDoctor.specialist,
+                        phone = verifiedDoctor.phone,
+                        imageUrl = verifiedDoctor.image,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onAction(DoctorAction.CallPhone(verifiedDoctor.phone)) }
+                    )
+                }
+
                 // Doctor Cards Section
                 uiState.doctorCards.forEach { doctorInfo ->
                     DoctorCard(
@@ -89,7 +102,8 @@ fun DoctorContent(
                         specialist = doctorInfo.specialist,
                         phone = doctorInfo.phone,
                         imageUrl = doctorInfo.image,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onAction(DoctorAction.CallPhone(doctorInfo.phone)) }
                     )
                 }
 

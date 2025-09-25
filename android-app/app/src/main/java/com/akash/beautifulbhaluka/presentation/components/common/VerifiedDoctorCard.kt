@@ -2,9 +2,9 @@ package com.akash.beautifulbhaluka.presentation.components.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.LocalHospital
@@ -23,11 +23,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
 /**
- * A modern doctor card component displaying doctor information
- * with professional styling and Material Design 3 principles.
+ * A modern verified doctor card component displaying doctor information
+ * with thumbnail image and verified badge.
  */
 @Composable
-fun DoctorCard(
+fun VerifiedDoctorCard(
     name: String,
     specialist: String,
     phone: String,
@@ -54,11 +54,11 @@ fun DoctorCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Profile Image
+            // Thumbnail Image
             Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape),
+                    .size(100.dp, 80.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -86,7 +86,7 @@ fun DoctorCard(
                             imageVector = Icons.Default.Person,
                             contentDescription = name,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }
@@ -97,17 +97,30 @@ fun DoctorCard(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Doctor Name
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-0.2).sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // Doctor Name with Verified Badge
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.2).sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Default.Verified,
+                        contentDescription = "Verified",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
 
                 // Specialist
                 Row(

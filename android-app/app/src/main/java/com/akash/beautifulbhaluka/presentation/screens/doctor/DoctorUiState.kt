@@ -3,6 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.doctor
 data class DoctorUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
+    val verifiedDoctors: List<VerifiedDoctorInfo> = getDefaultVerifiedDoctors(),
     val doctorCards: List<DoctorInfo> = getDefaultDoctorCards(),
     val specialistDoctors: List<SpecialistDoctor> = getDefaultSpecialistDoctors()
 )
@@ -20,6 +21,14 @@ data class SpecialistDoctor(
     val name: String,
     val specialist: String,
     val phone: String
+)
+
+data class VerifiedDoctorInfo(
+    val id: String,
+    val name: String,
+    val specialist: String,
+    val phone: String,
+    val image: String
 )
 
 sealed class DoctorAction {
@@ -143,5 +152,17 @@ private fun getDefaultSpecialistDoctors(): List<SpecialistDoctor> {
         SpecialistDoctor("22", "ডাঃ শামীম রেজা", "আবাসিক চিকিৎসক", "01521-404424"),
         SpecialistDoctor("23", "ডাঃ আবু নাইম", "আবাসিক চিকিৎসক", "01568-658636"),
         SpecialistDoctor("24", "ডাঃ বিন-ইয়ামিন", "আবাসিক চিকিৎসক", "01752-063936")
+    )
+}
+
+private fun getDefaultVerifiedDoctors(): List<VerifiedDoctorInfo> {
+    return listOf(
+        VerifiedDoctorInfo(
+            id = "1",
+            name = "ডাঃ জাকারিয়া রুবেল",
+            specialist = "ওরাল অ্যান্ড ডেন্টাল সার্জন",
+            phone = "01952-532442",
+            image = "https://beautifulbhaluka.com/wp-content/uploads/2025/01/IMG-20250102-WA01002.jpg"
+        )
     )
 }
