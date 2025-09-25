@@ -2,8 +2,8 @@ package com.akash.beautifulbhaluka.presentation.screens.upazila_admin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
@@ -47,50 +47,45 @@ fun UpazilaAdminContent(
     uiState: UpazilaAdminUiState,
     onAction: (UpazilaAdminAction) -> Unit
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Page Title with Icon
-        item {
-            UpazilaAdminHeader()
-        }
+        UpazilaAdminHeader()
 
         when {
             uiState.isLoading -> {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
 
             uiState.error != null -> {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Text(
-                            text = uiState.error,
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        text = uiState.error,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
                 }
             }
 
             else -> {
                 // Contact Cards Section
-                items(uiState.contactCards) { contactInfo ->
+                uiState.contactCards.forEach { contactInfo ->
                     ContactCard(
                         title = contactInfo.title,
                         phone = contactInfo.phone,
@@ -100,13 +95,12 @@ fun UpazilaAdminContent(
                     )
                 }
 
+
                 // Former Officers Table
-                item {
-                    FormerOfficersTable(
-                        officers = uiState.formerOfficers,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                FormerOfficersTable(
+                    officers = uiState.formerOfficers,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
@@ -156,6 +150,7 @@ private fun FormerOfficersTable(
         listOf(officer.serialNo, officer.name, officer.fromDate, officer.toDate)
     }
 
+    Spacer(Modifier.height(8.dp))
     ModernTable(
         title = "পূর্বতন উপজেলা নির্বাহী কর্মকর্তাগণ",
         headers = listOf("ক্রঃ নং", "নাম", "হতে", "পর্যন্ত"),
