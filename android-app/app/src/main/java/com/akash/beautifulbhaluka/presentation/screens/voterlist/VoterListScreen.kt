@@ -5,15 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,37 +19,25 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.components.common.ModernTable
 
-/**
- * Main voter list screen - stateful composable
- */
 @Composable
 fun VoterListScreen(
-    viewModel: VoterListViewModel = viewModel(),
-    navigateBack: () -> Unit = {}
+    viewModel: VoterListViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     VoterListContent(
         uiState = uiState,
-        onAction = viewModel::onAction,
-        navigateBack = navigateBack
+        onAction = viewModel::onAction
     )
 }
 
-/**
- * Stateless content composable for voter list
- */
 @Composable
 fun VoterListContent(
     uiState: VoterListUiState,
-    onAction: (VoterListAction) -> Unit,
-    navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    onAction: (VoterListAction) -> Unit
 ) {
-    val uriHandler = LocalUriHandler.current
-
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
@@ -94,7 +80,7 @@ fun VoterListContent(
 
                     // Subtitle with refined typography
                     Text(
-                        text = "নির্বাচনী এলাকার ভোটার তথ্য এবং নিবন্ধন",
+                        text = "ইউনিয়ন ভিত্তিক ভোটার তালিকা ডাউনলোড করুন",
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
@@ -125,7 +111,7 @@ fun VoterListContent(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "ইউনিয়ন ভিত্তিক ভোটার লিস্ট Zip File আকারে দেওয়া হয়েছে। Zip File ডাউনলোড করার পর Unzip করবেন, তারপর একটি ফোল্ডার পাবেন। ফোল্ডারের ভিতরে ওয়ার্ড ভিত্তিক ভোটার লিস্টের Pdf দেওয়া আছে। Zip File ডাউনলোড করতে কোন সমস্যা হলে বিউটিফুল ভালুকা পেইজে জানান।",
+                        text = "ইউনিয়ন ভিত্তিক ভোটার লিস্ট Zip File আকারে দেওয়া হয়েছে। Zip File ডাউনলোড করার পর Unzip করবেন, তারপর একটি ফোল্ডার পাবেন। ফোল্ডারের ভিতরে ওয়ার্ড ভিত্তিক ভোটার লিস্টের Pdf দেওয়া আছে। Zip File ডাউনলোড করতে কোন সমস্যা হলে বিউটিফুল ভালুকা পেইজে জানন।",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Normal
                         ),
@@ -150,19 +136,9 @@ fun VoterListContent(
                                     .height(300.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(48.dp)
-                                    )
-                                    Text(
-                                        text = "ভোটার তালিকা লোড হচ্ছে...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(48.dp)
+                                )
                             }
                         }
                     }
@@ -175,50 +151,27 @@ fun VoterListContent(
                                 containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
                             )
                         ) {
-                            Column(
+                            Row(
                                 modifier = Modifier.padding(20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.error
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "সমস্যা হয়েছে",
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                }
-
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Text(
                                     text = uiState.error,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Center
+                                    color = MaterialTheme.colorScheme.error
                                 )
-
-                                OutlinedButton(
-                                    onClick = { onAction(VoterListAction.LoadData) },
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.error
-                                    )
-                                ) {
-                                    Text("আবার চেষ্টা করুন")
-                                }
                             }
                         }
                     }
 
                     else -> {
-                        // Convert data to table format for ModernTable
+                        // Convert data to table format with download buttons
                         val headers = listOf("ইউনিয়ন", "ডাউনলোড লিংক")
                         val rows = uiState.voterListItems.map { item ->
                             listOf(item.unionName, "ডাউনলোড করুন")
@@ -238,6 +191,10 @@ fun VoterListContent(
                 }
             }
 
+            // Bottom spacing
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
 }
