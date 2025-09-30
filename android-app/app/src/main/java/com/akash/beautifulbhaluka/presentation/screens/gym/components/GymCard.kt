@@ -1,13 +1,11 @@
-package com.akash.beautifulbhaluka.presentation.screens.electricity.components
+package com.akash.beautifulbhaluka.presentation.screens.gym.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.ElectricBolt
-import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.akash.beautifulbhaluka.presentation.screens.electricity.ElectricityOffice
+import com.akash.beautifulbhaluka.presentation.screens.gym.Gym
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ElectricityOfficeCard(
-    office: ElectricityOffice,
+fun GymCard(
+    gym: Gym,
     onCallClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -38,75 +36,92 @@ fun ElectricityOfficeCard(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Left-aligned thumbnail
-            Box(
-                modifier = Modifier.size(80.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(office.image)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = office.name,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            CircleShape
-                        ),
-                    contentScale = ContentScale.Crop
-                )
-            }
+        Column {
+            // Full-width thumbnail at the top
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(gym.image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = gym.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                contentScale = ContentScale.Crop
+            )
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Right side card information
+            // Information section below the image
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
-                // Office Name
+                // Gym Category Badge
+                Surface(
+                    modifier = Modifier.wrapContentSize(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FitnessCenter,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "জিম ও ফিটনেস",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Gym Name
                 Text(
-                    text = office.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    text = gym.name,
+                    style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
+                        fontSize = 20.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Office Address with icon
+                // Address with icon
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Business,
-                        contentDescription = "Office",
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = office.office,
+                        text = gym.address,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 20.sp
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Phone number and call button
                 Row(
@@ -116,12 +131,12 @@ fun ElectricityOfficeCard(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "ফোন নম্বর",
+                            text = "যোগাযোগ",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = office.phone,
+                            text = gym.phone,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Medium
                             ),
@@ -134,15 +149,15 @@ fun ElectricityOfficeCard(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     FilledTonalButton(
-                        onClick = { onCallClick(office.phone) },
-                        modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(18.dp),
+                        onClick = { onCallClick(gym.phone) },
+                        modifier = Modifier.height(40.dp),
+                        shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Call,
                             contentDescription = "Call",
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
