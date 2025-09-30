@@ -37,46 +37,37 @@ fun GentsParlourCard(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.Top
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Left-aligned thumbnail
-            Box(
-                modifier = Modifier.size(90.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(parlour.image)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = parlour.title,
-                    modifier = Modifier
-                        .size(90.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            RoundedCornerShape(12.dp)
-                        ),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            // Full-width thumbnail at top
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(parlour.image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = parlour.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    ),
+                contentScale = ContentScale.Crop
+            )
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Right side card information
+            // Information section below image
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
                 // Title
                 Text(
                     text = parlour.title,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
+                        fontSize = 18.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
@@ -85,33 +76,33 @@ fun GentsParlourCard(
 
                 // Description (if available)
                 if (!parlour.description.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = parlour.description,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
-                        lineHeight = 16.sp
+                        lineHeight = 20.sp
                     )
                 }
 
                 // Address (if available)
                 if (!parlour.address.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = "Location",
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = parlour.address,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -121,11 +112,11 @@ fun GentsParlourCard(
 
                 // Phone numbers and call buttons
                 if (parlour.phones.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     parlour.phones.forEachIndexed { index, phone ->
                         if (index > 0) {
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                         }
 
                         Row(
@@ -141,7 +132,7 @@ fun GentsParlourCard(
                                 )
                                 Text(
                                     text = phone,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                    style = MaterialTheme.typography.bodyLarge.copy(
                                         fontWeight = FontWeight.Medium
                                     ),
                                     color = MaterialTheme.colorScheme.onSurface,
@@ -150,23 +141,23 @@ fun GentsParlourCard(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
 
                             FilledTonalButton(
                                 onClick = { onCallClick(phone) },
-                                modifier = Modifier.height(32.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+                                modifier = Modifier.height(40.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Call,
                                     contentDescription = "Call",
-                                    modifier = Modifier.size(12.dp)
+                                    modifier = Modifier.size(16.dp)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "কল",
-                                    style = MaterialTheme.typography.bodySmall.copy(
+                                    text = "কল করুন",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Medium
                                     )
                                 )
@@ -175,20 +166,20 @@ fun GentsParlourCard(
                     }
                 } else {
                     // Show service type icon when no phone numbers
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.ContentCut,
                             contentDescription = "Service",
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "হেয়ার কাট ও বিউটি সার্ভিস",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
