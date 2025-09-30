@@ -148,13 +148,15 @@ fun ButcherCookContent(
                 }
             }
 
-            // Results Count
-            item {
-                Text(
-                    text = "${uiState.filteredButcherCooks.size}টি ফলাফল পাওয়া গেছে",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            // Results Count - Only show when search or filter is active
+            if (uiState.searchQuery.isNotEmpty() || uiState.selectedType != ButcherCookType.ALL) {
+                item {
+                    Text(
+                        text = "${uiState.filteredButcherCooks.size}টি ফলাফল পাওয়া গেছে",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
             // Content Section
