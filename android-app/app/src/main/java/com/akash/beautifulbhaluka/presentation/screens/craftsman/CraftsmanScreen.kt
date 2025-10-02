@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -117,64 +119,69 @@ fun CraftsmanContent(
                     )
 
                     // Type Filter Dropdown
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    ExposedDropdownMenuBox(
+                        expanded = dropdownExpanded,
+                        onExpandedChange = { dropdownExpanded = !dropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = "ধরন:",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        OutlinedTextField(
+                            value = uiState.selectedType.displayName,
+                            onValueChange = { },
+                            readOnly = true,
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = uiState.selectedType.icon,
+                                    contentDescription = "কারিগরি ধরন আইকন",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "ড্রপডাউন"
+                                )
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
                         )
 
-                        ExposedDropdownMenuBox(
+                        ExposedDropdownMenu(
                             expanded = dropdownExpanded,
-                            onExpandedChange = { dropdownExpanded = !dropdownExpanded },
-                            modifier = Modifier.weight(1f)
+                            onDismissRequest = { dropdownExpanded = false }
                         ) {
-                            OutlinedTextField(
-                                value = uiState.selectedType.displayName,
-                                onValueChange = { },
-                                readOnly = true,
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "ড্রপডাউন"
-                                    )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = dropdownExpanded,
-                                onDismissRequest = { dropdownExpanded = false }
-                            ) {
-                                CraftsmanType.values().forEach { type ->
-                                    DropdownMenuItem(
-                                        text = { Text(type.displayName) },
-                                        onClick = {
-                                            onAction(CraftsmanAction.TypeFilterChanged(type))
-                                            dropdownExpanded = false
-                                        },
-                                        leadingIcon = {
-                                            if (type == uiState.selectedType) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Search,
-                                                    contentDescription = null,
-                                                    tint = MaterialTheme.colorScheme.primary,
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
+                            CraftsmanType.values().forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(type.displayName) },
+                                    onClick = {
+                                        onAction(CraftsmanAction.TypeFilterChanged(type))
+                                        dropdownExpanded = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = type.icon,
+                                            contentDescription = "${type.displayName} আইকন",
+                                            tint = if (type == uiState.selectedType)
+                                                MaterialTheme.colorScheme.primary
+                                            else
+                                                MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        if (type == uiState.selectedType) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "নির্বাচিত",
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
                                         }
-                                    )
-                                }
+                                    }
+                                )
                             }
                         }
                     }
