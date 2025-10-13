@@ -26,6 +26,8 @@ interface SocialRepository {
     // Comments
     suspend fun getComments(postId: String): Result<List<Comment>>
     suspend fun addComment(postId: String, content: String): Result<Comment>
+    suspend fun addReply(postId: String, parentCommentId: String, content: String): Result<Comment>
+    suspend fun getReplies(commentId: String): Result<List<Comment>>
     suspend fun deleteComment(commentId: String): Result<Unit>
     suspend fun likeComment(commentId: String): Result<Unit>
     suspend fun unlikeComment(commentId: String): Result<Unit>
@@ -45,4 +47,3 @@ interface SocialRepository {
     // Observe changes
     fun observePosts(): Flow<List<Post>>
 }
-

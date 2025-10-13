@@ -29,7 +29,8 @@ import com.akash.beautifulbhaluka.presentation.screens.social.components.PostCar
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = viewModel(),
-    onCreatePostClick: () -> Unit = {}
+    onCreatePostClick: () -> Unit = {},
+    onNavigateToComments: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -86,7 +87,7 @@ fun SocialFeedScreen(
                                     }
                                 },
                                 onCommentClick = {
-                                    viewModel.onAction(SocialFeedAction.NavigateToComments(post.id))
+                                    onNavigateToComments(post.id)
                                 },
                                 onShareClick = {
                                     viewModel.onAction(SocialFeedAction.SharePost(post.id))

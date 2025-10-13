@@ -138,6 +138,38 @@ class SocialRepositoryImpl : SocialRepository {
         return Result.success(comment)
     }
 
+    override suspend fun addReply(
+        postId: String,
+        parentCommentId: String,
+        content: String
+    ): Result<Comment> {
+        delay(500)
+        val reply = Comment(
+            id = "reply_${System.currentTimeMillis()}",
+            postId = postId,
+            userId = currentUserId,
+            userName = currentUserName,
+            userProfileImage = currentUserImage,
+            content = content,
+            createdAt = System.currentTimeMillis()
+        )
+
+        _posts.value = _posts.value.map { post ->
+            if (post.id == postId) {
+                post.copy(comments = post.comments + 1)
+            } else {
+                post
+            }
+        }
+
+        return Result.success(reply)
+    }
+
+    override suspend fun getReplies(commentId: String): Result<List<Comment>> {
+        delay(300)
+        return Result.success(generateMockReplies(commentId))
+    }
+
     override suspend fun deleteComment(commentId: String): Result<Unit> {
         delay(300)
         return Result.success(Unit)
@@ -311,6 +343,31 @@ class SocialRepositoryImpl : SocialRepository {
                 content = "অসাধারণ! আমিও সেখানে যাব।",
                 likes = 3,
                 createdAt = System.currentTimeMillis() - 900000
+            )
+        )
+    }
+
+    private fun generateMockReplies(commentId: String): List<Comment> {
+        return listOf(
+            Comment(
+                id = "r1",
+                postId = "1",
+                userId = "user_7",
+                userName = "মাহফুজুর রহমান",
+                userProfileImage = "https://ui-avatars.com/api/?name=Mahfuzur&background=3F51B5",
+                content = "আমি সেখানে ছিলাম। সত্যিই অসাধারণ একটি অনুষ্ঠান ছিল!",
+                likes = 2,
+                createdAt = System.currentTimeMillis() - 720000
+            ),
+            Comment(
+                id = "r2",
+                postId = "1",
+                userId = "user_8",
+                userName = "সোহেল রানা",
+                userProfileImage = "https://ui-avatars.com/api/?name=Sohel&background=8E24AA",
+                content = "হ্যাঁ, আমি ভিডিওতে দেখেছি। খুবই মজার লাগছে!",
+                likes = 1,
+                createdAt = System.currentTimeMillis() - 360000
             )
         )
     }
