@@ -1,5 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.social.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -27,10 +28,11 @@ import com.akash.beautifulbhaluka.presentation.screens.social.components.PostCar
  * Ultra-modern Social Profile Screen
  *
  * Design principles:
- * - Clean, spacious profile header
- * - Minimalistic stats display
- * - Professional typography
- * - Smooth edit mode transitions
+ * - Ultra-clean, spacious profile header with gradient overlay
+ * - Minimalistic stats display with subtle dividers
+ * - Professional typography hierarchy
+ * - Smooth spacing and visual breathing room
+ * - Clear information architecture
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,11 +57,11 @@ fun SocialProfileScreen(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                    contentPadding = PaddingValues(bottom = 24.dp)
                 ) {
-                    // Cover and Profile Image Section
+                    // Modern Profile Header
                     item {
-                        ProfileHeader(
+                        ModernProfileHeader(
                             profile = profile,
                             onEditClick = { viewModel.onAction(SocialProfileAction.ToggleEditMode) }
                         )
@@ -67,7 +69,7 @@ fun SocialProfileScreen(
 
                     // Profile Info Section
                     item {
-                        ProfileInfo(
+                        ProfileInfoSection(
                             profile = profile,
                             isEditMode = uiState.isEditMode,
                             editBio = uiState.editBio,
@@ -82,9 +84,9 @@ fun SocialProfileScreen(
                         )
                     }
 
-                    // Stats Section
+                    // Minimalist Stats Section
                     item {
-                        ProfileStats(
+                        MinimalistStatsSection(
                             postsCount = profile.postsCount,
                             friendsCount = profile.friendsCount,
                             followersCount = profile.followersCount,
@@ -95,7 +97,7 @@ fun SocialProfileScreen(
                     // Action Buttons (for other users)
                     if (profile.userId != "current_user_id") {
                         item {
-                            ProfileActionButtons(
+                            ModernActionButtons(
                                 isFollowing = profile.isFollowing,
                                 onFollowClick = {
                                     if (profile.isFollowing) {
@@ -109,9 +111,9 @@ fun SocialProfileScreen(
                         }
                     }
 
-                    // Tabs
+                    // Content Tabs
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         PrimaryTabRow(
                             selectedTabIndex = uiState.selectedTab.ordinal,
                             containerColor = MaterialTheme.colorScheme.surface
@@ -123,56 +125,59 @@ fun SocialProfileScreen(
                                     text = {
                                         Text(
                                             tab.displayName,
-                                            style = MaterialTheme.typography.labelLarge.copy(
+                                            style = MaterialTheme.typography.titleSmall.copy(
                                                 fontWeight = if (uiState.selectedTab == tab)
-                                                    FontWeight.Bold else FontWeight.Medium
+                                                    FontWeight.Bold else FontWeight.Normal,
+                                                letterSpacing = 0.5.sp
                                             )
                                         )
                                     }
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
 
                     // Tab Content
                     when (uiState.selectedTab) {
                         ProfileTab.POSTS -> {
-                            items(uiState.posts, key = { it.id }) { post ->
-                                PostCard(
-                                    post = post,
-                                    onLikeClick = { /* Handle like */ },
-                                    onCommentClick = { /* Handle comment */ },
-                                    onShareClick = { /* Handle share */ },
-                                    onProfileClick = { /* Handle profile */ }
-                                )
+                            if (uiState.posts.isEmpty()) {
+                                item {
+                                    EmptyStateCard(
+                                        icon = Icons.Outlined.PostAdd,
+                                        message = "এখনো কোনো পোস্ট নেই"
+                                    )
+                                }
+                            } else {
+                                items(uiState.posts, key = { it.id }) { post ->
+                                    PostCard(
+                                        post = post,
+                                        onLikeClick = { /* Handle like */ },
+                                        onCommentClick = { /* Handle comment */ },
+                                        onShareClick = { /* Handle share */ },
+                                        onProfileClick = { /* Handle profile */ }
+                                    )
+                                }
                             }
                         }
                         ProfileTab.ABOUT -> {
                             item {
-                                AboutSection(profile = profile)
+                                ModernAboutSection(profile = profile)
                             }
                         }
                         ProfileTab.FRIENDS -> {
                             item {
-                                Text(
-                                    "Friends feature coming soon",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp),
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                EmptyStateCard(
+                                    icon = Icons.Outlined.Group,
+                                    message = "বন্ধুদের তালিকা শীঘ্রই আসছে"
                                 )
                             }
                         }
                         ProfileTab.PHOTOS -> {
                             item {
-                                Text(
-                                    "Photos feature coming soon",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp),
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                EmptyStateCard(
+                                    icon = Icons.Outlined.Photo,
+                                    message = "ফটো গ্যালারি শীঘ্রই আসছে"
                                 )
                             }
                         }
@@ -184,57 +189,73 @@ fun SocialProfileScreen(
 }
 
 @Composable
-private fun ProfileHeader(
+private fun ModernProfileHeader(
     profile: SocialProfile,
     onEditClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(260.dp)
     ) {
-        // Cover Image
-        AsyncImage(
-            model = profile.coverImage,
-            contentDescription = "Cover",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
-        )
+        // Cover Image with gradient overlay
+        Box {
+            AsyncImage(
+                model = profile.coverImage,
+                contentDescription = "Cover Photo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
+            )
 
-        // Profile Image with border
-        Surface(
+            // Subtle gradient overlay for better text visibility
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.15f)
+                            )
+                        )
+                    )
+            )
+        }
+
+        // Modern Profile Image with elevation
+        Card(
             modifier = Modifier
-                .size(130.dp)
+                .size(120.dp)
                 .align(Alignment.BottomStart)
-                .offset(x = 20.dp),
+                .offset(x = 24.dp),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 4.dp
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             AsyncImage(
                 model = profile.userProfileImage,
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(4.dp)
-                    .clip(CircleShape),
+                contentDescription = "Profile Photo",
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
 
-        // Edit Button
+        // Minimalist Edit Button
         if (profile.userId == "current_user_id") {
             FilledTonalIconButton(
                 onClick = onEditClick,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                )
             ) {
                 Icon(
                     Icons.Outlined.Edit,
-                    contentDescription = "Edit Profile",
+                    contentDescription = "প্রোফাইল সম্পাদনা",
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -243,7 +264,7 @@ private fun ProfileHeader(
 }
 
 @Composable
-private fun ProfileInfo(
+private fun ProfileInfoSection(
     profile: SocialProfile,
     isEditMode: Boolean,
     editBio: String,
@@ -259,137 +280,124 @@ private fun ProfileInfo(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp)
+            .padding(horizontal = 24.dp)
+            .padding(top = 20.dp)
     ) {
-        // Name
+        // Name with cleaner typography
         Text(
             text = profile.userName,
-            style = MaterialTheme.typography.headlineMedium.copy(
+            style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
-                fontSize = 26.sp
+                letterSpacing = (-0.5).sp
             ),
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (!isEditMode) {
-            // View Mode
+            // View Mode - Clean and spacious
             if (profile.bio.isNotBlank()) {
                 Text(
                     text = profile.bio,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 22.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            // Location and Website
-            if (profile.location.isNotBlank()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Outlined.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = profile.location,
-                        style = MaterialTheme.typography.bodyMedium,
+                        lineHeight = 24.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                }
-                Spacer(modifier = Modifier.height(6.dp))
+                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (profile.website.isNotBlank()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Outlined.Link,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.primary
+            // Location and Website with better spacing
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (profile.location.isNotBlank()) {
+                    InfoChip(
+                        icon = Icons.Outlined.LocationOn,
+                        text = profile.location,
+                        iconTint = MaterialTheme.colorScheme.primary
                     )
-                    Text(
+                }
+
+                if (profile.website.isNotBlank()) {
+                    InfoChip(
+                        icon = Icons.Outlined.Link,
                         text = profile.website,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        iconTint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         } else {
-            // Edit Mode
+            // Edit Mode with refined inputs
             OutlinedTextField(
                 value = editBio,
                 onValueChange = onBioChange,
                 label = { Text("বায়ো") },
+                placeholder = { Text("আপনার সম্পর্কে লিখুন...") },
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 4,
-                shape = RoundedCornerShape(12.dp)
+                minLines = 3,
+                maxLines = 5,
+                shape = RoundedCornerShape(16.dp)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = editLocation,
                 onValueChange = onLocationChange,
                 label = { Text("অবস্থান") },
+                placeholder = { Text("শহর, দেশ") },
                 leadingIcon = {
                     Icon(Icons.Outlined.LocationOn, contentDescription = null)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = editWebsite,
                 onValueChange = onWebsiteChange,
                 label = { Text("ওয়েবসাইট") },
+                placeholder = { Text("https://example.com") },
                 leadingIcon = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Save/Cancel Buttons
+            // Modern Save/Cancel Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedButton(
                     onClick = onCancel,
-                    modifier = Modifier.weight(1f).height(48.dp)
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("বাতিল")
+                    Text("বাতিল", style = MaterialTheme.typography.titleSmall)
                 }
 
                 Button(
                     onClick = onSave,
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    enabled = !isSaving
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    enabled = !isSaving,
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isSaving) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             strokeWidth = 2.dp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text("সংরক্ষণ করুন")
+                        Text("সংরক্ষণ করুন", style = MaterialTheme.typography.titleSmall)
                     }
                 }
             }
@@ -398,53 +406,78 @@ private fun ProfileInfo(
 }
 
 @Composable
-private fun ProfileStats(
+private fun InfoChip(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String,
+    iconTint: Color
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = iconTint
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+private fun MinimalistStatsSection(
     postsCount: Int,
     friendsCount: Int,
     followersCount: Int,
     followingCount: Int
 ) {
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 20.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            .padding(horizontal = 24.dp, vertical = 24.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem("পোস্ট", postsCount)
-            VerticalDivider(modifier = Modifier.height(40.dp))
-            StatItem("বন্ধু", friendsCount)
-            VerticalDivider(modifier = Modifier.height(40.dp))
-            StatItem("অনুসরণকারী", followersCount)
-            VerticalDivider(modifier = Modifier.height(40.dp))
-            StatItem("অনুসরণ", followingCount)
+            StatCard("পোস্ট", postsCount)
+            StatCard("বন্ধু", friendsCount)
+            StatCard("ফলোয়ার", followersCount)
+            StatCard("ফলোয়িং", followingCount)
         }
     }
 }
 
 @Composable
-private fun StatItem(label: String, count: Int) {
+private fun StatCard(label: String, count: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = count.toString(),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.5).sp
             ),
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 12.sp
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Medium
             ),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -452,7 +485,7 @@ private fun StatItem(label: String, count: Int) {
 }
 
 @Composable
-private fun ProfileActionButtons(
+private fun ModernActionButtons(
     isFollowing: Boolean,
     onFollowClick: () -> Unit,
     onMessageClick: () -> Unit
@@ -460,32 +493,38 @@ private fun ProfileActionButtons(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Button(
             onClick = onFollowClick,
-            modifier = Modifier.weight(1f).height(48.dp),
+            modifier = Modifier.weight(1f).height(52.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = if (isFollowing) {
                 ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 ButtonDefaults.buttonColors()
             }
         ) {
             Icon(
-                imageVector = if (isFollowing) Icons.Outlined.PersonRemove else Icons.Outlined.PersonAdd,
+                imageVector = if (isFollowing) Icons.Outlined.Check else Icons.Outlined.PersonAdd,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(if (isFollowing) "আনফলো" else "ফলো করুন")
+            Text(
+                if (isFollowing) "ফলো করছেন" else "ফলো করুন",
+                style = MaterialTheme.typography.titleSmall
+            )
         }
 
         OutlinedButton(
             onClick = onMessageClick,
-            modifier = Modifier.weight(1f).height(48.dp)
+            modifier = Modifier.weight(1f).height(52.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.Message,
@@ -493,30 +532,31 @@ private fun ProfileActionButtons(
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("বার্তা")
+            Text("বার্তা", style = MaterialTheme.typography.titleSmall)
         }
     }
 }
 
 @Composable
-private fun AboutSection(
-    profile: SocialProfile
-) {
+private fun ModernAboutSection(profile: SocialProfile) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "সম্পর্কে",
-            style = MaterialTheme.typography.titleLarge.copy(
+            text = "সম্পর্কে",
+            style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold
-            )
+            ),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (profile.bio.isNotBlank()) {
-            InfoCard(
+            ModernInfoCard(
                 icon = Icons.Outlined.Info,
                 title = "বায়ো",
                 content = profile.bio
@@ -524,7 +564,7 @@ private fun AboutSection(
         }
 
         if (profile.location.isNotBlank()) {
-            InfoCard(
+            ModernInfoCard(
                 icon = Icons.Outlined.LocationOn,
                 title = "অবস্থান",
                 content = profile.location
@@ -532,30 +572,42 @@ private fun AboutSection(
         }
 
         if (profile.website.isNotBlank()) {
-            InfoCard(
+            ModernInfoCard(
                 icon = Icons.Outlined.Link,
                 title = "ওয়েবসাইট",
                 content = profile.website
+            )
+        }
+
+        if (profile.bio.isBlank() && profile.location.isBlank() && profile.website.isBlank()) {
+            EmptyStateCard(
+                icon = Icons.Outlined.Info,
+                message = "কোনো তথ্য যোগ করা হয়নি"
             )
         }
     }
 }
 
 @Composable
-private fun InfoCard(
+private fun ModernInfoCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
     content: String
 ) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Top
         ) {
             Icon(
                 imageVector = icon,
@@ -563,13 +615,16 @@ private fun InfoCard(
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = content,
                     style = MaterialTheme.typography.bodyLarge,
@@ -581,15 +636,63 @@ private fun InfoCard(
 }
 
 @Composable
+private fun EmptyStateCard(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    message: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
 private fun LoadingState() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(48.dp),
-            strokeWidth = 4.dp
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                strokeWidth = 4.dp
+            )
+            Text(
+                text = "লোড হচ্ছে...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -602,24 +705,36 @@ private fun ErrorState(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(32.dp)
+        Card(
+            modifier = Modifier.padding(32.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+            )
         ) {
-            Icon(
-                imageVector = Icons.Outlined.ErrorOutline,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-            )
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                textAlign = TextAlign.Center
-            )
-            Button(onClick = onRetry) {
-                Text("পুনরায় চেষ্টা করুন")
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.error
+                )
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+                Button(
+                    onClick = onRetry,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("পুনরায় চেষ্টা করুন")
+                }
             }
         }
     }
