@@ -123,6 +123,13 @@ fun SocialProfileScreen(
                                 Tab(
                                     selected = uiState.selectedTab == tab,
                                     onClick = { viewModel.onAction(SocialProfileAction.SelectTab(tab)) },
+                                    icon = {
+                                        Icon(
+                                            imageVector = tab.icon,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    },
                                     text = {
                                         Text(
                                             tab.displayName,
@@ -549,71 +556,6 @@ private fun formatCount(count: Int): String {
         count >= 1000000 -> "${count / 1000000}M"
         count >= 1000 -> "${count / 1000}K"
         else -> count.toString()
-    }
-}
-
-@Composable
-private fun ModernStatCard(
-    label: String,
-    count: Int,
-    icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.height(140.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = color.copy(alpha = 0.08f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Icon at top
-            Surface(
-                modifier = Modifier.size(44.dp),
-                shape = RoundedCornerShape(14.dp),
-                color = color.copy(alpha = 0.15f)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = color
-                    )
-                }
-            }
-
-            // Count in the middle
-            Text(
-                text = count.toString(),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-1).sp
-                ),
-                color = color
-            )
-
-            // Label at bottom
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 0.5.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
     }
 }
 

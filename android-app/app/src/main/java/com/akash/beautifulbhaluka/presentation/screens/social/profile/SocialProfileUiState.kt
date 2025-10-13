@@ -1,5 +1,11 @@
 package com.akash.beautifulbhaluka.presentation.screens.social.profile
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Article
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Photo
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.akash.beautifulbhaluka.domain.model.Post
 import com.akash.beautifulbhaluka.domain.model.SocialProfile
 
@@ -16,11 +22,11 @@ data class SocialProfileUiState(
     val error: String? = null
 )
 
-enum class ProfileTab(val displayName: String) {
-    POSTS("পোস্ট"),
-    ABOUT("সম্পর্কে"),
-    FRIENDS("বন্ধুরা"),
-    PHOTOS("ফটো")
+enum class ProfileTab(val displayName: String, val icon: ImageVector) {
+    POSTS("পোস্ট", Icons.Outlined.Article),
+    ABOUT("সম্পর্কে", Icons.Outlined.Info),
+    FRIENDS("বন্ধুরা", Icons.Outlined.Group),
+    PHOTOS("ফটো", Icons.Outlined.Photo)
 }
 
 sealed class SocialProfileAction {
@@ -36,4 +42,3 @@ sealed class SocialProfileAction {
     object ChangeProfileImage : SocialProfileAction()
     object ChangeCoverImage : SocialProfileAction()
 }
-
