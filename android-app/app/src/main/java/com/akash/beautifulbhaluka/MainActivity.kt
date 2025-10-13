@@ -13,13 +13,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.akash.beautifulbhaluka.presentation.components.layout.Bottombar
 import com.akash.beautifulbhaluka.presentation.components.layout.NavigationDrawer
 import com.akash.beautifulbhaluka.presentation.components.layout.Topbar
 import com.akash.beautifulbhaluka.presentation.navigation.AppNavigation
+import com.akash.beautifulbhaluka.presentation.navigation.NavigationRoutes
 import com.akash.beautifulbhaluka.presentation.theme.BeautifulBhalukaTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,6 +31,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+            // Observe current destination
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            // Hide bars when in Social screen
+            val shouldShowBars = currentRoute != NavigationRoutes.SOCIAL
 
             BeautifulBhalukaTheme(dynamicColor = false) {
                 ModalNavigationDrawer(
@@ -45,14 +54,30 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
                         bottomBar = {
-                            Bottombar(
-                                navController = navController,
-                                drawerState = drawerState
-                            )
+                            if (shouldShowBars) {
+                                Bottombar(
+                                    navController = navController,
+                                    drawerState = drawerState
+                                )
+                            }
                         },
-                        topBar = { Topbar() },
+                        topBar = {
+                            if (shouldShowBars) {
+                                Topbar()
+                            }
+                        },
                     ) { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .then(
+                                    if (shouldShowBars) {
+                                        Modifier.padding(innerPadding)
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                        ) {
                             AppNavigation(navController = navController)
                         }
                     }
