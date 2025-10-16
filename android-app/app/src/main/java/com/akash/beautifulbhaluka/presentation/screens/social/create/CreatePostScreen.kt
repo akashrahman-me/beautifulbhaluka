@@ -144,7 +144,7 @@ private fun ModernTopBar(
     TopAppBar(
         title = {
             Text(
-                text = "পোস্ট তৈরি করুন",
+                text = "Create Post",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.5).sp
@@ -155,7 +155,7 @@ private fun ModernTopBar(
             IconButton(onClick = onDismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "বন্ধ করুন",
+                    contentDescription = "Close",
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -184,7 +184,7 @@ private fun ModernTopBar(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "পোস্ট করুন",
+                        text = "Post",
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.SemiBold
                         )
@@ -215,7 +215,7 @@ private fun ModernContentSection(
             onValueChange = onContentChange,
             placeholder = {
                 Text(
-                    text = "আপনার মনে কি আছে?",
+                    text = "What's on your mind?",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
@@ -270,7 +270,7 @@ private fun ModernImagePreview(
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "ছবি (${images.size})",
+            text = "Photos (${images.size})",
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight.SemiBold
             ),
@@ -311,7 +311,7 @@ private fun ModernImagePreview(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "মুছে ফেলুন",
+                                    contentDescription = "Remove",
                                     modifier = Modifier.size(18.dp),
                                     tint = MaterialTheme.colorScheme.onErrorContainer
                                 )
@@ -339,7 +339,7 @@ private fun ModernActionButtons(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "আপনার পোস্টে যোগ করুন",
+            text = "Add to your post",
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight.SemiBold
             ),
@@ -349,8 +349,8 @@ private fun ModernActionButtons(
         // Photo/Video Button
         ModernActionCard(
             icon = Icons.Outlined.Image,
-            title = "ছবি/ভিডিও",
-            subtitle = "গ্যালারি থেকে নির্বাচন করুন",
+            title = "Photo/Video",
+            subtitle = "Select from gallery",
             iconTint = MaterialTheme.colorScheme.primary,
             onClick = onAddPhotos
         )
@@ -362,7 +362,7 @@ private fun ModernActionButtons(
                 PostPrivacy.FRIENDS -> Icons.Outlined.Group
                 PostPrivacy.ONLY_ME -> Icons.Outlined.Lock
             },
-            title = "গোপনীয়তা",
+            title = "Privacy",
             subtitle = selectedPrivacy.displayName,
             iconTint = MaterialTheme.colorScheme.secondary,
             onClick = onPrivacyClick
@@ -371,8 +371,8 @@ private fun ModernActionButtons(
         // Location Button
         ModernActionCard(
             icon = Icons.Outlined.LocationOn,
-            title = "অবস্থান",
-            subtitle = location.ifBlank { "অবস্থান যোগ করুন" },
+            title = "Location",
+            subtitle = location.ifBlank { "Add location" },
             iconTint = MaterialTheme.colorScheme.tertiary,
             onClick = onLocationClick
         )
@@ -471,7 +471,7 @@ private fun ModernPrivacyDialog(
         },
         title = {
             Text(
-                text = "গোপনীয়তা নির্বাচন করুন",
+                text = "Select Privacy",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -498,7 +498,7 @@ private fun ModernPrivacyDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("বন্ধ করুন")
+                Text("Close")
             }
         },
         shape = RoundedCornerShape(24.dp)
@@ -592,7 +592,7 @@ private fun ModernLocationDialog(
         },
         title = {
             Text(
-                text = "অবস্থান যোগ করুন",
+                text = "Add Location",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -602,7 +602,7 @@ private fun ModernLocationDialog(
             OutlinedTextField(
                 value = locationText,
                 onValueChange = { locationText = it },
-                placeholder = { Text("যেমন: ঢাকা, বাংলাদেশ") },
+                placeholder = { Text("e.g. Dhaka, Bangladesh") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Place,
@@ -623,7 +623,7 @@ private fun ModernLocationDialog(
                 },
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("যোগ করুন")
+                Text("Add")
             }
         },
         dismissButton = {
@@ -631,7 +631,7 @@ private fun ModernLocationDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("বাতিল")
+                Text("Cancel")
             }
         },
         shape = RoundedCornerShape(24.dp)

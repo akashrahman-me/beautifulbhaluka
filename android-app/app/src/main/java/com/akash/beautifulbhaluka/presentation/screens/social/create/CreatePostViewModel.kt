@@ -83,7 +83,7 @@ class CreatePostViewModel : ViewModel() {
         val state = _uiState.value
 
         if (state.content.isBlank() && state.selectedImages.isEmpty()) {
-            _uiState.value = state.copy(error = "পোস্ট খালি হতে পারে না")
+            _uiState.value = state.copy(error = "Post cannot be empty")
             return
         }
 
@@ -116,4 +116,3 @@ class CreatePostViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(postSuccess = false)
     }
 }
-

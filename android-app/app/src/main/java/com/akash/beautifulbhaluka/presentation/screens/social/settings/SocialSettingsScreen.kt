@@ -60,7 +60,7 @@ fun SocialSettingsScreen() {
                 .padding(bottom = 24.dp)
         ) {
             Text(
-                text = "সেটিংস",
+                text = "Settings",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.5).sp
@@ -68,7 +68,7 @@ fun SocialSettingsScreen() {
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "আপনার সোশ্যাল অভিজ্ঞতা কাস্টমাইজ করুন",
+                text = "Customize your social experience",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -76,37 +76,37 @@ fun SocialSettingsScreen() {
 
         // Account Settings Section
         ModernSettingsSection(
-            title = "অ্যাকাউন্ট",
+            title = "Account",
             icon = Icons.Outlined.AccountCircle
         ) {
             ModernSwitchItem(
                 icon = Icons.Outlined.Lock,
-                title = "ব্যক্তিগত অ্যাকাউন্ট",
-                subtitle = "শুধুমাত্র অনুমোদিত ব্যক্তিরা আপনার পোস্ট দেখতে পারবে",
+                title = "Private Account",
+                subtitle = "Only approved people can see your posts",
                 checked = privateAccount,
                 onCheckedChange = { privateAccount = it }
             )
 
             ModernSwitchItem(
                 icon = Icons.Outlined.Visibility,
-                title = "অনলাইন স্ট্যাটাস",
-                subtitle = "অন্যরা দেখতে পারবে আপনি অনলাইন আছেন কিনা",
+                title = "Online Status",
+                subtitle = "Others can see when you're online",
                 checked = showOnlineStatus,
                 onCheckedChange = { showOnlineStatus = it }
             )
 
             ModernSwitchItem(
                 icon = Icons.Outlined.Label,
-                title = "ট্যাগিং অনুমতি দিন",
-                subtitle = "অন্যরা আপনাকে পোস্টে ট্যাগ করতে পারবে",
+                title = "Allow Tagging",
+                subtitle = "Others can tag you in posts",
                 checked = allowTagging,
                 onCheckedChange = { allowTagging = it }
             )
 
             ModernSwitchItem(
                 icon = Icons.Outlined.DoneAll,
-                title = "পঠিত রসিদ",
-                subtitle = "প্রেরক দেখতে পারবে আপনি বার্তা পড়েছেন কিনা",
+                title = "Read Receipts",
+                subtitle = "Sender can see if you've read their message",
                 checked = showReadReceipts,
                 onCheckedChange = { showReadReceipts = it }
             )
@@ -116,13 +116,13 @@ fun SocialSettingsScreen() {
 
         // Notification Settings Section
         ModernSettingsSection(
-            title = "নোটিফিকেশন",
+            title = "Notifications",
             icon = Icons.Outlined.Notifications
         ) {
             ModernSwitchItem(
                 icon = Icons.Outlined.NotificationsActive,
-                title = "সব নোটিফিকেশন",
-                subtitle = "সকল নোটিফিকেশন সক্রিয়/নিষ্ক্রিয় করুন",
+                title = "All Notifications",
+                subtitle = "Enable/disable all notifications",
                 checked = notificationsEnabled,
                 onCheckedChange = { notificationsEnabled = it },
                 highlighted = true
@@ -131,24 +131,24 @@ fun SocialSettingsScreen() {
             if (notificationsEnabled) {
                 ModernSwitchItem(
                     icon = Icons.Outlined.PostAdd,
-                    title = "নতুন পোস্ট",
-                    subtitle = "বন্ধুদের নতুন পোস্টের জন্য নোটিফিকেশন",
+                    title = "New Posts",
+                    subtitle = "Notifications for new posts from friends",
                     checked = postNotifications,
                     onCheckedChange = { postNotifications = it }
                 )
 
                 ModernSwitchItem(
                     icon = Icons.Outlined.Comment,
-                    title = "কমেন্ট",
-                    subtitle = "আপনার পোস্টে নতুন কমেন্টের জন্য",
+                    title = "Comments",
+                    subtitle = "For new comments on your posts",
                     checked = commentNotifications,
                     onCheckedChange = { commentNotifications = it }
                 )
 
                 ModernSwitchItem(
                     icon = Icons.Outlined.FavoriteBorder,
-                    title = "লাইক",
-                    subtitle = "আপনার পোস্টে লাইকের জন্য",
+                    title = "Likes",
+                    subtitle = "For likes on your posts",
                     checked = likeNotifications,
                     onCheckedChange = { likeNotifications = it }
                 )
@@ -159,29 +159,29 @@ fun SocialSettingsScreen() {
 
         // Appearance & Performance Section
         ModernSettingsSection(
-            title = "চেহারা ও পারফরম্যান্স",
+            title = "Appearance & Performance",
             icon = Icons.Outlined.Palette
         ) {
             ModernSwitchItem(
                 icon = Icons.Outlined.DarkMode,
-                title = "ডার্ক মোড",
-                subtitle = "গাঢ় থিম সক্রিয় করুন",
+                title = "Dark Mode",
+                subtitle = "Enable dark theme",
                 checked = darkMode,
                 onCheckedChange = { darkMode = it }
             )
 
             ModernSwitchItem(
                 icon = Icons.Outlined.PlayCircle,
-                title = "অটো-প্লে ভিডিও",
-                subtitle = "ভিডিও স্বয়ংক্রিয়ভাবে চালু হবে",
+                title = "Auto-play Videos",
+                subtitle = "Videos will play automatically",
                 checked = autoPlayVideos,
                 onCheckedChange = { autoPlayVideos = it }
             )
 
             ModernSwitchItem(
                 icon = Icons.Outlined.DataUsage,
-                title = "ডেটা সংরক্ষণ মোড",
-                subtitle = "কম ডেটা ব্যবহার করার জন্য ছবি সংকুচিত করুন",
+                title = "Data Saver Mode",
+                subtitle = "Compress images to use less data",
                 checked = dataCompression,
                 onCheckedChange = { dataCompression = it }
             )
@@ -191,34 +191,34 @@ fun SocialSettingsScreen() {
 
         // Privacy & Security Section
         ModernSettingsSection(
-            title = "গোপনীয়তা ও নিরাপত্তা",
+            title = "Privacy & Security",
             icon = Icons.Outlined.Security
         ) {
             ModernNavigationItem(
                 icon = Icons.Outlined.Block,
-                title = "ব্লক করা ব্যবহারকারী",
-                subtitle = "আপনার ব্লক তালিকা পরিচালনা করুন",
+                title = "Blocked Users",
+                subtitle = "Manage your block list",
                 onClick = { /* Navigate to blocked users */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.Outlined.Shield,
-                title = "গোপনীয়তা নীতি",
-                subtitle = "আমরা কীভাবে আপনার তথ্য সুরক্ষিত করি",
+                title = "Privacy Policy",
+                subtitle = "How we protect your information",
                 onClick = { /* Navigate to privacy policy */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.Outlined.Policy,
-                title = "ব্যবহারের শর্তাবলী",
-                subtitle = "সেবা ব্যবহারের নিয়মাবলী",
+                title = "Terms of Service",
+                subtitle = "Service usage rules",
                 onClick = { /* Navigate to terms */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.Outlined.Password,
-                title = "পাসওয়ার্ড পরিবর্তন করুন",
-                subtitle = "আপনার অ্যাকাউন্ট সুরক্ষিত রাখুন",
+                title = "Change Password",
+                subtitle = "Keep your account secure",
                 onClick = { /* Navigate to change password */ }
             )
         }
@@ -227,34 +227,34 @@ fun SocialSettingsScreen() {
 
         // About Section
         ModernSettingsSection(
-            title = "সম্পর্কে",
+            title = "About",
             icon = Icons.Outlined.Info
         ) {
             ModernNavigationItem(
                 icon = Icons.Outlined.Info,
-                title = "অ্যাপ সম্পর্কে",
-                subtitle = "সংস্করণ 1.0.0 • আপডেট: ১৩ অক্টোবর, ২০২৫",
+                title = "About App",
+                subtitle = "Version 1.0.0 • Updated: Oct 13, 2025",
                 onClick = { /* Show about dialog */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.AutoMirrored.Filled.Help,
-                title = "সাহায্য ও সহায়তা",
-                subtitle = "FAQ এবং সহায়তা কেন্দ্র",
+                title = "Help & Support",
+                subtitle = "FAQ and support center",
                 onClick = { /* Navigate to help */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.Outlined.Reviews,
-                title = "রিভিউ দিন",
-                subtitle = "Play Store-এ আমাদের রেটিং দিন",
+                title = "Rate Us",
+                subtitle = "Rate us on Play Store",
                 onClick = { /* Open Play Store */ }
             )
 
             ModernNavigationItem(
                 icon = Icons.Outlined.Share,
-                title = "শেয়ার করুন",
-                subtitle = "বন্ধুদের সাথে অ্যাপ শেয়ার করুন",
+                title = "Share App",
+                subtitle = "Share app with friends",
                 onClick = { /* Share app */ }
             )
         }
@@ -264,8 +264,8 @@ fun SocialSettingsScreen() {
         // Logout Button
         ModernDangerButton(
             icon = Icons.AutoMirrored.Outlined.Logout,
-            title = "লগ আউট",
-            subtitle = "আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন",
+            title = "Log Out",
+            subtitle = "Sign out from your account",
             onClick = { /* Handle logout */ }
         )
 

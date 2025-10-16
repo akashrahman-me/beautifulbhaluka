@@ -64,7 +64,7 @@ fun CommentsScreen(
                 }
                 uiState.error != null && uiState.comments.isEmpty() -> {
                     ErrorState(
-                        errorMessage = uiState.error ?: "একটি ত্রুটি হয়েছে",
+                        errorMessage = uiState.error ?: "An error occurred",
                         onRetry = { viewModel.onAction(CommentsAction.LoadComments) }
                     )
                 }
@@ -118,14 +118,14 @@ private fun CommentsTopBar(
         title = {
             Column {
                 Text(
-                    text = "মন্তব্য",
+                    text = "Comments",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold
                     )
                 )
                 if (commentsCount > 0) {
                     Text(
-                        text = "$commentsCount টি মন্তব্য",
+                        text = "$commentsCount comments",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -161,7 +161,7 @@ private fun LoadingState() {
                 strokeWidth = 4.dp
             )
             Text(
-                text = "মন্তব্য লোড হচ্ছে...",
+                text = "Loading comments...",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Medium
                 ),
@@ -193,7 +193,7 @@ private fun ErrorState(
             )
 
             Text(
-                text = "কিছু ভুল হয়েছে",
+                text = "Something went wrong",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -217,7 +217,7 @@ private fun ErrorState(
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("পুনরায় চেষ্টা করুন")
+                Text("Try again")
             }
         }
     }
@@ -242,7 +242,7 @@ private fun EmptyCommentsState() {
             )
 
             Text(
-                text = "কোনো মন্তব্য নেই",
+                text = "No comments yet",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
@@ -251,7 +251,7 @@ private fun EmptyCommentsState() {
             )
 
             Text(
-                text = "প্রথম মন্তব্য করুন",
+                text = "Be the first to comment",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

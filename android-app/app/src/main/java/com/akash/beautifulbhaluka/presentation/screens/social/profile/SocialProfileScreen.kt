@@ -49,7 +49,7 @@ fun SocialProfileScreen(
             }
             uiState.error != null -> {
                 ErrorState(
-                    errorMessage = uiState.error ?: "একটি ত্রুটি হয়েছে",
+                    errorMessage = uiState.error ?: "An error occurred",
                     onRetry = { viewModel.onAction(SocialProfileAction.LoadProfile("current_user_id")) }
                 )
             }
@@ -153,7 +153,7 @@ fun SocialProfileScreen(
                                 item {
                                     EmptyStateCard(
                                         icon = Icons.Outlined.PostAdd,
-                                        message = "এখনো কোনো পোস্ট নেই"
+                                        message = "No posts yet"
                                     )
                                 }
                             } else {
@@ -177,7 +177,7 @@ fun SocialProfileScreen(
                             item {
                                 EmptyStateCard(
                                     icon = Icons.Outlined.Group,
-                                    message = "বন্ধুদের তালিকা শীঘ্রই আসছে"
+                                    message = "Friends list coming soon"
                                 )
                             }
                         }
@@ -185,7 +185,7 @@ fun SocialProfileScreen(
                             item {
                                 EmptyStateCard(
                                     icon = Icons.Outlined.Photo,
-                                    message = "ফটো গ্যালারি শীঘ্রই আসছে"
+                                    message = "Photo gallery coming soon"
                                 )
                             }
                         }
@@ -263,7 +263,7 @@ private fun ModernProfileHeader(
             ) {
                 Icon(
                     Icons.Outlined.Edit,
-                    contentDescription = "প্রোফাইল সম্পাদনা",
+                    contentDescription = "Edit Profile",
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -339,8 +339,8 @@ private fun ProfileInfoSection(
             OutlinedTextField(
                 value = editBio,
                 onValueChange = onBioChange,
-                label = { Text("বায়ো") },
-                placeholder = { Text("আপনার সম্পর্কে লিখুন...") },
+                label = { Text("Bio") },
+                placeholder = { Text("Write about yourself...") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 5,
@@ -352,8 +352,8 @@ private fun ProfileInfoSection(
             OutlinedTextField(
                 value = editLocation,
                 onValueChange = onLocationChange,
-                label = { Text("অবস্থান") },
-                placeholder = { Text("শহর, দেশ") },
+                label = { Text("Location") },
+                placeholder = { Text("City, Country") },
                 leadingIcon = {
                     Icon(Icons.Outlined.LocationOn, contentDescription = null)
                 },
@@ -367,7 +367,7 @@ private fun ProfileInfoSection(
             OutlinedTextField(
                 value = editWebsite,
                 onValueChange = onWebsiteChange,
-                label = { Text("ওয়েবসাইট") },
+                label = { Text("Website") },
                 placeholder = { Text("https://example.com") },
                 leadingIcon = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
@@ -389,7 +389,7 @@ private fun ProfileInfoSection(
                     modifier = Modifier.weight(1f).height(52.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("বাতিল", style = MaterialTheme.typography.titleSmall)
+                    Text("Cancel", style = MaterialTheme.typography.titleSmall)
                 }
 
                 Button(
@@ -405,7 +405,7 @@ private fun ProfileInfoSection(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text("সংরক্ষণ করুন", style = MaterialTheme.typography.titleSmall)
+                        Text("Save", style = MaterialTheme.typography.titleSmall)
                     }
                 }
             }
@@ -457,14 +457,14 @@ private fun MinimalistStatsSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             UltraModernStatCard(
-                label = "পোস্ট",
+                label = "Posts",
                 count = postsCount,
                 icon = Icons.Outlined.Article,
                 modifier = Modifier.weight(1f)
             )
 
             UltraModernStatCard(
-                label = "বন্ধু",
+                label = "Friends",
                 count = friendsCount,
                 icon = Icons.Outlined.Group,
                 modifier = Modifier.weight(1f)
@@ -477,14 +477,14 @@ private fun MinimalistStatsSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             UltraModernStatCard(
-                label = "ফলোয়ার",
+                label = "Followers",
                 count = followersCount,
                 icon = Icons.Outlined.Favorite,
                 modifier = Modifier.weight(1f)
             )
 
             UltraModernStatCard(
-                label = "ফলোয়িং",
+                label = "Following",
                 count = followingCount,
                 icon = Icons.Outlined.PersonAdd,
                 modifier = Modifier.weight(1f)
@@ -591,7 +591,7 @@ private fun ModernActionButtons(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                if (isFollowing) "ফলো করছেন" else "ফলো করুন",
+                if (isFollowing) "Following" else "Follow",
                 style = MaterialTheme.typography.titleSmall
             )
         }
@@ -607,7 +607,7 @@ private fun ModernActionButtons(
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("বার্তা", style = MaterialTheme.typography.titleSmall)
+            Text("Message", style = MaterialTheme.typography.titleSmall)
         }
     }
 }
@@ -621,7 +621,7 @@ private fun ModernAboutSection(profile: SocialProfile) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "সম্পর্কে",
+            text = "About",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold
             ),
@@ -633,7 +633,7 @@ private fun ModernAboutSection(profile: SocialProfile) {
         if (profile.bio.isNotBlank()) {
             ModernInfoCard(
                 icon = Icons.Outlined.Info,
-                title = "বায়ো",
+                title = "Bio",
                 content = profile.bio
             )
         }
@@ -641,7 +641,7 @@ private fun ModernAboutSection(profile: SocialProfile) {
         if (profile.location.isNotBlank()) {
             ModernInfoCard(
                 icon = Icons.Outlined.LocationOn,
-                title = "অবস্থান",
+                title = "Location",
                 content = profile.location
             )
         }
@@ -649,7 +649,7 @@ private fun ModernAboutSection(profile: SocialProfile) {
         if (profile.website.isNotBlank()) {
             ModernInfoCard(
                 icon = Icons.Outlined.Link,
-                title = "ওয়েবসাইট",
+                title = "Website",
                 content = profile.website
             )
         }
@@ -657,7 +657,7 @@ private fun ModernAboutSection(profile: SocialProfile) {
         if (profile.bio.isBlank() && profile.location.isBlank() && profile.website.isBlank()) {
             EmptyStateCard(
                 icon = Icons.Outlined.Info,
-                message = "কোনো তথ্য যোগ করা হয়নি"
+                message = "No information added yet"
             )
         }
     }
@@ -763,7 +763,7 @@ private fun LoadingState() {
                 strokeWidth = 4.dp
             )
             Text(
-                text = "লোড হচ্ছে...",
+                text = "Loading...",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -808,7 +808,7 @@ private fun ErrorState(
                     onClick = onRetry,
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("পুনরায় চেষ্টা করুন")
+                    Text("Retry")
                 }
             }
         }

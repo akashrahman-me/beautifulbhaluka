@@ -87,7 +87,7 @@ fun CommentInputSection(
                             )
                             Column {
                                 Text(
-                                    text = "${it.userName} কে উত্তর দিচ্ছেন",
+                                    text = "Replying to ${it.userName}",
                                     style = MaterialTheme.typography.labelMedium.copy(
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 13.sp
@@ -136,7 +136,7 @@ fun CommentInputSection(
                 modifier = Modifier.weight(1f),
                 placeholder = {
                     Text(
-                        text = if (replyingTo != null) "উত্তর লিখুন..." else "মন্তব্য লিখুন...",
+                        text = if (replyingTo != null) "Write a reply..." else "Write a comment...",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp
                         )
@@ -207,4 +207,3 @@ fun CommentInputSection(
         }
     }
 }
-

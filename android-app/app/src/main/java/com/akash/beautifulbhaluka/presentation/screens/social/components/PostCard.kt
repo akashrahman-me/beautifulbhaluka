@@ -260,7 +260,7 @@ private fun PostHeader(
             ) {
                 if (onDeleteClick != null) {
                     DropdownMenuItem(
-                        text = { Text("মুছে ফেলুন") },
+                        text = { Text("Delete") },
                         onClick = {
                             onShowMenuChange(false)
                             onDeleteClick()
@@ -271,14 +271,14 @@ private fun PostHeader(
                     )
                 }
                 DropdownMenuItem(
-                    text = { Text("সংরক্ষণ করুন") },
+                    text = { Text("Save") },
                     onClick = { onShowMenuChange(false) },
                     leadingIcon = {
                         Icon(Icons.Outlined.BookmarkBorder, contentDescription = null)
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("রিপোর্ট করুন") },
+                    text = { Text("Report") },
                     onClick = { onShowMenuChange(false) },
                     leadingIcon = {
                         Icon(Icons.Outlined.Flag, contentDescription = null)
@@ -335,7 +335,7 @@ private fun PostStats(
         ) {
             if (comments > 0) {
                 Text(
-                    text = "$comments মন্তব্য",
+                    text = "$comments comments",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 14.sp
                     ),
@@ -344,7 +344,7 @@ private fun PostStats(
             }
             if (shares > 0) {
                 Text(
-                    text = "$shares শেয়ার",
+                    text = "$shares shares",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 14.sp
                     ),
@@ -369,7 +369,7 @@ private fun PostActions(
     ) {
         PostActionButton(
             icon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUpOffAlt,
-            text = "লাইক",
+            text = "Like",
             isActive = isLiked,
             onClick = onLikeClick,
             modifier = Modifier.weight(1f)
@@ -377,14 +377,14 @@ private fun PostActions(
 
         PostActionButton(
             icon = Icons.Outlined.ChatBubbleOutline,
-            text = "মন্তব্য",
+            text = "Comment",
             onClick = onCommentClick,
             modifier = Modifier.weight(1f)
         )
 
         PostActionButton(
             icon = Icons.Outlined.Share,
-            text = "শেয়ার",
+            text = "Share",
             onClick = onShareClick,
             modifier = Modifier.weight(1f)
         )
@@ -569,10 +569,10 @@ fun formatTimeAgo(timestamp: Long): String {
     val diff = now - timestamp
 
     return when {
-        diff < 60_000 -> "এখনি"
-        diff < 3600_000 -> "${diff / 60_000} মিনিট"
-        diff < 86400_000 -> "${diff / 3600_000} ঘণ্টা"
-        diff < 604800_000 -> "${diff / 86400_000} দিন"
+        diff < 60_000 -> "Just now"
+        diff < 3600_000 -> "${diff / 60_000}m"
+        diff < 86400_000 -> "${diff / 3600_000}h"
+        diff < 604800_000 -> "${diff / 86400_000}d"
         else -> {
             val sdf = SimpleDateFormat("dd MMM", Locale.getDefault())
             sdf.format(Date(timestamp))

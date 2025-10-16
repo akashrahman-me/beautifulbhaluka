@@ -46,7 +46,7 @@ fun CreatePostBar(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "আ",
+                    text = "U",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     ),
@@ -63,7 +63,7 @@ fun CreatePostBar(
             contentAlignment = Alignment.CenterStart
         ) {
             Text(
-                text = "আপনার মনের কথা শেয়ার করুন...",
+                text = "What's on your mind?",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 15.sp
                 ),
@@ -74,7 +74,7 @@ fun CreatePostBar(
         // Image icon
         Icon(
             imageVector = Icons.Outlined.Image,
-            contentDescription = "ছবি যোগ করুন",
+            contentDescription = "Add image",
             modifier = Modifier.size(24.dp),
             tint = MaterialTheme.colorScheme.primary
         )

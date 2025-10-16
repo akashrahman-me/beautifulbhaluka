@@ -39,7 +39,7 @@ fun SocialFeedScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "সামাজিক ফিড",
+                        text = "Social Feed",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -76,7 +76,7 @@ fun SocialFeedScreen(
                     }
                     uiState.error != null && uiState.posts.isEmpty() -> {
                         ErrorState(
-                            errorMessage = uiState.error ?: "একটি ত্রুটি হয়েছে",
+                            errorMessage = uiState.error ?: "An error occurred",
                             onRetry = { viewModel.onAction(SocialFeedAction.LoadPosts) }
                         )
                     }
@@ -146,7 +146,7 @@ private fun LoadingState() {
                 strokeWidth = 4.dp
             )
             Text(
-                text = "পোস্ট লোড হচ্ছে...",
+                text = "Loading posts...",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Medium
                 ),
@@ -178,7 +178,7 @@ private fun ErrorState(
             )
 
             Text(
-                text = "কিছু ভুল হয়েছে",
+                text = "Something went wrong",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -205,7 +205,7 @@ private fun ErrorState(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "পুনরায় চেষ্টা করুন",
+                    text = "Try again",
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.SemiBold
                     )
@@ -236,7 +236,7 @@ private fun EmptyState(
             )
 
             Text(
-                text = "কোনো পোস্ট নেই",
+                text = "No posts yet",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
@@ -245,7 +245,7 @@ private fun EmptyState(
             )
 
             Text(
-                text = "এখনও কোনো পোস্ট শেয়ার করা হয়নি।\nপ্রথম পোস্টটি আপনিই করুন!",
+                text = "No posts have been shared yet.\nBe the first to post!",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     lineHeight = 24.sp
                 ),
@@ -272,7 +272,7 @@ private fun EmptyState(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = "নতুন পোস্ট করুন",
+                    text = "Create New Post",
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp

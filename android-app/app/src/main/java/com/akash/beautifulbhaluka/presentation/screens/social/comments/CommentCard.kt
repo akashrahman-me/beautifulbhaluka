@@ -166,7 +166,7 @@ fun CommentCard(
                             )
                     ) {
                         Text(
-                            text = if (comment.isLiked) "পছন্দ হয়েছে" else "পছন্দ করুন",
+                            text = if (comment.isLiked) "Liked" else "Like",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -189,7 +189,7 @@ fun CommentCard(
                     // Reply Button
                     if (!isReply) {
                         Text(
-                            text = "উত্তর দিন",
+                            text = "Reply",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -299,9 +299,9 @@ fun CommentCard(
 
                         Text(
                             text = if (showAllReplies) {
-                                "কম উত্তর দেখুন"
+                                "Show less"
                             } else {
-                                "${comment.replies.size - 2} টি আরও উত্তর দেখুন"
+                                "View ${comment.replies.size - 2} more replies"
                             },
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 13.sp,
@@ -324,11 +324,11 @@ private fun formatTimeAgo(timestamp: Long): String {
     val diff = now - timestamp
 
     return when {
-        diff < 60_000 -> "এখনই"
-        diff < 3600_000 -> "${diff / 60_000} মিনিট আগে"
-        diff < 86400_000 -> "${diff / 3600_000} ঘন্টা আগে"
-        diff < 604800_000 -> "${diff / 86400_000} দিন আগে"
-        diff < 2592000_000 -> "${diff / 604800_000} সপ্তাহ আগে"
-        else -> SimpleDateFormat("dd MMM", Locale("bn")).format(Date(timestamp))
+        diff < 60_000 -> "Just now"
+        diff < 3600_000 -> "${diff / 60_000}m ago"
+        diff < 86400_000 -> "${diff / 3600_000}h ago"
+        diff < 604800_000 -> "${diff / 86400_000}d ago"
+        diff < 2592000_000 -> "${diff / 604800_000}w ago"
+        else -> SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(timestamp))
     }
 }

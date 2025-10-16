@@ -21,9 +21,9 @@ enum class SocialTab(
     val title: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 ) {
-    FEED("ফিড", Icons.Default.Home),
-    PROFILE("প্রোফাইল", Icons.Default.Person),
-    SETTINGS("সেটিংস", Icons.Default.Settings)
+    FEED("Feed", Icons.Default.Home),
+    PROFILE("Profile", Icons.Default.Person),
+    SETTINGS("Settings", Icons.Default.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +41,7 @@ fun SocialScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            "বিউটিফুল ভালুকা সোশ্যাল",
+                            "Beautiful Bhaluka Social",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )

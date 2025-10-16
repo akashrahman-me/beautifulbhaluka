@@ -23,10 +23,10 @@ data class SocialProfileUiState(
 )
 
 enum class ProfileTab(val displayName: String, val icon: ImageVector) {
-    POSTS("পোস্ট", Icons.Outlined.Article),
-    ABOUT("সম্পর্কে", Icons.Outlined.Info),
-    FRIENDS("বন্ধুরা", Icons.Outlined.Group),
-    PHOTOS("ফটো", Icons.Outlined.Photo)
+    POSTS("Posts", Icons.Outlined.Article),
+    ABOUT("About", Icons.Outlined.Info),
+    FRIENDS("Friends", Icons.Outlined.Group),
+    PHOTOS("Photos", Icons.Outlined.Photo)
 }
 
 sealed class SocialProfileAction {
