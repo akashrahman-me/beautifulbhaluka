@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.akash.beautifulbhaluka.presentation.screens.social.components.CreatePostFab
+import com.akash.beautifulbhaluka.presentation.screens.social.components.CreatePostBar
 import com.akash.beautifulbhaluka.presentation.screens.social.components.PostCard
 
 /**
@@ -35,70 +35,94 @@ fun SocialFeedScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        floatingActionButton = {
-            CreatePostFab(
-                onClick = onCreatePostClick
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "সামাজিক ফিড",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading && uiState.posts.isEmpty() -> {
-                    LoadingState()
-                }
-                uiState.error != null && uiState.posts.isEmpty() -> {
-                    ErrorState(
-                        errorMessage = uiState.error ?: "একটি ত্রুটি হয়েছে",
-                        onRetry = { viewModel.onAction(SocialFeedAction.LoadPosts) }
-                    )
-                }
-                uiState.posts.isEmpty() -> {
-                    EmptyState(
-                        onCreatePost = onCreatePostClick
-                    )
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 88.dp)
-                    ) {
-                        // Refresh indicator
-                        if (uiState.isRefreshing) {
-                            item {
-                                LinearProgressIndicator(
-                                    modifier = Modifier.fillMaxWidth()
+            // Create post bar fixed at top
+            CreatePostBar(
+                onClick = onCreatePostClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
+
+            // Content area
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    uiState.isLoading && uiState.posts.isEmpty() -> {
+                        LoadingState()
+                    }
+                    uiState.error != null && uiState.posts.isEmpty() -> {
+                        ErrorState(
+                            errorMessage = uiState.error ?: "একটি ত্রুটি হয়েছে",
+                            onRetry = { viewModel.onAction(SocialFeedAction.LoadPosts) }
+                        )
+                    }
+                    uiState.posts.isEmpty() -> {
+                        EmptyState(
+                            onCreatePost = onCreatePostClick
+                        )
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 16.dp)
+                        ) {
+                            // Refresh indicator
+                            if (uiState.isRefreshing) {
+                                item {
+                                    LinearProgressIndicator(
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+
+                            items(uiState.posts, key = { it.id }) { post ->
+                                PostCard(
+                                    post = post,
+                                    onLikeClick = {
+                                        if (post.isLiked) {
+                                            viewModel.onAction(SocialFeedAction.UnlikePost(post.id))
+                                        } else {
+                                            viewModel.onAction(SocialFeedAction.LikePost(post.id))
+                                        }
+                                    },
+                                    onCommentClick = {
+                                        onNavigateToComments(post.id)
+                                    },
+                                    onShareClick = {
+                                        viewModel.onAction(SocialFeedAction.SharePost(post.id))
+                                    },
+                                    onProfileClick = {
+                                        viewModel.onAction(SocialFeedAction.NavigateToProfile(post.userId))
+                                    },
+                                    onDeleteClick = if (post.userId == "current_user_id") {
+                                        { viewModel.onAction(SocialFeedAction.DeletePost(post.id)) }
+                                    } else null
                                 )
                             }
-                        }
-
-                        items(uiState.posts, key = { it.id }) { post ->
-                            PostCard(
-                                post = post,
-                                onLikeClick = {
-                                    if (post.isLiked) {
-                                        viewModel.onAction(SocialFeedAction.UnlikePost(post.id))
-                                    } else {
-                                        viewModel.onAction(SocialFeedAction.LikePost(post.id))
-                                    }
-                                },
-                                onCommentClick = {
-                                    onNavigateToComments(post.id)
-                                },
-                                onShareClick = {
-                                    viewModel.onAction(SocialFeedAction.SharePost(post.id))
-                                },
-                                onProfileClick = {
-                                    viewModel.onAction(SocialFeedAction.NavigateToProfile(post.userId))
-                                },
-                                onDeleteClick = if (post.userId == "current_user_id") {
-                                    { viewModel.onAction(SocialFeedAction.DeletePost(post.id)) }
-                                } else null
-                            )
                         }
                     }
                 }

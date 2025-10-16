@@ -62,7 +62,7 @@ fun SocialScreen(
                 )
 
                 // Tab Row for navigation
-                TabRow(
+                PrimaryTabRow(
                     selectedTabIndex = selectedTab.ordinal,
                     containerColor = MaterialTheme.colorScheme.surface
                 ) {
