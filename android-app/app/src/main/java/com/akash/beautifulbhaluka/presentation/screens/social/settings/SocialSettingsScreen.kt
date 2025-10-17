@@ -145,7 +145,7 @@ fun SocialSettingsScreen() {
                 subtitle = "Enable/disable all notifications",
                 checked = notificationsEnabled,
                 onCheckedChange = { notificationsEnabled = it },
-                highlighted = true
+//                highlighted = true
             )
 
             if (notificationsEnabled) {
@@ -445,11 +445,11 @@ private fun ModernNavigationItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Icon Container
+            // Icon Container - Now consistent color
             Surface(
                 modifier = Modifier.size(44.dp),
                 shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -459,7 +459,7 @@ private fun ModernNavigationItem(
                         imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(22.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
