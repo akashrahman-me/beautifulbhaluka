@@ -5,26 +5,46 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.User
+import com.composables.icons.lucide.Lock
+import com.composables.icons.lucide.Eye
+import com.composables.icons.lucide.Tag
+import com.composables.icons.lucide.CheckCheck
+import com.composables.icons.lucide.Bell
+import com.composables.icons.lucide.BellRing
+import com.composables.icons.lucide.FileText
+import com.composables.icons.lucide.MessageSquare
+import com.composables.icons.lucide.Heart
+import com.composables.icons.lucide.Palette
+import com.composables.icons.lucide.Moon
+import com.composables.icons.lucide.Play
+import com.composables.icons.lucide.Database
+import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.UserX
+import com.composables.icons.lucide.ShieldCheck
+import com.composables.icons.lucide.FileCheck
+import com.composables.icons.lucide.KeyRound
+import com.composables.icons.lucide.Info
+import com.composables.icons.lucide.CircleHelp
+import com.composables.icons.lucide.Star
+import com.composables.icons.lucide.Share2
+import com.composables.icons.lucide.LogOut
+import com.composables.icons.lucide.ChevronRight
 
 /**
  * Ultra-Modern Social Settings Screen
  *
  * Design principles:
- * - Icon-first design with Material Icons
+ * - Icon-first design with Lucide Icons
  * - Segmented sections with clear visual separation
  * - Smooth animations and transitions
  * - Professional color usage and spacing
@@ -77,10 +97,10 @@ fun SocialSettingsScreen() {
         // Account Settings Section
         ModernSettingsSection(
             title = "Account",
-            icon = Icons.Outlined.AccountCircle
+            icon = Lucide.User
         ) {
             ModernSwitchItem(
-                icon = Icons.Outlined.Lock,
+                icon = Lucide.Lock,
                 title = "Private Account",
                 subtitle = "Only approved people can see your posts",
                 checked = privateAccount,
@@ -88,7 +108,7 @@ fun SocialSettingsScreen() {
             )
 
             ModernSwitchItem(
-                icon = Icons.Outlined.Visibility,
+                icon = Lucide.Eye,
                 title = "Online Status",
                 subtitle = "Others can see when you're online",
                 checked = showOnlineStatus,
@@ -96,7 +116,7 @@ fun SocialSettingsScreen() {
             )
 
             ModernSwitchItem(
-                icon = Icons.Outlined.Label,
+                icon = Lucide.Tag,
                 title = "Allow Tagging",
                 subtitle = "Others can tag you in posts",
                 checked = allowTagging,
@@ -104,7 +124,7 @@ fun SocialSettingsScreen() {
             )
 
             ModernSwitchItem(
-                icon = Icons.Outlined.DoneAll,
+                icon = Lucide.CheckCheck,
                 title = "Read Receipts",
                 subtitle = "Sender can see if you've read their message",
                 checked = showReadReceipts,
@@ -117,10 +137,10 @@ fun SocialSettingsScreen() {
         // Notification Settings Section
         ModernSettingsSection(
             title = "Notifications",
-            icon = Icons.Outlined.Notifications
+            icon = Lucide.Bell
         ) {
             ModernSwitchItem(
-                icon = Icons.Outlined.NotificationsActive,
+                icon = Lucide.BellRing,
                 title = "All Notifications",
                 subtitle = "Enable/disable all notifications",
                 checked = notificationsEnabled,
@@ -130,7 +150,7 @@ fun SocialSettingsScreen() {
 
             if (notificationsEnabled) {
                 ModernSwitchItem(
-                    icon = Icons.Outlined.PostAdd,
+                    icon = Lucide.FileText,
                     title = "New Posts",
                     subtitle = "Notifications for new posts from friends",
                     checked = postNotifications,
@@ -138,7 +158,7 @@ fun SocialSettingsScreen() {
                 )
 
                 ModernSwitchItem(
-                    icon = Icons.Outlined.Comment,
+                    icon = Lucide.MessageSquare,
                     title = "Comments",
                     subtitle = "For new comments on your posts",
                     checked = commentNotifications,
@@ -146,7 +166,7 @@ fun SocialSettingsScreen() {
                 )
 
                 ModernSwitchItem(
-                    icon = Icons.Outlined.FavoriteBorder,
+                    icon = Lucide.Heart,
                     title = "Likes",
                     subtitle = "For likes on your posts",
                     checked = likeNotifications,
@@ -160,10 +180,10 @@ fun SocialSettingsScreen() {
         // Appearance & Performance Section
         ModernSettingsSection(
             title = "Appearance & Performance",
-            icon = Icons.Outlined.Palette
+            icon = Lucide.Palette
         ) {
             ModernSwitchItem(
-                icon = Icons.Outlined.DarkMode,
+                icon = Lucide.Moon,
                 title = "Dark Mode",
                 subtitle = "Enable dark theme",
                 checked = darkMode,
@@ -171,7 +191,7 @@ fun SocialSettingsScreen() {
             )
 
             ModernSwitchItem(
-                icon = Icons.Outlined.PlayCircle,
+                icon = Lucide.Play,
                 title = "Auto-play Videos",
                 subtitle = "Videos will play automatically",
                 checked = autoPlayVideos,
@@ -179,7 +199,7 @@ fun SocialSettingsScreen() {
             )
 
             ModernSwitchItem(
-                icon = Icons.Outlined.DataUsage,
+                icon = Lucide.Database,
                 title = "Data Saver Mode",
                 subtitle = "Compress images to use less data",
                 checked = dataCompression,
@@ -192,31 +212,31 @@ fun SocialSettingsScreen() {
         // Privacy & Security Section
         ModernSettingsSection(
             title = "Privacy & Security",
-            icon = Icons.Outlined.Security
+            icon = Lucide.Shield
         ) {
             ModernNavigationItem(
-                icon = Icons.Outlined.Block,
+                icon = Lucide.UserX,
                 title = "Blocked Users",
                 subtitle = "Manage your block list",
                 onClick = { /* Navigate to blocked users */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.Outlined.Shield,
+                icon = Lucide.ShieldCheck,
                 title = "Privacy Policy",
                 subtitle = "How we protect your information",
                 onClick = { /* Navigate to privacy policy */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.Outlined.Policy,
+                icon = Lucide.FileCheck,
                 title = "Terms of Service",
                 subtitle = "Service usage rules",
                 onClick = { /* Navigate to terms */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.Outlined.Password,
+                icon = Lucide.KeyRound,
                 title = "Change Password",
                 subtitle = "Keep your account secure",
                 onClick = { /* Navigate to change password */ }
@@ -228,31 +248,31 @@ fun SocialSettingsScreen() {
         // About Section
         ModernSettingsSection(
             title = "About",
-            icon = Icons.Outlined.Info
+            icon = Lucide.Info
         ) {
             ModernNavigationItem(
-                icon = Icons.Outlined.Info,
+                icon = Lucide.Info,
                 title = "About App",
-                subtitle = "Version 1.0.0 • Updated: Oct 13, 2025",
+                subtitle = "Version 1.0.0 • Updated: Oct 17, 2025",
                 onClick = { /* Show about dialog */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.AutoMirrored.Filled.Help,
+                icon = Lucide.CircleHelp,
                 title = "Help & Support",
                 subtitle = "FAQ and support center",
                 onClick = { /* Navigate to help */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.Outlined.Reviews,
+                icon = Lucide.Star,
                 title = "Rate Us",
                 subtitle = "Rate us on Play Store",
                 onClick = { /* Open Play Store */ }
             )
 
             ModernNavigationItem(
-                icon = Icons.Outlined.Share,
+                icon = Lucide.Share2,
                 title = "Share App",
                 subtitle = "Share app with friends",
                 onClick = { /* Share app */ }
@@ -263,9 +283,7 @@ fun SocialSettingsScreen() {
 
         // Logout Button
         ModernDangerButton(
-            icon = Icons.AutoMirrored.Outlined.Logout,
-            title = "Log Out",
-            subtitle = "Sign out from your account",
+            icon = Lucide.LogOut,
             onClick = { /* Handle logout */ }
         )
 
@@ -469,7 +487,7 @@ private fun ModernNavigationItem(
 
             // Navigation Arrow
             Icon(
-                imageVector = Icons.Outlined.ChevronRight,
+                imageVector = Lucide.ChevronRight,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -481,8 +499,6 @@ private fun ModernNavigationItem(
 @Composable
 private fun ModernDangerButton(
     icon: ImageVector,
-    title: String,
-    subtitle: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -531,14 +547,14 @@ private fun ModernDangerButton(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = title,
+                        text = "Log Out",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
                         color = MaterialTheme.colorScheme.error
                     )
                     Text(
-                        text = subtitle,
+                        text = "Sign out from your account",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -546,7 +562,7 @@ private fun ModernDangerButton(
 
                 // Arrow
                 Icon(
-                    imageVector = Icons.Outlined.ChevronRight,
+                    imageVector = Lucide.ChevronRight,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
