@@ -1,11 +1,15 @@
 package com.akash.beautifulbhaluka.presentation.screens.social
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -15,15 +19,26 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.akash.beautifulbhaluka.presentation.screens.social.comments.CommentsScreen
+import com.akash.beautifulbhaluka.presentation.screens.social.messenger.MessengerScreen
+import com.akash.beautifulbhaluka.presentation.screens.social.messenger.chat.ChatScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.settings.SocialSettingsScreen
+import com.akash.beautifulbhaluka.presentation.theme.RubikWetPaint
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.House
+import com.composables.icons.lucide.MessageCircle
+import com.composables.icons.lucide.CircleUserRound
+import com.composables.icons.lucide.Settings
+import com.composables.icons.lucide.X
 
 enum class SocialTab(
     val title: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val iconOutlined: androidx.compose.ui.graphics.vector.ImageVector
 ) {
-    FEED("Feed", Icons.Default.Home),
-    PROFILE("Profile", Icons.Default.Person),
-    SETTINGS("Settings", Icons.Default.Settings)
+    FEED("Feed", Lucide.House, Lucide.House),
+    MESSAGES("Messages", Lucide.MessageCircle, Lucide.MessageCircle),
+    PROFILE("Profile", Lucide.CircleUserRound, Lucide.CircleUserRound),
+    SETTINGS("Settings", Lucide.Settings, Lucide.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,99 +48,202 @@ fun SocialScreen(
 ) {
     var selectedTab by remember { mutableStateOf(SocialTab.FEED) }
     var showCreatePost by remember { mutableStateOf(false) }
-    val navController = rememberNavController()
+    val feedNavController = rememberNavController()
+    val messengerNavController = rememberNavController()
 
-    Scaffold(
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            "Beautiful Bhaluka Social",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    actions = {
-                        IconButton(onClick = onExit) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Exit Social",
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        titleContentColor = MaterialTheme.colorScheme.primary
+    Scaffold{ paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            Column(
+                modifier = Modifier.animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
                     )
                 )
+            ) {
+                // Modern Header Section with smooth transition
+                AnimatedVisibility(
+                    visible = selectedTab == SocialTab.FEED,
+                    enter = slideInVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        initialOffsetY = { -it }
+                    ) + fadeIn(
+                        animationSpec = tween(durationMillis = 300)
+                    ) + expandVertically(
+                        animationSpec = tween(durationMillis = 300)
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        targetOffsetY = { -it }
+                    ) + fadeOut(
+                        animationSpec = tween(durationMillis = 300)
+                    ) + shrinkVertically(
+                        animationSpec = tween(durationMillis = 300)
+                    )
+                ) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 0.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        ) {
+                            // Create gradient brush
+                            val gradientBrush = Brush.linearGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.primary
+                                ),
+                                start = Offset(0f, 0f),
+                                end = Offset(1000f, 100f)
+                            )
 
-                // Tab Row for navigation
+                            Text(
+                                text = "Need Book",
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    brush = gradientBrush
+                                ),
+                                fontFamily = RubikWetPaint,
+                            )
+
+                            // Exit Button
+                            FilledTonalIconButton(
+                                onClick = onExit,
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Lucide.X,
+                                    contentDescription = "Exit Social",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Modern Tab Navigation
                 PrimaryTabRow(
                     selectedTabIndex = selectedTab.ordinal,
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth(),
+                    divider = {
+                        HorizontalDivider(
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                        )
+                    }
                 ) {
                     SocialTab.entries.forEach { tab ->
                         Tab(
                             selected = selectedTab == tab,
                             onClick = { selectedTab = tab },
-                            text = { Text(tab.title) },
-                            icon = {
+                            modifier = Modifier.height(56.dp)
+                        ) {
+                            Column(
+                                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            ) {
                                 Icon(
-                                    imageVector = tab.icon,
-                                    contentDescription = tab.title
+                                    imageVector = if (selectedTab == tab) tab.icon else tab.iconOutlined,
+                                    contentDescription = tab.title,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = if (selectedTab == tab) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    }
                                 )
                             }
-                        )
+                        }
                     }
                 }
-            }
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            when (selectedTab) {
-                SocialTab.FEED -> {
-                    NavHost(
-                        navController = navController,
-                        startDestination = "feed"
-                    ) {
-                        composable("feed") {
-                            SocialFeedScreen(
-                                onCreatePostClick = { showCreatePost = true },
-                                onNavigateToComments = { postId ->
-                                    navController.navigate("comments/$postId")
-                                }
-                            )
-                        }
 
-                        composable(
-                            route = "comments/{postId}",
-                            arguments = listOf(
-                                navArgument("postId") { type = NavType.StringType }
-                            )
+                when (selectedTab) {
+                    SocialTab.FEED -> {
+                        NavHost(
+                            navController = feedNavController,
+                            startDestination = "feed"
                         ) {
-                            CommentsScreen(
-                                onNavigateBack = { navController.popBackStack() }
-                            )
+                            composable("feed") {
+                                SocialFeedScreen(
+                                    onCreatePostClick = { showCreatePost = true },
+                                    onNavigateToComments = { postId ->
+                                        feedNavController.navigate("comments/$postId")
+                                    }
+                                )
+                            }
+
+                            composable(
+                                route = "comments/{postId}",
+                                arguments = listOf(
+                                    navArgument("postId") { type = NavType.StringType }
+                                )
+                            ) {
+                                CommentsScreen(
+                                    onNavigateBack = { feedNavController.popBackStack() }
+                                )
+                            }
                         }
                     }
-                }
 
-                SocialTab.PROFILE -> {
-                    val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileViewModel = viewModel()
-                    LaunchedEffect(Unit) {
-                        viewModel.onAction(
-                            com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileAction.LoadProfile("current_user_id")
-                        )
+                    SocialTab.MESSAGES -> {
+                        NavHost(
+                            navController = messengerNavController,
+                            startDestination = "messenger"
+                        ) {
+                            composable("messenger") {
+                                MessengerScreen(
+                                    onConversationClick = { conversationId ->
+                                        messengerNavController.navigate("chat/$conversationId")
+                                    },
+                                    onNewMessageClick = {
+                                        // TODO: Navigate to new message screen
+                                    }
+                                )
+                            }
+
+                            composable(
+                                route = "chat/{conversationId}",
+                                arguments = listOf(
+                                    navArgument("conversationId") { type = NavType.StringType }
+                                )
+                            ) { backStackEntry ->
+                                val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
+                                ChatScreen(
+                                    conversationId = conversationId,
+                                    onNavigateBack = { messengerNavController.popBackStack() }
+                                )
+                            }
+                        }
                     }
-                    com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileScreen(viewModel = viewModel)
-                }
 
-                SocialTab.SETTINGS -> {
-                    SocialSettingsScreen()
+                    SocialTab.PROFILE -> {
+                        val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileViewModel = viewModel()
+                        LaunchedEffect(Unit) {
+                            viewModel.onAction(
+                                com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileAction.LoadProfile("current_user_id")
+                            )
+                        }
+                        com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileScreen(viewModel = viewModel)
+                    }
+
+                    SocialTab.SETTINGS -> {
+                        SocialSettingsScreen()
+                    }
                 }
             }
+
         }
 
         if (showCreatePost) {

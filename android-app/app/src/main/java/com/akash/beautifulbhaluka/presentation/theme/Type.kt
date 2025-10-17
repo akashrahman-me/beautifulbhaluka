@@ -16,6 +16,15 @@ val SolaimanLipiFont = FontFamily(
     Font(R.font.solaimanlipi, FontWeight.Bold)
 )
 
+val PermanentMarker = FontFamily(
+    Font(R.font.permanent_marker_regular, FontWeight.Normal),
+)
+val RubikWetPaint = FontFamily(
+    Font(R.font.rubik_wet_paint_regular, FontWeight.Normal),
+)
+
+
+
 // Custom Typography using Bengali font for the entire app
 val Typography = Typography(
     // Display styles
