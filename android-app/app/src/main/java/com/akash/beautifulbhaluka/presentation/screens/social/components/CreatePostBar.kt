@@ -11,10 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.VideoLibrary
-import androidx.compose.material.icons.outlined.EmojiEmotions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Image
+import com.composables.icons.lucide.Smile
+import com.composables.icons.lucide.Video
 
 /**
  * Ultra-modern post creation bar with premium design
@@ -154,13 +154,13 @@ fun CreatePostBar(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Photo action
                     ActionButton(
-                        icon = Icons.Outlined.Image,
+                        icon = Lucide.Image,
                         label = "Photo",
                         color = Color(0xFF3a86ff),
                         onClick = onClick
@@ -168,7 +168,7 @@ fun CreatePostBar(
 
                     // Video action
                     ActionButton(
-                        icon = Icons.Outlined.VideoLibrary,
+                        icon = Lucide.Video,
                         label = "Video",
                         color = Color(0xFFff006e),
                         onClick = onClick
@@ -176,7 +176,7 @@ fun CreatePostBar(
 
                     // Feeling action
                     ActionButton(
-                        icon = Icons.Outlined.EmojiEmotions,
+                        icon = Lucide.Smile,
                         label = "Feeling",
                         color = Color(0xFFfca311),
                         onClick = onClick
