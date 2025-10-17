@@ -3,6 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.social
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -29,6 +30,7 @@ import com.akash.beautifulbhaluka.presentation.screens.social.components.PostCar
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = viewModel(),
+    scrollState: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState(),
     onCreatePostClick: () -> Unit = {},
     onNavigateToComments: (String) -> Unit = {}
 ) {
@@ -54,6 +56,7 @@ fun SocialFeedScreen(
             }
             else -> {
                 LazyColumn(
+                    state = scrollState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {

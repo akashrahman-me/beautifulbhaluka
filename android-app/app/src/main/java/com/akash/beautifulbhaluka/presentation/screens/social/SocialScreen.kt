@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -29,6 +30,8 @@ import com.composables.icons.lucide.MessageCircle
 import com.composables.icons.lucide.CircleUserRound
 import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.X
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 enum class SocialTab(
     val title: String,
@@ -51,6 +54,48 @@ fun SocialScreen(
     val feedNavController = rememberNavController()
     val messengerNavController = rememberNavController()
 
+    // Track scroll state for feed tab
+    val feedScrollState = rememberLazyListState()
+
+    // Track header visibility state
+    var showHeader by remember { mutableStateOf(true) }
+
+    // Track previous scroll position
+    var previousScrollPosition by remember { mutableStateOf(0) }
+
+    // Detect scroll direction using snapshotFlow
+    LaunchedEffect(selectedTab) {
+        if (selectedTab != SocialTab.FEED) {
+            showHeader = false
+            return@LaunchedEffect
+        }
+
+        snapshotFlow {
+            feedScrollState.firstVisibleItemIndex * 10000 + feedScrollState.firstVisibleItemScrollOffset
+        }.collect { currentScrollPosition ->
+            // Always show at the very top
+            if (feedScrollState.firstVisibleItemIndex == 0 && feedScrollState.firstVisibleItemScrollOffset == 0) {
+                showHeader = true
+                previousScrollPosition = 0
+                return@collect
+            }
+
+            // Detect scroll direction by comparing with previous position
+            val isScrollingUp = currentScrollPosition < previousScrollPosition
+
+            // Update header visibility based on scroll direction
+            showHeader = isScrollingUp
+
+            // Update previous position
+            previousScrollPosition = currentScrollPosition
+        }
+    }
+
+    // Reset header visibility when changing tabs
+    LaunchedEffect(selectedTab) {
+        showHeader = selectedTab == SocialTab.FEED
+    }
+
     Scaffold{ paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             Column(
@@ -63,7 +108,7 @@ fun SocialScreen(
             ) {
                 // Modern Header Section with smooth transition
                 AnimatedVisibility(
-                    visible = selectedTab == SocialTab.FEED,
+                    visible = showHeader,
                     enter = slideInVertically(
                         animationSpec = tween(durationMillis = 300),
                         initialOffsetY = { -it }
@@ -177,6 +222,7 @@ fun SocialScreen(
                         ) {
                             composable("feed") {
                                 SocialFeedScreen(
+                                    scrollState = feedScrollState,
                                     onCreatePostClick = { showCreatePost = true },
                                     onNavigateToComments = { postId ->
                                         feedNavController.navigate("comments/$postId")
