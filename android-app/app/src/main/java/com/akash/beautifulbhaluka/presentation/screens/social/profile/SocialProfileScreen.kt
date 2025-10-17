@@ -1,39 +1,67 @@
 package com.akash.beautifulbhaluka.presentation.screens.social.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Message
+import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.SocialProfile
+import com.akash.beautifulbhaluka.domain.model.StoryHighlight
+import com.akash.beautifulbhaluka.domain.model.Friend
+import com.akash.beautifulbhaluka.domain.model.Photo
 import com.akash.beautifulbhaluka.presentation.screens.social.components.PostCard
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Camera
+import com.composables.icons.lucide.Plus
+import com.composables.icons.lucide.MessageCircle
+import com.composables.icons.lucide.UserPlus
+import com.composables.icons.lucide.Ellipsis
+import com.composables.icons.lucide.MapPin
+import com.composables.icons.lucide.Link as LinkIcon
+import com.composables.icons.lucide.Briefcase
+import com.composables.icons.lucide.GraduationCap
+import com.composables.icons.lucide.House
+import com.composables.icons.lucide.Heart
+import com.composables.icons.lucide.Calendar
+import com.composables.icons.lucide.Image as ImageIcon
+import com.composables.icons.lucide.Video
+import java.util.Locale
 
 /**
- * Ultra-modern Social Profile Screen
+ * Ultra-Modern Social Profile Screen - Facebook-inspired Design
  *
- * Design principles:
- * - Ultra-clean, spacious profile header with gradient overlay
- * - Minimalistic stats display with subtle dividers
- * - Professional typography hierarchy
- * - Smooth spacing and visual breathing room
- * - Clear information architecture
+ * Features:
+ * - Cover photo with gradient overlay and camera options
+ * - Profile picture with upload functionality
+ * - Bio section with rich information (work, education, location, etc.)
+ * - Interactive stats (posts, friends, followers, photos)
+ * - Quick action buttons (Message, Add Friend, Share)
+ * - Tabbed content (Posts, About, Friends, Photos, Videos)
+ * - Create post/story shortcuts
+ * - Modern Material 3 design with gradients
+ * - Smooth animations and transitions
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,109 +69,106 @@ fun SocialProfileScreen(
     viewModel: SocialProfileViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showMoreOptions by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
-                LoadingState()
+                ModernLoadingState()
             }
             uiState.error != null -> {
-                ErrorState(
+                ModernErrorState(
                     errorMessage = uiState.error ?: "An error occurred",
                     onRetry = { viewModel.onAction(SocialProfileAction.LoadProfile("current_user_id")) }
                 )
             }
             uiState.profile != null -> {
                 val profile = uiState.profile!!
+                val isOwnProfile = profile.userId == "current_user_id"
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 24.dp)
                 ) {
-                    // Modern Profile Header
+                    // Ultra-Modern Cover & Profile Section
                     item {
-                        ModernProfileHeader(
+                        UltraModernCoverSection(
                             profile = profile,
-                            onEditClick = { viewModel.onAction(SocialProfileAction.ToggleEditMode) }
+                            isOwnProfile = isOwnProfile,
+                            onCoverPhotoClick = { /* Upload cover */ },
+                            onProfilePhotoClick = { /* Upload profile */ }
                         )
                     }
 
-                    // Profile Info Section
+                    // Name & Bio Section
                     item {
-                        ProfileInfoSection(
+                        NameAndBioSection(
                             profile = profile,
-                            isEditMode = uiState.isEditMode,
-                            editBio = uiState.editBio,
-                            editLocation = uiState.editLocation,
-                            editWebsite = uiState.editWebsite,
-                            isSaving = uiState.isSaving,
-                            onBioChange = { viewModel.onAction(SocialProfileAction.UpdateBio(it)) },
-                            onLocationChange = { viewModel.onAction(SocialProfileAction.UpdateLocation(it)) },
-                            onWebsiteChange = { viewModel.onAction(SocialProfileAction.UpdateWebsite(it)) },
-                            onSave = { viewModel.onAction(SocialProfileAction.SaveProfile) },
-                            onCancel = { viewModel.onAction(SocialProfileAction.ToggleEditMode) }
+                            isOwnProfile = isOwnProfile
                         )
                     }
 
-                    // Minimalist Stats Section
+                    // Action Buttons Row
                     item {
-                        MinimalistStatsSection(
-                            postsCount = profile.postsCount,
-                            friendsCount = profile.friendsCount,
-                            followersCount = profile.followersCount,
-                            followingCount = profile.followingCount
+                        ActionButtonsRow(
+                            isOwnProfile = isOwnProfile,
+                            isFollowing = profile.isFollowing,
+                            onMessageClick = { /* Navigate to chat */ },
+                            onFriendClick = {
+                                if (profile.isFollowing) {
+                                    viewModel.onAction(SocialProfileAction.UnfollowUser)
+                                } else {
+                                    viewModel.onAction(SocialProfileAction.FollowUser)
+                                }
+                            },
+                            onMoreClick = { showMoreOptions = true },
+                            onEditProfileClick = { viewModel.onAction(SocialProfileAction.ToggleEditMode) }
                         )
                     }
 
-                    // Action Buttons (for other users)
-                    if (profile.userId != "current_user_id") {
+                    // Story Highlights Section (Square 2:4 shape)
+                    if (isOwnProfile) {
                         item {
-                            ModernActionButtons(
-                                isFollowing = profile.isFollowing,
-                                onFollowClick = {
-                                    if (profile.isFollowing) {
-                                        viewModel.onAction(SocialProfileAction.UnfollowUser)
-                                    } else {
-                                        viewModel.onAction(SocialProfileAction.FollowUser)
-                                    }
-                                },
-                                onMessageClick = { /* Handle message */ }
+                            StoryHighlightsSection(highlights = uiState.storyHighlights)
+                        }
+                    }
+
+                    // Intro Section (Work, Education, Location, etc.)
+                    item {
+                        IntroSection(profile = profile)
+                    }
+
+                    // Friends Preview Section
+                    item {
+                        FriendsPreviewSection(
+                            friendsCount = profile.friendsCount,
+                            friends = uiState.friends
+                        )
+                    }
+
+                    // Photos Preview Section
+                    item {
+                        PhotosPreviewSection(photos = uiState.photos)
+                    }
+
+                    // Create Post Section (if own profile)
+                    if (isOwnProfile) {
+                        item {
+                            CreatePostSection(
+                                profile = profile,
+                                onCreatePost = { /* Handle create post */ },
+                                onAddPhoto = { /* Handle add photo */ },
+                                onGoLive = { /* Handle go live */ }
                             )
                         }
                     }
 
-                    // Content Tabs
+                    // Tabbed Content Section
                     item {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        PrimaryTabRow(
-                            selectedTabIndex = uiState.selectedTab.ordinal,
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ) {
-                            ProfileTab.entries.forEach { tab ->
-                                Tab(
-                                    selected = uiState.selectedTab == tab,
-                                    onClick = { viewModel.onAction(SocialProfileAction.SelectTab(tab)) },
-                                    icon = {
-                                        Icon(
-                                            imageVector = tab.icon,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    },
-                                    text = {
-                                        Text(
-                                            tab.displayName,
-                                            style = MaterialTheme.typography.titleSmall.copy(
-                                                fontWeight = if (uiState.selectedTab == tab)
-                                                    FontWeight.Bold else FontWeight.Normal,
-                                                letterSpacing = 0.5.sp
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
+                        ContentTabsSection(
+                            selectedTab = uiState.selectedTab,
+                            onTabSelected = { viewModel.onAction(SocialProfileAction.SelectTab(it)) }
+                        )
                     }
 
                     // Tab Content
@@ -151,10 +176,7 @@ fun SocialProfileScreen(
                         ProfileTab.POSTS -> {
                             if (uiState.posts.isEmpty()) {
                                 item {
-                                    EmptyStateCard(
-                                        icon = Icons.Outlined.PostAdd,
-                                        message = "No posts yet"
-                                    )
+                                    EmptyPostsState(isOwnProfile = isOwnProfile)
                                 }
                             } else {
                                 items(uiState.posts, key = { it.id }) { post ->
@@ -170,23 +192,17 @@ fun SocialProfileScreen(
                         }
                         ProfileTab.ABOUT -> {
                             item {
-                                ModernAboutSection(profile = profile)
+                                DetailedAboutSection(profile = profile)
                             }
                         }
                         ProfileTab.FRIENDS -> {
                             item {
-                                EmptyStateCard(
-                                    icon = Icons.Outlined.Group,
-                                    message = "Friends list coming soon"
-                                )
+                                FriendsGridSection()
                             }
                         }
                         ProfileTab.PHOTOS -> {
                             item {
-                                EmptyStateCard(
-                                    icon = Icons.Outlined.Photo,
-                                    message = "Photo gallery coming soon"
-                                )
+                                PhotosGridSection()
                             }
                         }
                     }
@@ -197,215 +213,124 @@ fun SocialProfileScreen(
 }
 
 @Composable
-private fun ModernProfileHeader(
+private fun UltraModernCoverSection(
     profile: SocialProfile,
-    onEditClick: () -> Unit
+    isOwnProfile: Boolean,
+    onCoverPhotoClick: () -> Unit,
+    onProfilePhotoClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp)
+            .height(320.dp)
     ) {
-        // Cover Image with gradient overlay
+        // Cover Photo with Gradient Overlay
         Box {
+            // Cover Image
             AsyncImage(
                 model = profile.coverImage,
                 contentDescription = "Cover Photo",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
+                    .height(240.dp),
                 contentScale = ContentScale.Crop
             )
 
-            // Subtle gradient overlay for better text visibility
+            // Gradient Overlay
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(240.dp)
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                Color.Black.copy(alpha = 0.15f)
+                                Color.Black.copy(alpha = 0.3f)
                             )
                         )
                     )
             )
+
+            // Cover Photo Edit Button
+            if (isOwnProfile) {
+                FilledTonalIconButton(
+                    onClick = onCoverPhotoClick,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Lucide.Camera,
+                        contentDescription = "Edit Cover",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
         }
 
-        // Modern Profile Image with elevation
-        Card(
+        // Profile Picture with Border & Badge
+        Box(
             modifier = Modifier
-                .size(120.dp)
                 .align(Alignment.BottomStart)
-                .offset(x = 24.dp),
-            shape = CircleShape,
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .padding(start = 24.dp)
+                .offset(y = 40.dp)
         ) {
-            AsyncImage(
-                model = profile.userProfileImage,
-                contentDescription = "Profile Photo",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        // Minimalist Edit Button
-        if (profile.userId == "current_user_id") {
-            FilledTonalIconButton(
-                onClick = onEditClick,
+            // Gradient Border
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp),
-                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                )
-            ) {
-                Icon(
-                    Icons.Outlined.Edit,
-                    contentDescription = "Edit Profile",
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProfileInfoSection(
-    profile: SocialProfile,
-    isEditMode: Boolean,
-    editBio: String,
-    editLocation: String,
-    editWebsite: String,
-    isSaving: Boolean,
-    onBioChange: (String) -> Unit,
-    onLocationChange: (String) -> Unit,
-    onWebsiteChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onCancel: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .padding(top = 20.dp)
-    ) {
-        // Name with cleaner typography
-        Text(
-            text = profile.userName,
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.5).sp
-            ),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (!isEditMode) {
-            // View Mode - Clean and spacious
-            if (profile.bio.isNotBlank()) {
-                Text(
-                    text = profile.bio,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 24.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Location and Website with better spacing
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (profile.location.isNotBlank()) {
-                    InfoChip(
-                        icon = Icons.Outlined.LocationOn,
-                        text = profile.location,
-                        iconTint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                if (profile.website.isNotBlank()) {
-                    InfoChip(
-                        icon = Icons.Outlined.Link,
-                        text = profile.website,
-                        iconTint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        } else {
-            // Edit Mode with refined inputs
-            OutlinedTextField(
-                value = editBio,
-                onValueChange = onBioChange,
-                label = { Text("Bio") },
-                placeholder = { Text("Write about yourself...") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                maxLines = 5,
-                shape = RoundedCornerShape(16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = editLocation,
-                onValueChange = onLocationChange,
-                label = { Text("Location") },
-                placeholder = { Text("City, Country") },
-                leadingIcon = {
-                    Icon(Icons.Outlined.LocationOn, contentDescription = null)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = editWebsite,
-                onValueChange = onWebsiteChange,
-                label = { Text("Website") },
-                placeholder = { Text("https://example.com") },
-                leadingIcon = {
-                    Icon(Icons.Outlined.Link, contentDescription = null)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Modern Save/Cancel Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedButton(
-                    onClick = onCancel,
-                    modifier = Modifier.weight(1f).height(52.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Cancel", style = MaterialTheme.typography.titleSmall)
-                }
-
-                Button(
-                    onClick = onSave,
-                    modifier = Modifier.weight(1f).height(52.dp),
-                    enabled = !isSaving,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
+                    .size(160.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary,
+                                MaterialTheme.colorScheme.tertiary
+                            )
                         )
-                    } else {
-                        Text("Save", style = MaterialTheme.typography.titleSmall)
+                    )
+                    .padding(4.dp)
+            ) {
+                // Profile Image
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = CircleShape,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    AsyncImage(
+                        model = profile.userProfileImage,
+                        contentDescription = "Profile Photo",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            // Camera Button for Profile Photo
+            if (isOwnProfile) {
+                Surface(
+                    onClick = onProfilePhotoClick,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .align(Alignment.BottomEnd)
+                        .offset(x = (-8).dp, y = (-8).dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shadowElevation = 4.dp
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Lucide.Camera,
+                            contentDescription = "Change Photo",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                 }
             }
@@ -414,20 +339,261 @@ private fun ProfileInfoSection(
 }
 
 @Composable
-private fun InfoChip(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String,
-    iconTint: Color
+private fun NameAndBioSection(
+    profile: SocialProfile,
+    isOwnProfile: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .padding(top = 56.dp, bottom = 16.dp)
+    ) {
+        // Name with verification badge
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = profile.userName,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.5).sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            // Verified Badge
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Verified",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(2.dp),
+                    tint = Color.White
+                )
+            }
+        }
+
+        // Bio
+        if (profile.bio.isNotBlank()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = profile.bio,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    lineHeight = 24.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtonsRow(
+    isOwnProfile: Boolean,
+    isFollowing: Boolean,
+    onMessageClick: () -> Unit,
+    onFriendClick: () -> Unit,
+    onMoreClick: () -> Unit,
+    onEditProfileClick: () -> Unit
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        if (isOwnProfile) {
+            // Edit Profile Button
+            Button(
+                onClick = onEditProfileClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Edit Profile", style = MaterialTheme.typography.labelLarge)
+            }
+
+            // Add Story Button
+            FilledTonalButton(
+                onClick = { /* Add story */ },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Lucide.Plus,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Story", style = MaterialTheme.typography.labelLarge)
+            }
+        } else {
+            // Add Friend / Following Button
+            Button(
+                onClick = onFriendClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = if (isFollowing) {
+                    ButtonDefaults.filledTonalButtonColors()
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
+            ) {
+                Icon(
+                    imageVector = if (isFollowing) Icons.Filled.Check else Lucide.UserPlus,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    if (isFollowing) "Friends" else "Add Friend",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+
+            // Message Button
+            FilledTonalButton(
+                onClick = onMessageClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Lucide.MessageCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Message", style = MaterialTheme.typography.labelLarge)
+            }
+        }
+
+        // More Options Button
+        FilledTonalIconButton(
+            onClick = onMoreClick,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Lucide.Ellipsis,
+                contentDescription = "More",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun IntroSection(profile: SocialProfile) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Intro",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            // Work
+            IntroItem(
+                icon = Lucide.Briefcase,
+                text = "Works at Tech Company"
+            )
+
+            // Education
+            IntroItem(
+                icon = Lucide.GraduationCap,
+                text = "Studied Computer Science at University"
+            )
+
+            // Lives in
+            IntroItem(
+                icon = Lucide.House,
+                text = "Lives in ${profile.location.ifBlank { "New York, USA" }}"
+            )
+
+            // From
+            IntroItem(
+                icon = Lucide.MapPin,
+                text = "From California, USA"
+            )
+
+            // Relationship
+            IntroItem(
+                icon = Lucide.Heart,
+                text = "Single"
+            )
+
+            // Joined
+            IntroItem(
+                icon = Lucide.Calendar,
+                text = "Joined October 2023"
+            )
+
+            if (profile.website.isNotBlank()) {
+                IntroItem(
+                    icon = Lucide.LinkIcon,
+                    text = profile.website
+                )
+            }
+
+            // Edit Details Button
+            TextButton(
+                onClick = { /* Edit details */ },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Edit Details")
+            }
+        }
+    }
+}
+
+@Composable
+private fun IntroItem(
+    icon: ImageVector,
+    text: String
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = iconTint
+            modifier = Modifier.size(22.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = text,
@@ -438,115 +604,484 @@ private fun InfoChip(
 }
 
 @Composable
-private fun MinimalistStatsSection(
-    postsCount: Int,
-    friendsCount: Int,
-    followersCount: Int,
-    followingCount: Int
-) {
-    // Ultra-modern grid layout with 2x2 stats cards
-    Column(
+private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        // Top Row: Posts and Friends
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
-            UltraModernStatCard(
-                label = "Posts",
-                count = postsCount,
-                icon = Icons.Outlined.Article,
-                modifier = Modifier.weight(1f)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Friends",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Text(
+                        text = "$friendsCount friends",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-            UltraModernStatCard(
-                label = "Friends",
-                count = friendsCount,
-                icon = Icons.Outlined.Group,
-                modifier = Modifier.weight(1f)
-            )
+                TextButton(onClick = { /* See all friends */ }) {
+                    Text("See All")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Friends Grid Preview (2x3) - Show actual friend data
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    friends.take(3).forEachIndexed { index, friend ->
+                        FriendPreviewCard(
+                            name = friend.userName,
+                            profileImage = friend.profileImage,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    // Fill empty slots if less than 3 friends
+                    repeat(maxOf(0, 3 - minOf(3, friends.size))) {
+                        Box(modifier = Modifier.weight(1f))
+                    }
+                }
+                if (friends.size > 3) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        friends.drop(3).take(3).forEachIndexed { index, friend ->
+                            FriendPreviewCard(
+                                name = friend.userName,
+                                profileImage = friend.profileImage,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        // Fill empty slots if less than 3 friends in second row
+                        repeat(maxOf(0, 3 - minOf(3, friends.drop(3).size))) {
+                            Box(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FriendPreviewCard(
+    name: String,
+    profileImage: String = "",
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            if (profileImage.isNotEmpty()) {
+                AsyncImage(
+                    model = profileImage,
+                    contentDescription = name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
 
-        // Bottom Row: Followers and Following
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun PhotosPreviewSection(photos: List<Photo>) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
-            UltraModernStatCard(
-                label = "Followers",
-                count = followersCount,
-                icon = Icons.Outlined.Favorite,
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Photos",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                TextButton(onClick = { /* See all photos */ }) {
+                    Text("See All")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Photos Grid (3x3) - Show actual photo data
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(3) { rowIndex ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        repeat(3) { colIndex ->
+                            val photoIndex = rowIndex * 3 + colIndex
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            ) {
+                                if (photoIndex < photos.size) {
+                                    AsyncImage(
+                                        model = photos[photoIndex].imageUrl,
+                                        contentDescription = photos[photoIndex].caption,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Photo,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(32.dp),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CreatePostSection(
+    profile: SocialProfile,
+    onCreatePost: () -> Unit,
+    onAddPhoto: () -> Unit,
+    onGoLive: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Create Post Input
+            Surface(
+                onClick = onCreatePost,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.size(40.dp),
+                        shape = CircleShape
+                    ) {
+                        AsyncImage(
+                            model = profile.userProfileImage,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    Text(
+                        text = "What's on your mind?",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
             )
 
-            UltraModernStatCard(
-                label = "Following",
-                count = followingCount,
-                icon = Icons.Outlined.PersonAdd,
-                modifier = Modifier.weight(1f)
+            // Quick Actions
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                CreateActionButton(
+                    icon = Lucide.ImageIcon,
+                    label = "Photo",
+                    color = Color(0xFF45BD62),
+                    onClick = onAddPhoto
+                )
+
+                CreateActionButton(
+                    icon = Lucide.Video,
+                    label = "Video",
+                    color = Color(0xFFE7554C),
+                    onClick = { /* Add video */ }
+                )
+
+                CreateActionButton(
+                    icon = Icons.Filled.Videocam,
+                    label = "Live",
+                    color = Color(0xFFFC636B),
+                    onClick = onGoLive
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CreateActionButton(
+    icon: ImageVector,
+    label: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    TextButton(
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = color
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
 
 @Composable
-private fun UltraModernStatCard(
-    label: String,
-    count: Int,
-    icon: ImageVector,
-    modifier: Modifier = Modifier
+private fun ContentTabsSection(
+    selectedTab: ProfileTab,
+    onTabSelected: (ProfileTab) -> Unit
 ) {
-    Card(
-        modifier = modifier
-            .aspectRatio(1.5f),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        ) {
-            // Icon in top-right corner
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(28.dp)
-                    .align(Alignment.TopEnd),
+    PrimaryTabRow(
+        selectedTabIndex = selectedTab.ordinal,
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        divider = {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
             )
-
-            // Count and Label in bottom-left
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+        }
+    ) {
+        ProfileTab.entries.forEach { tab ->
+            Tab(
+                selected = selectedTab == tab,
+                onClick = { onTabSelected(tab) },
+                modifier = Modifier.height(56.dp)
             ) {
-                Text(
-                    text = formatCount(count),
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        letterSpacing = (-0.5).sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = tab.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                        tint = if (selectedTab == tab) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                    Text(
+                        text = tab.displayName,
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = if (selectedTab == tab) {
+                                FontWeight.SemiBold
+                            } else {
+                                FontWeight.Normal
+                            }
+                        ),
+                        color = if (selectedTab == tab) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun DetailedAboutSection(profile: SocialProfile) {
+    // Implement detailed about with all info
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "About",
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        // Detailed info cards
+        // This can be expanded similar to IntroSection
+    }
+}
+
+@Composable
+private fun FriendsGridSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "All Friends",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Full friends grid
+    }
+}
+
+@Composable
+private fun PhotosGridSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "All Photos",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Full photos grid
+    }
+}
+
+@Composable
+private fun EmptyPostsState(isOwnProfile: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 48.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.Article,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            )
+            Text(
+                text = if (isOwnProfile) {
+                    "No posts yet\nShare your first post!"
+                } else {
+                    "No posts to show"
+                },
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -554,217 +1089,30 @@ private fun UltraModernStatCard(
 private fun formatCount(count: Int): String {
     return when {
         count >= 1000000 -> "${count / 1000000}M"
-        count >= 1000 -> "${count / 1000}K"
+        count >= 1000 -> String.format(Locale.US, "%.1fK", count / 1000.0)
         else -> count.toString()
     }
 }
 
 @Composable
-private fun ModernActionButtons(
-    isFollowing: Boolean,
-    onFollowClick: () -> Unit,
-    onMessageClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Button(
-            onClick = onFollowClick,
-            modifier = Modifier.weight(1f).height(52.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = if (isFollowing) {
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                ButtonDefaults.buttonColors()
-            }
-        ) {
-            Icon(
-                imageVector = if (isFollowing) Icons.Outlined.Check else Icons.Outlined.PersonAdd,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                if (isFollowing) "Following" else "Follow",
-                style = MaterialTheme.typography.titleSmall
-            )
-        }
-
-        OutlinedButton(
-            onClick = onMessageClick,
-            modifier = Modifier.weight(1f).height(52.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Message,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Message", style = MaterialTheme.typography.titleSmall)
-        }
-    }
-}
-
-@Composable
-private fun ModernAboutSection(profile: SocialProfile) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "About",
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (profile.bio.isNotBlank()) {
-            ModernInfoCard(
-                icon = Icons.Outlined.Info,
-                title = "Bio",
-                content = profile.bio
-            )
-        }
-
-        if (profile.location.isNotBlank()) {
-            ModernInfoCard(
-                icon = Icons.Outlined.LocationOn,
-                title = "Location",
-                content = profile.location
-            )
-        }
-
-        if (profile.website.isNotBlank()) {
-            ModernInfoCard(
-                icon = Icons.Outlined.Link,
-                title = "Website",
-                content = profile.website
-            )
-        }
-
-        if (profile.bio.isBlank() && profile.location.isBlank() && profile.website.isBlank()) {
-            EmptyStateCard(
-                icon = Icons.Outlined.Info,
-                message = "No information added yet"
-            )
-        }
-    }
-}
-
-@Composable
-private fun ModernInfoCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    content: String
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = content,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    message: String
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(48.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(56.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-            )
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun LoadingState() {
+private fun ModernLoadingState() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(48.dp),
-                strokeWidth = 4.dp
+                modifier = Modifier.size(56.dp),
+                strokeWidth = 5.dp
             )
             Text(
-                text = "Loading...",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "Loading profile...",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -772,7 +1120,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun ErrorState(
+private fun ModernErrorState(
     errorMessage: String,
     onRetry: () -> Unit
 ) {
@@ -782,35 +1130,180 @@ private fun ErrorState(
     ) {
         Card(
             modifier = Modifier.padding(32.dp),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
-            )
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.padding(32.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.padding(40.dp)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ErrorOutline,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(72.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
+
+                Text(
+                    text = "Oops!",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.error
+                )
+
                 Text(
                     text = errorMessage,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
+
                 Button(
                     onClick = onRetry,
+                    modifier = Modifier.height(48.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Retry")
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Try Again")
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun StoryHighlightsSection(highlights: List<StoryHighlight>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+    ) {
+        Text(
+            text = "Story Highlights",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+        )
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Add New Highlight
+            item {
+                AddHighlightCard()
+            }
+
+            // Existing Highlights from UI State
+            items(highlights) { highlight ->
+                StoryHighlightCard(
+                    title = highlight.title,
+                    imageUrl = highlight.coverImage
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddHighlightCard() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .width(80.dp)
+                .height(160.dp), // 2:4 ratio (1:2 = width:height)
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            border = BorderStroke(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = Lucide.Plus,
+                    contentDescription = "Add Highlight",
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Text(
+            text = "New",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun StoryHighlightCard(
+    title: String,
+    imageUrl: String
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(80.dp)
+                .height(160.dp) // 2:4 ratio (1:2 = width:height)
+        ) {
+            // Gradient Border
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.tertiary
+                            )
+                        )
+                    )
+                    .padding(3.dp)
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

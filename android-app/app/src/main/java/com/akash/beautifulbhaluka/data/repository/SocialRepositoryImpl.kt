@@ -4,6 +4,9 @@ import com.akash.beautifulbhaluka.domain.model.Comment
 import com.akash.beautifulbhaluka.domain.model.Post
 import com.akash.beautifulbhaluka.domain.model.PostPrivacy
 import com.akash.beautifulbhaluka.domain.model.SocialProfile
+import com.akash.beautifulbhaluka.domain.model.StoryHighlight
+import com.akash.beautifulbhaluka.domain.model.Friend
+import com.akash.beautifulbhaluka.domain.model.Photo
 import com.akash.beautifulbhaluka.domain.repository.SocialRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -247,6 +250,24 @@ class SocialRepositoryImpl : SocialRepository {
         return Result.success(Unit)
     }
 
+    // Story Highlights
+    override suspend fun getStoryHighlights(userId: String): Result<List<StoryHighlight>> {
+        delay(400)
+        return Result.success(generateMockStoryHighlights())
+    }
+
+    // Friends
+    override suspend fun getFriends(userId: String): Result<List<Friend>> {
+        delay(400)
+        return Result.success(generateMockFriends())
+    }
+
+    // Photos
+    override suspend fun getPhotos(userId: String): Result<List<Photo>> {
+        delay(400)
+        return Result.success(generateMockPhotos())
+    }
+
     override fun observePosts(): Flow<List<Post>> {
         return _posts.asStateFlow()
     }
@@ -368,6 +389,236 @@ class SocialRepositoryImpl : SocialRepository {
                 content = "হ্যাঁ, আমি ভিডিওতে দেখেছি। খুবই মজার লাগছে!",
                 likes = 1,
                 createdAt = System.currentTimeMillis() - 360000
+            )
+        )
+    }
+
+    private fun generateMockStoryHighlights(): List<StoryHighlight> {
+        return listOf(
+            StoryHighlight(
+                id = "highlight_1",
+                title = "ভ্রমণ",
+                coverImage = "https://picsum.photos/seed/travel1/400/800",
+                storiesCount = 12,
+                createdAt = System.currentTimeMillis() - 86400000 * 7
+            ),
+            StoryHighlight(
+                id = "highlight_2",
+                title = "খাবার",
+                coverImage = "https://picsum.photos/seed/food1/400/800",
+                storiesCount = 8,
+                createdAt = System.currentTimeMillis() - 86400000 * 14
+            ),
+            StoryHighlight(
+                id = "highlight_3",
+                title = "পরিবার",
+                coverImage = "https://picsum.photos/seed/family1/400/800",
+                storiesCount = 15,
+                createdAt = System.currentTimeMillis() - 86400000 * 21
+            ),
+            StoryHighlight(
+                id = "highlight_4",
+                title = "উৎসব",
+                coverImage = "https://picsum.photos/seed/festival1/400/800",
+                storiesCount = 10,
+                createdAt = System.currentTimeMillis() - 86400000 * 30
+            ),
+            StoryHighlight(
+                id = "highlight_5",
+                title = "প্রকৃতি",
+                coverImage = "https://picsum.photos/seed/nature2/400/800",
+                storiesCount = 20,
+                createdAt = System.currentTimeMillis() - 86400000 * 45
+            )
+        )
+    }
+
+    private fun generateMockFriends(): List<Friend> {
+        return listOf(
+            Friend(
+                userId = "friend_1",
+                userName = "রহিম উদ্দিন",
+                profileImage = "https://ui-avatars.com/api/?name=Rahim+Uddin&background=4CAF50&color=fff",
+                mutualFriends = 12,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_2",
+                userName = "সালমা খাতুন",
+                profileImage = "https://ui-avatars.com/api/?name=Salma+Khatun&background=FF9800&color=fff",
+                mutualFriends = 8,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_3",
+                userName = "করিম মিয়া",
+                profileImage = "https://ui-avatars.com/api/?name=Karim+Mia&background=2196F3&color=fff",
+                mutualFriends = 15,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_4",
+                userName = "ফাতেমা বেগম",
+                profileImage = "https://ui-avatars.com/api/?name=Fatema+Begum&background=E91E63&color=fff",
+                mutualFriends = 20,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_5",
+                userName = "আব্দুল্লাহ",
+                profileImage = "https://ui-avatars.com/api/?name=Abdullah&background=9C27B0&color=fff",
+                mutualFriends = 5,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_6",
+                userName = "জেসমিন আক্তার",
+                profileImage = "https://ui-avatars.com/api/?name=Jesmin+Akter&background=00BCD4&color=fff",
+                mutualFriends = 18,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_7",
+                userName = "মাহফুজুর রহমান",
+                profileImage = "https://ui-avatars.com/api/?name=Mahfuzur+Rahman&background=3F51B5&color=fff",
+                mutualFriends = 10,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_8",
+                userName = "সোহেল রানা",
+                profileImage = "https://ui-avatars.com/api/?name=Sohel+Rana&background=8E24AA&color=fff",
+                mutualFriends = 7,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_9",
+                userName = "নাজমা আক্তার",
+                profileImage = "https://ui-avatars.com/api/?name=Nazma+Akter&background=F44336&color=fff",
+                mutualFriends = 14,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_10",
+                userName = "আরিফুল ইসলাম",
+                profileImage = "https://ui-avatars.com/api/?name=Ariful+Islam&background=009688&color=fff",
+                mutualFriends = 22,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_11",
+                userName = "রুমানা পারভীন",
+                profileImage = "https://ui-avatars.com/api/?name=Rumana+Parvin&background=FF5722&color=fff",
+                mutualFriends = 9,
+                isFriend = true
+            ),
+            Friend(
+                userId = "friend_12",
+                userName = "তানভীর আহমেদ",
+                profileImage = "https://ui-avatars.com/api/?name=Tanvir+Ahmed&background=607D8B&color=fff",
+                mutualFriends = 16,
+                isFriend = true
+            )
+        )
+    }
+
+    private fun generateMockPhotos(): List<Photo> {
+        return listOf(
+            Photo(
+                id = "photo_1",
+                imageUrl = "https://picsum.photos/seed/photo1/800/800",
+                caption = "ভালুকার সুন্দর সকাল",
+                likes = 45,
+                comments = 8,
+                createdAt = System.currentTimeMillis() - 86400000
+            ),
+            Photo(
+                id = "photo_2",
+                imageUrl = "https://picsum.photos/seed/photo2/800/800",
+                caption = "পরিবারের সাথে",
+                likes = 89,
+                comments = 15,
+                createdAt = System.currentTimeMillis() - 86400000 * 2
+            ),
+            Photo(
+                id = "photo_3",
+                imageUrl = "https://picsum.photos/seed/photo3/800/800",
+                caption = "নতুন জায়গায়",
+                likes = 67,
+                comments = 12,
+                createdAt = System.currentTimeMillis() - 86400000 * 3
+            ),
+            Photo(
+                id = "photo_4",
+                imageUrl = "https://picsum.photos/seed/photo4/800/800",
+                caption = "সূর্যাস্তের দৃশ্য",
+                likes = 123,
+                comments = 20,
+                createdAt = System.currentTimeMillis() - 86400000 * 4
+            ),
+            Photo(
+                id = "photo_5",
+                imageUrl = "https://picsum.photos/seed/photo5/800/800",
+                caption = "বন্ধুদের সাথে",
+                likes = 98,
+                comments = 18,
+                createdAt = System.currentTimeMillis() - 86400000 * 5
+            ),
+            Photo(
+                id = "photo_6",
+                imageUrl = "https://picsum.photos/seed/photo6/800/800",
+                caption = "খাবারের সময়",
+                likes = 76,
+                comments = 10,
+                createdAt = System.currentTimeMillis() - 86400000 * 6
+            ),
+            Photo(
+                id = "photo_7",
+                imageUrl = "https://picsum.photos/seed/photo7/800/800",
+                caption = "প্রকৃতির সৌন্দর্য",
+                likes = 145,
+                comments = 25,
+                createdAt = System.currentTimeMillis() - 86400000 * 7
+            ),
+            Photo(
+                id = "photo_8",
+                imageUrl = "https://picsum.photos/seed/photo8/800/800",
+                caption = "বিশেষ মুহূর্ত",
+                likes = 87,
+                comments = 14,
+                createdAt = System.currentTimeMillis() - 86400000 * 8
+            ),
+            Photo(
+                id = "photo_9",
+                imageUrl = "https://picsum.photos/seed/photo9/800/800",
+                caption = "নতুন অভিজ্ঞতা",
+                likes = 112,
+                comments = 22,
+                createdAt = System.currentTimeMillis() - 86400000 * 9
+            ),
+            Photo(
+                id = "photo_10",
+                imageUrl = "https://picsum.photos/seed/photo10/800/800",
+                caption = "সন্ধ্যার আকাশ",
+                likes = 134,
+                comments = 19,
+                createdAt = System.currentTimeMillis() - 86400000 * 10
+            ),
+            Photo(
+                id = "photo_11",
+                imageUrl = "https://picsum.photos/seed/photo11/800/800",
+                caption = "স্মৃতি",
+                likes = 92,
+                comments = 16,
+                createdAt = System.currentTimeMillis() - 86400000 * 11
+            ),
+            Photo(
+                id = "photo_12",
+                imageUrl = "https://picsum.photos/seed/photo12/800/800",
+                caption = "আনন্দের মুহূর্ত",
+                likes = 105,
+                comments = 21,
+                createdAt = System.currentTimeMillis() - 86400000 * 12
             )
         )
     }

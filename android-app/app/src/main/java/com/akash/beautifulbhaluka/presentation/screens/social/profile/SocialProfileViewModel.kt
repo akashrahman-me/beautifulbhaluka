@@ -36,17 +36,29 @@ class SocialProfileViewModel : ViewModel() {
 
             val profileResult = repository.getProfile(userId)
             val postsResult = repository.getUserPosts(userId)
+            val highlightsResult = repository.getStoryHighlights(userId)
+            val friendsResult = repository.getFriends(userId)
+            val photosResult = repository.getPhotos(userId)
 
             profileResult.onSuccess { profile ->
                 postsResult.onSuccess { posts ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        profile = profile,
-                        posts = posts,
-                        editBio = profile.bio,
-                        editLocation = profile.location,
-                        editWebsite = profile.website
-                    )
+                    highlightsResult.onSuccess { highlights ->
+                        friendsResult.onSuccess { friends ->
+                            photosResult.onSuccess { photos ->
+                                _uiState.value = _uiState.value.copy(
+                                    isLoading = false,
+                                    profile = profile,
+                                    posts = posts,
+                                    storyHighlights = highlights,
+                                    friends = friends,
+                                    photos = photos,
+                                    editBio = profile.bio,
+                                    editLocation = profile.location,
+                                    editWebsite = profile.website
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -139,4 +151,3 @@ class SocialProfileViewModel : ViewModel() {
         }
     }
 }
-

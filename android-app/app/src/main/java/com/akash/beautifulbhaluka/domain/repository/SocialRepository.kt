@@ -4,6 +4,9 @@ import com.akash.beautifulbhaluka.domain.model.Comment
 import com.akash.beautifulbhaluka.domain.model.Post
 import com.akash.beautifulbhaluka.domain.model.PostPrivacy
 import com.akash.beautifulbhaluka.domain.model.SocialProfile
+import com.akash.beautifulbhaluka.domain.model.StoryHighlight
+import com.akash.beautifulbhaluka.domain.model.Friend
+import com.akash.beautifulbhaluka.domain.model.Photo
 import kotlinx.coroutines.flow.Flow
 
 interface SocialRepository {
@@ -43,6 +46,15 @@ interface SocialRepository {
     suspend fun updateCoverImage(imageUrl: String): Result<Unit>
     suspend fun followUser(userId: String): Result<Unit>
     suspend fun unfollowUser(userId: String): Result<Unit>
+
+    // Story Highlights
+    suspend fun getStoryHighlights(userId: String): Result<List<StoryHighlight>>
+
+    // Friends
+    suspend fun getFriends(userId: String): Result<List<Friend>>
+
+    // Photos
+    suspend fun getPhotos(userId: String): Result<List<Photo>>
 
     // Observe changes
     fun observePosts(): Flow<List<Post>>

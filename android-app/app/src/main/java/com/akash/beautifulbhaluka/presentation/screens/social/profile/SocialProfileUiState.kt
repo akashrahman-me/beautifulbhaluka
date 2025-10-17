@@ -8,11 +8,17 @@ import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.akash.beautifulbhaluka.domain.model.Post
 import com.akash.beautifulbhaluka.domain.model.SocialProfile
+import com.akash.beautifulbhaluka.domain.model.StoryHighlight
+import com.akash.beautifulbhaluka.domain.model.Friend
+import com.akash.beautifulbhaluka.domain.model.Photo as PhotoModel
 
 data class SocialProfileUiState(
     val isLoading: Boolean = false,
     val profile: SocialProfile? = null,
     val posts: List<Post> = emptyList(),
+    val storyHighlights: List<StoryHighlight> = emptyList(),
+    val friends: List<Friend> = emptyList(),
+    val photos: List<PhotoModel> = emptyList(),
     val selectedTab: ProfileTab = ProfileTab.POSTS,
     val isEditMode: Boolean = false,
     val editBio: String = "",
