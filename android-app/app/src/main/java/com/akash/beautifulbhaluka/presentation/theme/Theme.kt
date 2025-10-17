@@ -19,8 +19,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF2A9D8F),
-    secondary = Color(0xFFE76F51),
+    primary = Color(0xFF00b4d8),
+    primaryContainer = Color(0xFF90e0ef),
+    secondary = Color(0xFF0077b6),
     tertiary = Color(0xFF264653),
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
