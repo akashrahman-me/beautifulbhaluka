@@ -34,97 +34,75 @@ fun SocialFeedScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Social Feed",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        when {
+            uiState.isLoading && uiState.posts.isEmpty() -> {
+                LoadingState()
+            }
+            uiState.error != null && uiState.posts.isEmpty() -> {
+                ErrorState(
+                    errorMessage = uiState.error ?: "An error occurred",
+                    onRetry = { viewModel.onAction(SocialFeedAction.LoadPosts) }
                 )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when {
-                uiState.isLoading && uiState.posts.isEmpty() -> {
-                    LoadingState()
-                }
-                uiState.error != null && uiState.posts.isEmpty() -> {
-                    ErrorState(
-                        errorMessage = uiState.error ?: "An error occurred",
-                        onRetry = { viewModel.onAction(SocialFeedAction.LoadPosts) }
-                    )
-                }
-                uiState.posts.isEmpty() -> {
-                    EmptyState(
-                        onCreatePost = onCreatePostClick
-                    )
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 16.dp)
-                    ) {
-                        // Create post bar as first item in scrollable list
-                        item {
-                            Column {
-                                CreatePostBar(
-                                    onClick = onCreatePostClick,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                HorizontalDivider(
-                                    thickness = 1.dp,
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                                )
-                            }
-                        }
-
-                        // Refresh indicator
-                        if (uiState.isRefreshing) {
-                            item {
-                                LinearProgressIndicator(
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
-
-                        items(uiState.posts, key = { it.id }) { post ->
-                            PostCard(
-                                post = post,
-                                onLikeClick = {
-                                    if (post.isLiked) {
-                                        viewModel.onAction(SocialFeedAction.UnlikePost(post.id))
-                                    } else {
-                                        viewModel.onAction(SocialFeedAction.LikePost(post.id))
-                                    }
-                                },
-                                onCommentClick = {
-                                    onNavigateToComments(post.id)
-                                },
-                                onShareClick = {
-                                    viewModel.onAction(SocialFeedAction.SharePost(post.id))
-                                },
-                                onProfileClick = {
-                                    viewModel.onAction(SocialFeedAction.NavigateToProfile(post.userId))
-                                },
-                                onDeleteClick = if (post.userId == "current_user_id") {
-                                    { viewModel.onAction(SocialFeedAction.DeletePost(post.id)) }
-                                } else null
+            }
+            uiState.posts.isEmpty() -> {
+                EmptyState(
+                    onCreatePost = onCreatePostClick
+                )
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
+                    // Create post bar as first item in scrollable list
+                    item {
+                        Column {
+                            CreatePostBar(
+                                onClick = onCreatePostClick,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                             )
                         }
+                    }
+
+                    // Refresh indicator
+                    if (uiState.isRefreshing) {
+                        item {
+                            LinearProgressIndicator(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    items(uiState.posts, key = { it.id }) { post ->
+                        PostCard(
+                            post = post,
+                            onLikeClick = {
+                                if (post.isLiked) {
+                                    viewModel.onAction(SocialFeedAction.UnlikePost(post.id))
+                                } else {
+                                    viewModel.onAction(SocialFeedAction.LikePost(post.id))
+                                }
+                            },
+                            onCommentClick = {
+                                onNavigateToComments(post.id)
+                            },
+                            onShareClick = {
+                                viewModel.onAction(SocialFeedAction.SharePost(post.id))
+                            },
+                            onProfileClick = {
+                                viewModel.onAction(SocialFeedAction.NavigateToProfile(post.userId))
+                            },
+                            onDeleteClick = if (post.userId == "current_user_id") {
+                                { viewModel.onAction(SocialFeedAction.DeletePost(post.id)) }
+                            } else null
+                        )
                     }
                 }
             }

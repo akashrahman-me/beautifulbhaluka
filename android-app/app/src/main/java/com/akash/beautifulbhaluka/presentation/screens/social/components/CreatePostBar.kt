@@ -28,55 +28,58 @@ fun CreatePostBar(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Avatar
-        Surface(
-            modifier = Modifier.size(40.dp),
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer
+    Column {
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Avatar
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "U",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            // Input field (fake - just for visual)
             Box(
-                contentAlignment = Alignment.Center
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp),
+                contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "U",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
+                    text = "What's on your mind?",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 15.sp
                     ),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
-        }
 
-        // Input field (fake - just for visual)
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(40.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = "What's on your mind?",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 15.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            // Image icon
+            Icon(
+                imageVector = Icons.Outlined.Image,
+                contentDescription = "Add image",
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
-
-        // Image icon
-        Icon(
-            imageVector = Icons.Outlined.Image,
-            contentDescription = "Add image",
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
     }
 }
