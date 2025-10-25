@@ -40,6 +40,8 @@ class CommentsViewModel(
             is CommentsAction.SubmitComment -> submitComment()
             is CommentsAction.LikeComment -> likeComment(action.commentId)
             is CommentsAction.UnlikeComment -> unlikeComment(action.commentId)
+            is CommentsAction.ReactToComment -> reactToComment(action.commentId, action.reaction)
+            is CommentsAction.CustomReactToComment -> customReactToComment(action.commentId, action.emoji, action.label)
             is CommentsAction.StartReply -> startReply(action.comment)
             is CommentsAction.CancelReply -> cancelReply()
             is CommentsAction.DeleteComment -> deleteComment(action.commentId)
@@ -215,6 +217,79 @@ class CommentsViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    private fun reactToComment(commentId: String, reaction: com.akash.beautifulbhaluka.domain.model.Reaction) {
+        _uiState.update { state ->
+            state.copy(
+                comments = state.comments.map { comment ->
+                    updateCommentReaction(comment, commentId, reaction)
+                }
+            )
+        }
+    }
+
+    private fun customReactToComment(commentId: String, emoji: String, label: String) {
+        _uiState.update { state ->
+            state.copy(
+                comments = state.comments.map { comment ->
+                    updateCommentCustomReaction(comment, commentId, emoji, label)
+                }
+            )
+        }
+    }
+
+    private fun updateCommentReaction(
+        comment: Comment,
+        commentId: String,
+        reaction: com.akash.beautifulbhaluka.domain.model.Reaction
+    ): Comment {
+        return if (comment.id == commentId) {
+            comment.copy(
+                userReaction = reaction,
+                customReactionEmoji = null,
+                customReactionLabel = null,
+                isLiked = true,
+                likes = if (!comment.isLiked && comment.userReaction == null && comment.customReactionEmoji == null) {
+                    comment.likes + 1
+                } else {
+                    comment.likes
+                }
+            )
+        } else {
+            comment.copy(
+                replies = comment.replies.map { reply ->
+                    updateCommentReaction(reply, commentId, reaction)
+                }
+            )
+        }
+    }
+
+    private fun updateCommentCustomReaction(
+        comment: Comment,
+        commentId: String,
+        emoji: String,
+        label: String
+    ): Comment {
+        return if (comment.id == commentId) {
+            comment.copy(
+                customReactionEmoji = emoji,
+                customReactionLabel = label,
+                userReaction = null,
+                isLiked = true,
+                likes = if (!comment.isLiked && comment.userReaction == null && comment.customReactionEmoji == null) {
+                    comment.likes + 1
+                } else {
+                    comment.likes
+                }
+            )
+        } else {
+            comment.copy(
+                replies = comment.replies.map { reply ->
+                    updateCommentCustomReaction(reply, commentId, emoji, label)
+                }
+            )
         }
     }
 }

@@ -135,5 +135,48 @@ class SocialFeedViewModel : ViewModel() {
                 }
         }
     }
-}
 
+    private fun reactToPost(postId: String, reaction: com.akash.beautifulbhaluka.domain.model.Reaction) {
+        _uiState.value = _uiState.value.copy(
+            posts = _uiState.value.posts.map { post ->
+                if (post.id == postId) {
+                    post.copy(
+                        userReaction = reaction,
+                        customReactionEmoji = null,
+                        customReactionLabel = null,
+                        isLiked = true,
+                        likes = if (!post.isLiked && post.userReaction == null && post.customReactionEmoji == null) {
+                            post.likes + 1
+                        } else {
+                            post.likes
+                        }
+                    )
+                } else {
+                    post
+                }
+            }
+        )
+    }
+
+    private fun customReactToPost(postId: String, emoji: String, label: String) {
+        _uiState.value = _uiState.value.copy(
+            posts = _uiState.value.posts.map { post ->
+                if (post.id == postId) {
+                    post.copy(
+                        customReactionEmoji = emoji,
+                        customReactionLabel = label,
+                        userReaction = null,
+                        isLiked = true,
+                        likes = if (!post.isLiked && post.userReaction == null && post.customReactionEmoji == null) {
+                            post.likes + 1
+                        } else {
+                            post.likes
+                        }
+                    )
+                } else {
+                    post
+                }
+            }
+        )
+    }
+}

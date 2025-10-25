@@ -93,6 +93,12 @@ fun SocialFeedScreen(
                                     viewModel.onAction(SocialFeedAction.LikePost(post.id))
                                 }
                             },
+                            onReactionSelected = { reaction ->
+                                viewModel.onAction(SocialFeedAction.ReactToPost(post.id, reaction))
+                            },
+                            onCustomEmojiSelected = { emoji, label ->
+                                viewModel.onAction(SocialFeedAction.CustomReactToPost(post.id, emoji, label))
+                            },
                             onCommentClick = {
                                 onNavigateToComments(post.id)
                             },

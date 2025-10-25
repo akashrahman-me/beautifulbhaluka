@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.akash.beautifulbhaluka.domain.model.Reaction
 
 /**
  * Ultra-modern Comments Screen
@@ -86,6 +87,12 @@ fun CommentsScreen(
                                         viewModel.onAction(CommentsAction.LikeComment(comment.id))
                                     }
                                 },
+                                onReactionSelected = { reaction ->
+                                    viewModel.onAction(CommentsAction.ReactToComment(comment.id, reaction))
+                                },
+                                onCustomEmojiSelected = { emoji, label ->
+                                    viewModel.onAction(CommentsAction.CustomReactToComment(comment.id, emoji, label))
+                                },
                                 onReplyClick = {
                                     viewModel.onAction(CommentsAction.StartReply(comment))
                                 },
@@ -98,6 +105,12 @@ fun CommentsScreen(
                                     } else {
                                         viewModel.onAction(CommentsAction.LikeComment(replyId))
                                     }
+                                },
+                                onReplyReactionSelected = { replyId, reaction ->
+                                    viewModel.onAction(CommentsAction.ReactToComment(replyId, reaction))
+                                },
+                                onReplyCustomEmojiSelected = { replyId, emoji, label ->
+                                    viewModel.onAction(CommentsAction.CustomReactToComment(replyId, emoji, label))
                                 }
                             )
                         }

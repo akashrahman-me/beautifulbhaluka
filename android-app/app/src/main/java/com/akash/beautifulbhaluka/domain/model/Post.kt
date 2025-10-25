@@ -12,6 +12,9 @@ data class Post(
     val comments: Int = 0,
     val shares: Int = 0,
     val isLiked: Boolean = false,
+    val userReaction: Reaction? = null, // The reaction the current user gave
+    val customReactionEmoji: String? = null, // Custom emoji if user picked one
+    val customReactionLabel: String? = null, // Custom emoji label
     val createdAt: Long = System.currentTimeMillis(),
     val location: String? = null,
     val privacy: PostPrivacy = PostPrivacy.PUBLIC
@@ -32,6 +35,9 @@ data class Comment(
     val content: String,
     val likes: Int = 0,
     val isLiked: Boolean = false,
+    val userReaction: Reaction? = null, // The reaction the current user gave
+    val customReactionEmoji: String? = null, // Custom emoji if user picked one
+    val customReactionLabel: String? = null, // Custom emoji label
     val replies: List<Comment> = emptyList(),
     val createdAt: Long = System.currentTimeMillis()
 )

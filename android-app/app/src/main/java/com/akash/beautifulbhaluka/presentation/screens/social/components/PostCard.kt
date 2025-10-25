@@ -3,8 +3,10 @@ package com.akash.beautifulbhaluka.presentation.screens.social.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.Post
 import com.akash.beautifulbhaluka.domain.model.PostPrivacy
+import com.akash.beautifulbhaluka.domain.model.Reaction
+import com.akash.beautifulbhaluka.presentation.screens.social.comments.ReactionPicker
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,6 +48,8 @@ fun PostCard(
     modifier: Modifier = Modifier,
     post: Post,
     onLikeClick: () -> Unit,
+    onReactionSelected: (Reaction) -> Unit = {},
+    onCustomEmojiSelected: (String, String) -> Unit = { _, _ -> },
     onCommentClick: () -> Unit,
     onShareClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -144,8 +150,10 @@ fun PostCard(
 
             // Action Buttons
             PostActions(
-                isLiked = post.isLiked,
+                post = post,
                 onLikeClick = onLikeClick,
+                onReactionSelected = onReactionSelected,
+                onCustomEmojiSelected = onCustomEmojiSelected,
                 onCommentClick = onCommentClick,
                 onShareClick = onShareClick,
                 modifier = Modifier.padding(horizontal = 8.dp)
@@ -355,25 +363,45 @@ private fun PostStats(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostActions(
-    isLiked: Boolean,
+    post: Post,
     onLikeClick: () -> Unit,
+    onReactionSelected: (Reaction) -> Unit,
+    onCustomEmojiSelected: (String, String) -> Unit,
     onCommentClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showReactionPicker by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        PostActionButton(
-            icon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUpOffAlt,
-            text = "Like",
-            isActive = isLiked,
-            onClick = onLikeClick,
-            modifier = Modifier.weight(1f)
-        )
+        // Like button with reaction support
+        Box(modifier = Modifier.weight(1f)) {
+            PostActionButtonWithReaction(
+                post = post,
+                onLikeClick = onLikeClick,
+                onLongPress = { showReactionPicker = true },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Reaction Picker Popup
+            if (showReactionPicker) {
+                ReactionPicker(
+                    onReactionSelected = { reaction ->
+                        onReactionSelected(reaction)
+                    },
+                    onCustomEmojiSelected = { emoji, label ->
+                        onCustomEmojiSelected(emoji, label)
+                    },
+                    onDismiss = { showReactionPicker = false }
+                )
+            }
+        }
 
         PostActionButton(
             icon = Icons.Outlined.ChatBubbleOutline,
@@ -387,6 +415,96 @@ private fun PostActions(
             text = "Share",
             onClick = onShareClick,
             modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PostActionButtonWithReaction(
+    post: Post,
+    onLikeClick: () -> Unit,
+    onLongPress: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Determine the color based on reaction
+    val iconColor by animateColorAsState(
+        targetValue = when {
+            post.customReactionEmoji != null -> MaterialTheme.colorScheme.primary
+            post.userReaction != null -> when (post.userReaction) {
+                Reaction.LOVE -> Color(0xFFED4956)
+                Reaction.HAHA -> Color(0xFFF7B125)
+                Reaction.WOW -> Color(0xFFF7B125)
+                Reaction.SAD -> Color(0xFFF7B125)
+                Reaction.ANGRY -> Color(0xFFF05545)
+                else -> if (post.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            }
+            post.isLiked -> MaterialTheme.colorScheme.primary
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(200),
+        label = "icon_color"
+    )
+
+    val scale by animateFloatAsState(
+        targetValue = if (post.userReaction != null || post.isLiked || post.customReactionEmoji != null) 1.1f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "reaction_scale"
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .combinedClickable(
+                onClick = onLikeClick,
+                onLongClick = onLongPress,
+                indication = null,
+                interactionSource = interactionSource
+            )
+            .padding(vertical = 8.dp)
+    ) {
+        // Show reaction emoji or thumbs up icon
+        when {
+            post.customReactionEmoji != null -> {
+                Text(
+                    text = post.customReactionEmoji,
+                    fontSize = 20.sp,
+                    modifier = Modifier.scale(scale)
+                )
+            }
+            post.userReaction != null -> {
+                Text(
+                    text = post.userReaction.emoji,
+                    fontSize = 20.sp,
+                    modifier = Modifier.scale(scale)
+                )
+            }
+            else -> {
+                Icon(
+                    imageVector = if (post.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUpOffAlt,
+                    contentDescription = "Like",
+                    modifier = Modifier.size(20.dp).scale(scale),
+                    tint = iconColor
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(6.dp))
+
+        Text(
+            text = when {
+                post.customReactionLabel != null -> post.customReactionLabel
+                post.userReaction != null -> post.userReaction.label
+                else -> "Like"
+            },
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = iconColor
         )
     }
 }

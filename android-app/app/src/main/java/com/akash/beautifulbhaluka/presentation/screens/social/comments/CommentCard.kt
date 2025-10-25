@@ -3,12 +3,16 @@ package com.akash.beautifulbhaluka.presentation.screens.social.comments
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.Comment
+import com.akash.beautifulbhaluka.domain.model.Reaction
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,22 +39,54 @@ import java.util.*
  * - Support for nested replies with visual hierarchy
  * - Show first 2 replies by default, expand to see all
  * - Like/unlike with smooth animations
+ * - Facebook-style reaction picker on long press
  * - Reply functionality
  * - Delete option for own comments
  * - Professional spacing and typography
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
     comment: Comment,
     onLikeClick: () -> Unit,
+    onReactionSelected: (Reaction) -> Unit = {},
+    onCustomEmojiSelected: (String, String) -> Unit = { _, _ -> },
     onReplyClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     isReply: Boolean = false,
-    onReplyLikeClick: (commentId: String, isLiked: Boolean) -> Unit = { _, _ -> }
+    onReplyLikeClick: (commentId: String, isLiked: Boolean) -> Unit = { _, _ -> },
+    onReplyReactionSelected: (commentId: String, reaction: Reaction) -> Unit = { _, _ -> },
+    onReplyCustomEmojiSelected: (commentId: String, emoji: String, label: String) -> Unit = { _, _, _ -> }
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showAllReplies by remember { mutableStateOf(false) }
+    var showReactionPicker by remember { mutableStateOf(false) }
+
+    // Determine the color based on reaction
+    val reactionColor by animateColorAsState(
+        targetValue = when {
+            comment.customReactionEmoji != null -> MaterialTheme.colorScheme.primary
+            comment.userReaction != null -> when (comment.userReaction) {
+                Reaction.LOVE -> Color(0xFFED4956)
+                Reaction.HAHA -> Color(0xFFF7B125)
+                Reaction.WOW -> Color(0xFFF7B125)
+                Reaction.SAD -> Color(0xFFF7B125)
+                Reaction.ANGRY -> Color(0xFFF05545)
+                else -> if (comment.isLiked) Color(0xFFED4956) else MaterialTheme.colorScheme.onSurfaceVariant
+            }
+            comment.isLiked -> Color(0xFFED4956)
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "reaction_color"
+    )
+
+    val reactionScale by animateFloatAsState(
+        targetValue = if (comment.userReaction != null || comment.isLiked || comment.customReactionEmoji != null) 1.1f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "reaction_scale"
+    )
 
     // Smooth like animation
     val likeColor by animateColorAsState(
@@ -154,53 +191,113 @@ fun CommentCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Like Button
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                            .clickable(
-                                onClick = onLikeClick,
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            )
-                    ) {
-                        Text(
-                            text = if (comment.isLiked) "Liked" else "Like",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            color = likeColor,
-                            modifier = Modifier.scale(likeScale)
-                        )
+                    // Reaction/Like Button with long-press support
+                    Box {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier
+                                .combinedClickable(
+                                    onClick = onLikeClick,
+                                    onLongClick = { showReactionPicker = true },
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                )
+                        ) {
+                            // Show reaction emoji or heart icon
+                            when {
+                                comment.customReactionEmoji != null -> {
+                                    Text(
+                                        text = comment.customReactionEmoji,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.scale(reactionScale)
+                                    )
+                                }
+                                comment.userReaction != null -> {
+                                    Text(
+                                        text = comment.userReaction.emoji,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.scale(reactionScale)
+                                    )
+                                }
+                                else -> {
+                                    Icon(
+                                        imageVector = if (comment.isLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                        contentDescription = "Like",
+                                        tint = reactionColor,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .scale(reactionScale)
+                                    )
+                                }
+                            }
 
-                        if (comment.likes > 0) {
                             Text(
-                                text = "(${comment.likes})",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 11.sp
+                                text = when {
+                                    comment.customReactionLabel != null -> comment.customReactionLabel
+                                    comment.userReaction != null -> comment.userReaction.label
+                                    comment.isLiked -> "Liked"
+                                    else -> "Like"
+                                },
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
                                 ),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = reactionColor
+                            )
+
+                            if (comment.likes > 0) {
+                                Text(
+                                    text = "(${comment.likes})",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontSize = 11.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        // Reaction Picker Popup
+                        if (showReactionPicker) {
+                            ReactionPicker(
+                                onReactionSelected = { reaction ->
+                                    onReactionSelected(reaction)
+                                },
+                                onCustomEmojiSelected = { emoji, label ->
+                                    onCustomEmojiSelected(emoji, label)
+                                },
+                                onDismiss = { showReactionPicker = false }
                             )
                         }
                     }
 
                     // Reply Button
                     if (!isReply) {
-                        Text(
-                            text = "Reply",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.clickable(
                                 onClick = onReplyClick,
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             )
-                        )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ChatBubbleOutline,
+                                contentDescription = "Reply",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Text(
+                                text = "Reply",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -267,10 +364,18 @@ fun CommentCard(
                             // Call the reply-specific like handler with the reply's ID
                             onReplyLikeClick(reply.id, reply.isLiked)
                         },
+                        onReactionSelected = { reaction ->
+                            onReplyReactionSelected(reply.id, reaction)
+                        },
+                        onCustomEmojiSelected = { emoji, label ->
+                            onReplyCustomEmojiSelected(reply.id, emoji, label)
+                        },
                         onReplyClick = { },
                         onDeleteClick = onDeleteClick,
                         isReply = true,
-                        onReplyLikeClick = onReplyLikeClick
+                        onReplyLikeClick = onReplyLikeClick,
+                        onReplyReactionSelected = onReplyReactionSelected,
+                        onReplyCustomEmojiSelected = onReplyCustomEmojiSelected
                     )
                 }
 

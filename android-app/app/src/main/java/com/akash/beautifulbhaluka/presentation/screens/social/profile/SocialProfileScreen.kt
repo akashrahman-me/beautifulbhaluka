@@ -276,22 +276,14 @@ private fun UltraModernCoverSection(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 24.dp)
-                .offset(y = 40.dp)
+                .offset(y = 10.dp)
         ) {
             // Gradient Border
             Box(
                 modifier = Modifier
-                    .size(160.dp)
+                    .size(128.dp)
                     .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary,
-                                MaterialTheme.colorScheme.tertiary
-                            )
-                        )
-                    )
+                    .background(Color.White)
                     .padding(4.dp)
             ) {
                 // Profile Image
@@ -314,9 +306,9 @@ private fun UltraModernCoverSection(
                 Surface(
                     onClick = onProfilePhotoClick,
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(36.dp)
                         .align(Alignment.BottomEnd)
-                        .offset(x = (-8).dp, y = (-8).dp),
+                        .offset(x = (-6).dp, y = (-6).dp),
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shadowElevation = 4.dp
@@ -347,7 +339,7 @@ private fun NameAndBioSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(top = 56.dp, bottom = 16.dp)
+            .padding(top =36.dp, bottom = 16.dp)
     ) {
         // Name with verification badge
         Row(

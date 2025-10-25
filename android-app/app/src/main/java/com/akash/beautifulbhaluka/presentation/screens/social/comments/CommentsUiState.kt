@@ -1,6 +1,7 @@
 package com.akash.beautifulbhaluka.presentation.screens.social.comments
 
 import com.akash.beautifulbhaluka.domain.model.Comment
+import com.akash.beautifulbhaluka.domain.model.Reaction
 
 /**
  * UI State for Comments Screen
@@ -26,9 +27,10 @@ sealed class CommentsAction {
     object SubmitComment : CommentsAction()
     data class LikeComment(val commentId: String) : CommentsAction()
     data class UnlikeComment(val commentId: String) : CommentsAction()
+    data class ReactToComment(val commentId: String, val reaction: Reaction) : CommentsAction()
+    data class CustomReactToComment(val commentId: String, val emoji: String, val label: String) : CommentsAction()
     data class StartReply(val comment: Comment) : CommentsAction()
     object CancelReply : CommentsAction()
     data class DeleteComment(val commentId: String) : CommentsAction()
     data class LoadReplies(val commentId: String) : CommentsAction()
 }
-
