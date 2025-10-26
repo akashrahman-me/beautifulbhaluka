@@ -466,7 +466,7 @@ fun PostActionButtonWithReaction(
             )
             .padding(vertical = 8.dp)
     ) {
-        // Show reaction emoji or thumbs up icon
+        // Show reaction emoji or thumbs up
         when {
             post.customReactionEmoji != null -> {
                 Text(
@@ -482,9 +482,18 @@ fun PostActionButtonWithReaction(
                     modifier = Modifier.scale(scale)
                 )
             }
+            post.isLiked -> {
+                // Show thumbs up emoji when liked
+                Text(
+                    text = "👍",
+                    fontSize = 20.sp,
+                    modifier = Modifier.scale(scale)
+                )
+            }
             else -> {
+                // Show thumbs up icon when not liked
                 Icon(
-                    imageVector = if (post.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUpOffAlt,
+                    imageVector = Icons.Outlined.ThumbUpOffAlt,
                     contentDescription = "Like",
                     modifier = Modifier.size(20.dp).scale(scale),
                     tint = iconColor

@@ -53,6 +53,7 @@ fun SocialScreen(
     var showCreatePost by remember { mutableStateOf(false) }
     val feedNavController = rememberNavController()
     val messengerNavController = rememberNavController()
+    val profileNavController = rememberNavController()
 
     // Track scroll state for feed tab
     val feedScrollState = rememberLazyListState()
@@ -275,13 +276,34 @@ fun SocialScreen(
                     }
 
                     SocialTab.PROFILE -> {
-                        val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileViewModel = viewModel()
-                        LaunchedEffect(Unit) {
-                            viewModel.onAction(
-                                com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileAction.LoadProfile("current_user_id")
-                            )
+                        NavHost(
+                            navController = profileNavController,
+                            startDestination = "profile"
+                        ) {
+                            composable("profile") {
+                                val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileViewModel = viewModel()
+                                LaunchedEffect(Unit) {
+                                    viewModel.onAction(
+                                        com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileAction.LoadProfile("current_user_id")
+                                    )
+                                }
+                                com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileScreen(
+                                    viewModel = viewModel,
+                                    onNavigateToEditProfile = {
+                                        profileNavController.navigate("edit_profile")
+                                    }
+                                )
+                            }
+
+                            composable("edit_profile") {
+                                com.akash.beautifulbhaluka.presentation.screens.social.profile.EditProfileScreen(
+                                    onNavigateBack = { profileNavController.popBackStack() },
+                                    onSaveProfile = { profileData ->
+                                        // TODO: Save profile data via ViewModel
+                                    }
+                                )
+                            }
                         }
-                        com.akash.beautifulbhaluka.presentation.screens.social.profile.SocialProfileScreen(viewModel = viewModel)
                     }
 
                     SocialTab.SETTINGS -> {

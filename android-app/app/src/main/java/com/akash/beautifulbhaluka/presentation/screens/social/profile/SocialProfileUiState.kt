@@ -47,4 +47,6 @@ sealed class SocialProfileAction {
     object UnfollowUser : SocialProfileAction()
     object ChangeProfileImage : SocialProfileAction()
     object ChangeCoverImage : SocialProfileAction()
+    data class ReactToPost(val postId: String, val reaction: com.akash.beautifulbhaluka.domain.model.Reaction) : SocialProfileAction()
+    data class ReactToPostWithCustomEmoji(val postId: String, val emoji: String, val label: String) : SocialProfileAction()
 }

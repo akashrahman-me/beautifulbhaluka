@@ -66,7 +66,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialProfileScreen(
-    viewModel: SocialProfileViewModel
+    viewModel: SocialProfileViewModel,
+    onNavigateToEditProfile: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showMoreOptions by remember { mutableStateOf(false) }
@@ -135,7 +136,10 @@ fun SocialProfileScreen(
 
                     // Intro Section (Work, Education, Location, etc.)
                     item {
-                        IntroSection(profile = profile)
+                        IntroSection(
+                            profile = profile,
+                            onEditDetailsClick = onNavigateToEditProfile
+                        )
                     }
 
                     // Friends Preview Section
@@ -182,7 +186,20 @@ fun SocialProfileScreen(
                                 items(uiState.posts, key = { it.id }) { post ->
                                     PostCard(
                                         post = post,
-                                        onLikeClick = { /* Handle like */ },
+                                        onLikeClick = {
+                                            if (post.isLiked) {
+                                                // Unlike the post by selecting LIKE again
+                                                viewModel.onAction(SocialProfileAction.ReactToPost(post.id, com.akash.beautifulbhaluka.domain.model.Reaction.LIKE))
+                                            } else {
+                                                viewModel.onAction(SocialProfileAction.ReactToPost(post.id, com.akash.beautifulbhaluka.domain.model.Reaction.LIKE))
+                                            }
+                                        },
+                                        onReactionSelected = { reaction ->
+                                            viewModel.onAction(SocialProfileAction.ReactToPost(post.id, reaction))
+                                        },
+                                        onCustomEmojiSelected = { emoji, label ->
+                                            viewModel.onAction(SocialProfileAction.ReactToPostWithCustomEmoji(post.id, emoji, label))
+                                        },
                                         onCommentClick = { /* Handle comment */ },
                                         onShareClick = { /* Handle share */ },
                                         onProfileClick = { /* Handle profile */ }
@@ -493,7 +510,10 @@ private fun ActionButtonsRow(
 }
 
 @Composable
-private fun IntroSection(profile: SocialProfile) {
+private fun IntroSection(
+    profile: SocialProfile,
+    onEditDetailsClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -563,7 +583,7 @@ private fun IntroSection(profile: SocialProfile) {
 
             // Edit Details Button
             TextButton(
-                onClick = { /* Edit details */ },
+                onClick = onEditDetailsClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Edit Details")

@@ -26,6 +26,8 @@ class SocialProfileViewModel : ViewModel() {
             is SocialProfileAction.SaveProfile -> saveProfile()
             is SocialProfileAction.FollowUser -> followUser()
             is SocialProfileAction.UnfollowUser -> unfollowUser()
+            is SocialProfileAction.ReactToPost -> reactToPost(action.postId, action.reaction)
+            is SocialProfileAction.ReactToPostWithCustomEmoji -> reactToPostWithCustomEmoji(action.postId, action.emoji, action.label)
             else -> {}
         }
     }
@@ -149,5 +151,65 @@ class SocialProfileViewModel : ViewModel() {
                     }
                 }
         }
+    }
+
+    private fun reactToPost(postId: String, reaction: com.akash.beautifulbhaluka.domain.model.Reaction) {
+        // Update UI state immediately for responsive feedback
+        val updatedPosts = _uiState.value.posts.map { post ->
+            if (post.id == postId) {
+                // Check if clicking the same reaction (to unlike)
+                val isSameReaction = post.userReaction == reaction
+
+                if (isSameReaction && post.isLiked) {
+                    // Unlike the post
+                    post.copy(
+                        isLiked = false,
+                        likes = maxOf(0, post.likes - 1),
+                        userReaction = null
+                    )
+                } else {
+                    // Like with new reaction or change reaction
+                    val likesChange = if (post.isLiked) 0 else 1
+                    post.copy(
+                        isLiked = true,
+                        likes = post.likes + likesChange,
+                        userReaction = reaction
+                    )
+                }
+            } else {
+                post
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(posts = updatedPosts)
+
+        // TODO: Call repository to persist the reaction
+        // viewModelScope.launch {
+        //     repository.reactToPost(postId, reaction.name)
+        // }
+    }
+
+    private fun reactToPostWithCustomEmoji(postId: String, emoji: String, label: String) {
+        // Update UI state immediately for responsive feedback
+        val updatedPosts = _uiState.value.posts.map { post ->
+            if (post.id == postId) {
+                post.copy(
+                    isLiked = true,
+                    likes = if (post.isLiked) post.likes else post.likes + 1,
+                    userReaction = com.akash.beautifulbhaluka.domain.model.Reaction.CUSTOM,
+                    customReactionEmoji = emoji,
+                    customReactionLabel = label
+                )
+            } else {
+                post
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(posts = updatedPosts)
+
+        // TODO: Call repository to persist the custom reaction
+        // viewModelScope.launch {
+        //     repository.reactToPostWithCustomEmoji(postId, emoji, label)
+        // }
     }
 }

@@ -204,7 +204,7 @@ fun CommentCard(
                                     interactionSource = remember { MutableInteractionSource() }
                                 )
                         ) {
-                            // Show reaction emoji or heart icon
+                            // Show reaction emoji or thumbs up
                             when {
                                 comment.customReactionEmoji != null -> {
                                     Text(
@@ -220,9 +220,18 @@ fun CommentCard(
                                         modifier = Modifier.scale(reactionScale)
                                     )
                                 }
+                                comment.isLiked -> {
+                                    // Show thumbs up emoji when liked
+                                    Text(
+                                        text = "👍",
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.scale(reactionScale)
+                                    )
+                                }
                                 else -> {
+                                    // Show thumbs up icon when not liked
                                     Icon(
-                                        imageVector = if (comment.isLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                        imageVector = Icons.Outlined.ThumbUpOffAlt,
                                         contentDescription = "Like",
                                         tint = reactionColor,
                                         modifier = Modifier
