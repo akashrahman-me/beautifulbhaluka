@@ -25,6 +25,8 @@ class SocialFeedViewModel : ViewModel() {
             is SocialFeedAction.Refresh -> refreshPosts()
             is SocialFeedAction.LikePost -> likePost(action.postId)
             is SocialFeedAction.UnlikePost -> unlikePost(action.postId)
+            is SocialFeedAction.ReactToPost -> reactToPost(action.postId, action.reaction)
+            is SocialFeedAction.CustomReactToPost -> customReactToPost(action.postId, action.emoji, action.label)
             is SocialFeedAction.SharePost -> sharePost(action.postId)
             is SocialFeedAction.DeletePost -> deletePost(action.postId)
             else -> {}
@@ -98,7 +100,13 @@ class SocialFeedViewModel : ViewModel() {
                     _uiState.value = _uiState.value.copy(
                         posts = _uiState.value.posts.map { post ->
                             if (post.id == postId) {
-                                post.copy(likes = maxOf(0, post.likes - 1), isLiked = false)
+                                post.copy(
+                                    likes = maxOf(0, post.likes - 1),
+                                    isLiked = false,
+                                    userReaction = null,
+                                    customReactionEmoji = null,
+                                    customReactionLabel = null
+                                )
                             } else {
                                 post
                             }

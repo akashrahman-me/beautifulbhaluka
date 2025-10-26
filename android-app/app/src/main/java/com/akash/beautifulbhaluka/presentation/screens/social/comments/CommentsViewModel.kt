@@ -164,7 +164,10 @@ class CommentsViewModel(
         return if (comment.id == commentId) {
             comment.copy(
                 likes = if (isLiked) comment.likes + 1 else maxOf(0, comment.likes - 1),
-                isLiked = isLiked
+                isLiked = isLiked,
+                userReaction = if (!isLiked) null else comment.userReaction,
+                customReactionEmoji = if (!isLiked) null else comment.customReactionEmoji,
+                customReactionLabel = if (!isLiked) null else comment.customReactionLabel
             )
         } else {
             comment.copy(
