@@ -1,7 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.social
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.*
@@ -19,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
+import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 import com.akash.beautifulbhaluka.presentation.screens.social.comments.CommentsScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.messenger.MessengerScreen
 import com.akash.beautifulbhaluka.presentation.screens.social.messenger.chat.ChatScreen
@@ -58,44 +59,11 @@ fun SocialScreen(
     // Track scroll state for feed tab
     val feedScrollState = rememberLazyListState()
 
-    // Track header visibility state
-    var showHeader by remember { mutableStateOf(true) }
+    // Use reusable scroll header state hook
+    val showHeader = rememberScrollHeaderState(scrollState = feedScrollState)
 
-    // Track previous scroll position
-    var previousScrollPosition by remember { mutableStateOf(0) }
-
-    // Detect scroll direction using snapshotFlow
-    LaunchedEffect(selectedTab) {
-        if (selectedTab != SocialTab.FEED) {
-            showHeader = false
-            return@LaunchedEffect
-        }
-
-        snapshotFlow {
-            feedScrollState.firstVisibleItemIndex * 10000 + feedScrollState.firstVisibleItemScrollOffset
-        }.collect { currentScrollPosition ->
-            // Always show at the very top
-            if (feedScrollState.firstVisibleItemIndex == 0 && feedScrollState.firstVisibleItemScrollOffset == 0) {
-                showHeader = true
-                previousScrollPosition = 0
-                return@collect
-            }
-
-            // Detect scroll direction by comparing with previous position
-            val isScrollingUp = currentScrollPosition < previousScrollPosition
-
-            // Update header visibility based on scroll direction
-            showHeader = isScrollingUp
-
-            // Update previous position
-            previousScrollPosition = currentScrollPosition
-        }
-    }
-
-    // Reset header visibility when changing tabs
-    LaunchedEffect(selectedTab) {
-        showHeader = selectedTab == SocialTab.FEED
-    }
+    // Only show header when on FEED tab
+    val shouldShowHeader = showHeader && selectedTab == SocialTab.FEED
 
     Scaffold{ paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -107,26 +75,8 @@ fun SocialScreen(
                     )
                 )
             ) {
-                // Modern Header Section with smooth transition
-                AnimatedVisibility(
-                    visible = showHeader,
-                    enter = slideInVertically(
-                        animationSpec = tween(durationMillis = 300),
-                        initialOffsetY = { -it }
-                    ) + fadeIn(
-                        animationSpec = tween(durationMillis = 300)
-                    ) + expandVertically(
-                        animationSpec = tween(durationMillis = 300)
-                    ),
-                    exit = slideOutVertically(
-                        animationSpec = tween(durationMillis = 300),
-                        targetOffsetY = { -it }
-                    ) + fadeOut(
-                        animationSpec = tween(durationMillis = 300)
-                    ) + shrinkVertically(
-                        animationSpec = tween(durationMillis = 300)
-                    )
-                ) {
+                // Modern Header Section with reusable scroll animation
+                ScrollAnimatedHeader(visible = shouldShowHeader) {
                     Surface(
                         color = MaterialTheme.colorScheme.surface,
                         tonalElevation = 0.dp,

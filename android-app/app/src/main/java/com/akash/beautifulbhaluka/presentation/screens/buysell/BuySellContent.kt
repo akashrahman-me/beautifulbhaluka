@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
+import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 import java.text.NumberFormat
 import java.util.*
 
@@ -43,6 +45,9 @@ fun BuySellContent(
     var showSortSheet by remember { mutableStateOf(false) }
     var showFilterSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+
+    // Use reusable scroll header state hook
+    val showHeader = rememberScrollHeaderState(scrollState = listState)
 
     // Modern gradient background
     val gradientBrush = Brush.verticalGradient(
@@ -60,13 +65,15 @@ fun BuySellContent(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Modern Top Bar with gradient
-//            BuySellTopBar(
-//                onAction = onAction,
-//                uiState = uiState,
-//                onSortClick = { showSortSheet = true },
-//                onFilterClick = { showFilterSheet = true }
-//            )
+            // Modern Top Bar with reusable scroll animation
+            ScrollAnimatedHeader(visible = showHeader) {
+                BuySellTopBar(
+                    onAction = onAction,
+                    uiState = uiState,
+                    onSortClick = { showSortSheet = true },
+                    onFilterClick = { showFilterSheet = true }
+                )
+            }
 
             // Animated Category Pills
             CategoryPillsRow(
