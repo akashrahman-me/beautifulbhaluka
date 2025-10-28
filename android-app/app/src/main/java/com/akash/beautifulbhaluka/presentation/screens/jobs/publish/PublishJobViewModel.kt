@@ -3,7 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.jobs.publish
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.akash.beautifulbhaluka.presentation.screens.jobs.JobCategory
+import com.akash.beautifulbhaluka.domain.model.JobCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +24,7 @@ class PublishJobViewModel : ViewModel() {
         when (action) {
             is PublishJobAction.UpdateTitle -> updateTitle(action.title)
             is PublishJobAction.UpdateCompany -> updateCompany(action.company)
+            is PublishJobAction.UpdateDescription -> updateDescription(action.description)
             is PublishJobAction.UpdateLocation -> updateLocation(action.location)
             is PublishJobAction.UpdateSalary -> updateSalary(action.salary)
             is PublishJobAction.UpdatePositionCount -> updatePositionCount(action.count)
@@ -50,6 +51,10 @@ class PublishJobViewModel : ViewModel() {
 
     private fun updateCompany(company: String) {
         _uiState.update { it.copy(company = company) }
+    }
+
+    private fun updateDescription(description: String) {
+        _uiState.update { it.copy(description = description) }
     }
 
     private fun updateLocation(location: String) {
@@ -206,14 +211,17 @@ class PublishJobViewModel : ViewModel() {
     // Mock data function - replace with actual repository call
     private fun getMockCategories(): List<JobCategory> {
         return listOf(
-            JobCategory("1", "Software Development", "https://picsum.photos/200/120?random=1", 45),
-            JobCategory("2", "Digital Marketing", "https://picsum.photos/200/120?random=2", 32),
-            JobCategory("3", "Design & Creative", "https://picsum.photos/200/120?random=3", 28),
-            JobCategory("4", "Sales & Business", "https://picsum.photos/200/120?random=4", 19),
-            JobCategory("5", "Education", "https://picsum.photos/200/120?random=5", 15),
-            JobCategory("6", "Healthcare", "https://picsum.photos/200/120?random=6", 22),
-            JobCategory("7", "Engineering", "https://picsum.photos/200/120?random=7", 31),
-            JobCategory("8", "Finance", "https://picsum.photos/200/120?random=8", 18)
+            JobCategory.IT,
+            JobCategory.ENGINEERING,
+            JobCategory.HEALTHCARE,
+            JobCategory.EDUCATION,
+            JobCategory.BUSINESS,
+            JobCategory.MARKETING,
+            JobCategory.DESIGN,
+            JobCategory.FINANCE,
+            JobCategory.SALES,
+            JobCategory.HR,
+            JobCategory.OPERATIONS
         )
     }
 }

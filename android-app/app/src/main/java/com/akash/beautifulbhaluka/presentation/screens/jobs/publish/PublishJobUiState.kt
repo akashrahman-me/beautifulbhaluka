@@ -1,12 +1,13 @@
 package com.akash.beautifulbhaluka.presentation.screens.jobs.publish
 
 import android.net.Uri
-import com.akash.beautifulbhaluka.presentation.screens.jobs.JobCategory
+import com.akash.beautifulbhaluka.domain.model.JobCategory
 
 data class PublishJobUiState(
     val isLoading: Boolean = false,
     val title: String = "",
     val company: String = "",
+    val description: String = "",
     val location: String = "",
     val salary: String = "",
     val positionCount: String = "",
@@ -29,6 +30,7 @@ data class PublishJobUiState(
 sealed class PublishJobAction {
     data class UpdateTitle(val title: String) : PublishJobAction()
     data class UpdateCompany(val company: String) : PublishJobAction()
+    data class UpdateDescription(val description: String) : PublishJobAction()
     data class UpdateLocation(val location: String) : PublishJobAction()
     data class UpdateSalary(val salary: String) : PublishJobAction()
     data class UpdatePositionCount(val count: String) : PublishJobAction()

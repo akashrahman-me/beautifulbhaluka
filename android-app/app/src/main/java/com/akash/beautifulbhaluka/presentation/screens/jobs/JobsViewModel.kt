@@ -2,21 +2,33 @@ package com.akash.beautifulbhaluka.presentation.screens.jobs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.akash.beautifulbhaluka.data.repository.JobRepositoryImpl
+import com.akash.beautifulbhaluka.domain.model.JobCategory
+import com.akash.beautifulbhaluka.domain.repository.JobRepository
+import com.akash.beautifulbhaluka.domain.usecase.GetFavoriteJobsUseCase
+import com.akash.beautifulbhaluka.domain.usecase.GetJobsUseCase
+import com.akash.beautifulbhaluka.domain.usecase.ToggleFavoriteJobUseCase
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import com.akash.beautifulbhaluka.presentation.screens.home.CarouselItem
 
+/**
+ * ViewModel for Jobs Screen following MVVM architecture
+ * Uses Use Cases for business logic operations
+ */
 class JobsViewModel : ViewModel() {
+
+    // Create instances directly without dependency injection
+    private val jobRepository: JobRepository = JobRepositoryImpl()
+    private val getJobsUseCase: GetJobsUseCase = GetJobsUseCase(jobRepository)
+    private val toggleFavoriteJobUseCase: ToggleFavoriteJobUseCase = ToggleFavoriteJobUseCase(jobRepository)
+    private val getFavoriteJobsUseCase: GetFavoriteJobsUseCase = GetFavoriteJobsUseCase(jobRepository)
 
     private val _uiState = MutableStateFlow(JobsUiState())
     val uiState: StateFlow<JobsUiState> = _uiState.asStateFlow()
 
     init {
         loadInitialData()
+        observeFavorites()
     }
 
     fun onAction(action: JobsAction) {
@@ -24,22 +36,18 @@ class JobsViewModel : ViewModel() {
             is JobsAction.LoadJobs -> loadJobs()
             is JobsAction.Refresh -> refresh()
             is JobsAction.ViewJobDetails -> {
-                // Navigation is now handled at the screen level, not in ViewModel
-                // This case is handled in JobsScreen.kt
+                // Navigation handled at screen level
             }
-
             is JobsAction.NavigateToPublishJob -> {
-                // Navigation is now handled at the screen level, not in ViewModel
-                // This case is handled in JobsScreen.kt
+                // Navigation handled at screen level
             }
-
             is JobsAction.SelectTab -> selectTab(action.tab)
-            is JobsAction.SelectCategory -> selectCategory(action.categoryId)
+            is JobsAction.FilterByCategory -> filterByCategory(action.category)
+            is JobsAction.SearchJobs -> searchJobs(action.query)
             is JobsAction.ToggleFavorite -> toggleFavorite(action.jobId)
             is JobsAction.LoadPage -> loadPage(action.page)
             is JobsAction.LoadNextPage -> loadNextPage()
             is JobsAction.LoadPreviousPage -> loadPreviousPage()
-            is JobsAction.ViewCarouselItem -> viewCarouselItem(action.itemId)
         }
     }
 
@@ -47,20 +55,29 @@ class JobsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            // Load all initial data
-            val categories = getMockCategories()
-            val carouselItems = getMockCarouselItems()
-            val appliedJobs = getMockAppliedJobs()
-            loadJobsForPage(1)
+            // Load featured jobs
+            jobRepository.getFeaturedJobs()
+                .onSuccess { featured ->
+                    _uiState.update { it.copy(featuredJobs = featured) }
+                }
 
-            _uiState.update { currentState ->
-                currentState.copy(
-                    categories = categories,
-                    carouselItems = carouselItems,
-                    appliedJobs = appliedJobs,
-                    isLoading = false
-                )
-            }
+            // Load applications
+            jobRepository.getUserApplications()
+                .onSuccess { applications ->
+                    _uiState.update { it.copy(appliedJobs = applications) }
+                }
+
+            // Load first page of jobs
+            loadJobsForPage(1)
+        }
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            jobRepository.observeFavoriteJobIds()
+                .collect { favoriteIds ->
+                    _uiState.update { it.copy(favoriteJobIds = favoriteIds) }
+                }
         }
     }
 
@@ -72,14 +89,15 @@ class JobsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                // Simulate API call delay
-                delay(500)
-
-                val (jobs, totalPages) = getMockJobsForPage(page)
-
-                _uiState.update { currentState ->
-                    currentState.copy(
+            val currentState = _uiState.value
+            getJobsUseCase(
+                category = if (currentState.selectedCategory == JobCategory.ALL) null else currentState.selectedCategory,
+                searchQuery = currentState.searchQuery.ifBlank { null },
+                page = page,
+                pageSize = 10
+            ).onSuccess { (jobs, totalPages) ->
+                _uiState.update { state ->
+                    state.copy(
                         isLoading = false,
                         jobs = jobs,
                         currentPage = page,
@@ -89,11 +107,11 @@ class JobsViewModel : ViewModel() {
                         error = null
                     )
                 }
-            } catch (e: Exception) {
+            }.onFailure { error ->
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Unknown error occurred"
+                        error = error.message ?: "একটি ত্রুটি ঘটেছে"
                     )
                 }
             }
@@ -110,22 +128,31 @@ class JobsViewModel : ViewModel() {
 
     private fun selectTab(tab: JobTab) {
         _uiState.update { it.copy(currentTab = tab) }
+
+        when (tab) {
+            JobTab.JOB_FEEDS -> loadJobs()
+            JobTab.MY_APPLICATIONS -> loadApplications()
+            JobTab.FAVORITES -> loadFavorites()
+        }
     }
 
-    private fun selectCategory(categoryId: String) {
-        // Handle category selection - filter jobs or navigate to category screen
-        println("Category selected: $categoryId")
+    private fun filterByCategory(category: JobCategory) {
+        _uiState.update { it.copy(selectedCategory = category, currentPage = 1) }
+        loadJobsForPage(1)
+    }
+
+    private fun searchJobs(query: String) {
+        _uiState.update { it.copy(searchQuery = query, currentPage = 1) }
+        loadJobsForPage(1)
     }
 
     private fun toggleFavorite(jobId: String) {
-        _uiState.update { currentState ->
-            val favoriteJobs = currentState.favoriteJobs.toMutableSet()
-            if (favoriteJobs.contains(jobId)) {
-                favoriteJobs.remove(jobId)
-            } else {
-                favoriteJobs.add(jobId)
-            }
-            currentState.copy(favoriteJobs = favoriteJobs)
+        viewModelScope.launch {
+            toggleFavoriteJobUseCase(jobId)
+                .onFailure { error ->
+                    // Show error message
+                    _uiState.update { it.copy(error = error.message) }
+                }
         }
     }
 
@@ -147,143 +174,29 @@ class JobsViewModel : ViewModel() {
         }
     }
 
-    private fun viewCarouselItem(itemId: String) {
-        // Handle carousel item click
-        println("Carousel item clicked: $itemId")
-    }
-
-    // Mock data functions
-    private fun getMockCategories(): List<JobCategory> {
-        return listOf(
-            JobCategory("1", "Software Development", "https://picsum.photos/200/120?random=1", 45),
-            JobCategory("2", "Digital Marketing", "https://picsum.photos/200/120?random=2", 32),
-            JobCategory("3", "Design & Creative", "https://picsum.photos/200/120?random=3", 28),
-            JobCategory("4", "Sales & Business", "https://picsum.photos/200/120?random=4", 19),
-            JobCategory("5", "Education", "https://picsum.photos/200/120?random=5", 15),
-            JobCategory("6", "Healthcare", "https://picsum.photos/200/120?random=6", 22),
-            JobCategory("7", "Engineering", "https://picsum.photos/200/120?random=7", 31),
-            JobCategory("8", "Finance", "https://picsum.photos/200/120?random=8", 18)
-        )
-    }
-
-    private fun getMockCarouselItems(): List<CarouselItem> {
-        return listOf(
-            CarouselItem(
-                "1",
-                "Join Top Tech Companies",
-                "Discover amazing opportunities in leading tech firms",
-                "https://picsum.photos/400/200?random=10"
-            ),
-            CarouselItem(
-                "2",
-                "Remote Work Opportunities",
-                "Work from anywhere with flexible remote positions",
-                "https://picsum.photos/400/200?random=11"
-            ),
-            CarouselItem(
-                "3",
-                "Career Growth Programs",
-                "Accelerate your career with mentorship and training",
-                "https://picsum.photos/400/200?random=12"
-            ),
-            CarouselItem(
-                "4",
-                "High Salary Jobs",
-                "Find jobs with competitive salaries and benefits",
-                "https://picsum.photos/400/200?random=13"
-            )
-        )
-    }
-
-    private fun getMockJobsForPage(page: Int): Pair<List<JobItem>, Int> {
-        val jobsPerPage = 6
-        val totalJobs = 50
-        val totalPages = (totalJobs + jobsPerPage - 1) / jobsPerPage
-
-        val startIndex = (page - 1) * jobsPerPage
-        val endIndex = minOf(startIndex + jobsPerPage, totalJobs)
-
-        val allJobs = generateMockJobs()
-        val pageJobs = if (startIndex < allJobs.size) {
-            allJobs.subList(startIndex, minOf(endIndex, allJobs.size))
-        } else {
-            emptyList()
-        }
-
-        return Pair(pageJobs, totalPages)
-    }
-
-    private fun generateMockJobs(): List<JobItem> {
-        val companies = listOf(
-            "Tech Corp",
-            "Digital Solutions",
-            "Creative Agency",
-            "StartupXYZ",
-            "Global Tech",
-            "Innovation Hub"
-        )
-        val jobTitles = listOf(
-            "Android Developer",
-            "iOS Developer",
-            "Full Stack Developer",
-            "UI/UX Designer",
-            "Product Manager",
-            "DevOps Engineer",
-            "Data Scientist",
-            "QA Engineer"
-        )
-        val locations = listOf("ঢাকা", "চট্টগ্রাম", "সিলেট", "রাজশাহী", "খুলনা", "বরিশাল")
-        val categories = listOf("1", "2", "3", "4", "5", "6", "7", "8")
-        val experiences = listOf("ফ্রেশার", "১-২ বছর", "২-৩ বছর", "৩-৫ বছর", "৫+ বছর")
-        val educations = listOf("এস এস সি/ সমমান", "এইচ এস সি/ সমমান", "স্নাতক", "স্নাতকোত্তর")
-        val jobTypes = listOf("ফুল-টাইম", "পার্ট-টাইম", "চুক্তিভিত্তিক", "ইন্টার্নশিপ")
-        val workingHours = listOf("৮ ঘন্টা", "৬ ঘন্টা", "১০ ঘন্টা", "ফ্লেক্সিবল")
-        val workLocations = listOf("অন-সাইট", "রিমোট", "হাইব্রিড")
-        val positionCounts = listOf("৫ টি", "১০ টি", "২০ টি", "৫০ টি", "১০০ টি")
-
-        return (1..50).map { index ->
-            JobItem(
-                id = "job_$index",
-                title = jobTitles[index % jobTitles.size],
-                company = companies[index % companies.size],
-                location = locations[index % locations.size],
-                salary = "${(19 + index * 2)},০০০-${(25 + index * 3)},০০০ টাকা",
-                experience = experiences[index % experiences.size],
-                education = educations[index % educations.size],
-                description = "আমরা একজন অভিজ্ঞ ${jobTitles[index % jobTitles.size]} খুঁজছি যিনি আমাদের দলে যোগ দেবেন।",
-                postedDate = "${1 + index % 30} দিন আগে",
-                deadline = "${15 + index % 15}/${if (index % 2 == 0) "০৯" else "১০"}/২০২৫",
-                contactInfo = "+০১৮১২৩৪৫৬৭৮৯\nadmin@${
-                    companies[index % companies.size].lowercase().replace(" ", "")
-                }.com",
-                imageUrl = "https://picsum.photos/300/200?random=${20 + index}",
-                categoryId = categories[index % categories.size],
-                isFeatured = index % 7 == 0,
-                positionCount = positionCounts[index % positionCounts.size],
-                jobType = jobTypes[index % jobTypes.size],
-                workingHours = workingHours[index % workingHours.size],
-                workLocation = workLocations[index % workLocations.size]
-            )
+    private fun loadApplications() {
+        viewModelScope.launch {
+            jobRepository.getUserApplications()
+                .onSuccess { applications ->
+                    _uiState.update { it.copy(appliedJobs = applications) }
+                }
         }
     }
 
-    private fun getMockAppliedJobs(): List<AppliedJob> {
-        val allJobs = generateMockJobs()
-        val appliedStatuses = listOf(
-            ApplicationStatus.APPLIED,
-            ApplicationStatus.REVIEWED,
-            ApplicationStatus.SHORTLISTED,
-            ApplicationStatus.REJECTED,
-            ApplicationStatus.ACCEPTED
-        )
-
-        // Simulate user has applied to first 8 jobs with different statuses
-        return allJobs.take(8).mapIndexed { index, job ->
-            AppliedJob(
-                jobItem = job,
-                applicationStatus = appliedStatuses[index % appliedStatuses.size],
-                appliedDate = "${(index + 1) * 2} দিন আগে"
-            )
+    private fun loadFavorites() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            getFavoriteJobsUseCase()
+                .onSuccess { favorites ->
+                    _uiState.update {
+                        it.copy(isLoading = false, jobs = favorites, error = null)
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(isLoading = false, error = error.message)
+                    }
+                }
         }
     }
 }

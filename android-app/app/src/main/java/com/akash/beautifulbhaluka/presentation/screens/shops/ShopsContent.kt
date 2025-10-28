@@ -1,6 +1,8 @@
 package com.akash.beautifulbhaluka.presentation.screens.shops
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,23 +10,34 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.ShoppingBag
+import androidx.compose.material.icons.automirrored.outlined.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import java.util.Locale
+import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
+import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
+import java.text.NumberFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,140 +48,469 @@ fun ShopsContent(
     onNavigateToDetails: ((String) -> Unit)?,
     onNavigateToPublish: (() -> Unit)?
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Simple Search Bar
-        SearchSection(
-            searchQuery = uiState.searchQuery,
-            onSearchChange = { onAction(ShopsAction.SearchProducts(it)) },
-            onAddProductClick = { onNavigateToPublish?.invoke() }
+    var showSortSheet by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+
+    // Use reusable scroll header state hook
+    val showHeader = rememberScrollHeaderState(scrollState = listState)
+
+    // Modern gradient background
+    val gradientBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         )
+    )
 
-        when {
-            uiState.isLoading -> {
-                LoadingState()
-            }
-
-            uiState.error != null -> {
-                ErrorState(
-                    onRetry = { onAction(ShopsAction.Refresh) }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(gradientBrush)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Modern Top Bar with reusable scroll animation
+            ScrollAnimatedHeader(visible = showHeader) {
+                ShopsTopBar(
+                    onAction = onAction,
+                    uiState = uiState,
+                    onSortClick = { showSortSheet = true }
                 )
             }
 
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    // Categories
-                    if (uiState.categories.isNotEmpty()) {
+            // Main content
+            when {
+                uiState.isLoading -> {
+                    ModernLoadingState()
+                }
+
+                uiState.error != null -> {
+                    ModernErrorState(
+                        errorMessage = uiState.error,
+                        onRetry = { onAction(ShopsAction.Refresh) }
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Stats Card
                         item {
-                            CategorySection(
-                                categories = uiState.categories,
-                                selectedCategory = uiState.selectedCategory,
-                                onCategorySelected = { onAction(ShopsAction.SelectCategory(it)) }
+                            ShopsStatsCard(
+                                totalProducts = filteredProducts.size,
+                                categories = uiState.categories.size
                             )
                         }
-                    }
 
-                    // Products Grid
-                    item {
-                        if (filteredProducts.isNotEmpty()) {
-                            ProductGrid(
-                                products = filteredProducts,
-                                onProductClick = { onNavigateToDetails?.invoke(it.id) }
+                        // Categories Row
+                        if (uiState.categories.isNotEmpty()) {
+                            item {
+                                ModernCategorySection(
+                                    categories = uiState.categories,
+                                    selectedCategory = uiState.selectedCategory,
+                                    onCategorySelected = { onAction(ShopsAction.SelectCategory(it)) }
+                                )
+                            }
+                        }
+
+                        // Filter Chips
+                        item {
+                            FilterChipsRow(
+                                hasFilters = uiState.selectedCategory != null || uiState.searchQuery.isNotEmpty()
                             )
-                        } else {
-                            EmptyState(
-                                onAddProductClick = { onNavigateToPublish?.invoke() }
-                            )
+                        }
+
+                        // Products Grid or Empty State
+                        item {
+                            if (filteredProducts.isNotEmpty()) {
+                                ModernProductGrid(
+                                    products = filteredProducts,
+                                    onProductClick = { onNavigateToDetails?.invoke(it.id) }
+                                )
+                            } else {
+                                ModernEmptyState(
+                                    onAddProductClick = { onNavigateToPublish?.invoke() }
+                                )
+                            }
+                        }
+
+                        // Bottom spacing for FAB
+                        item {
+                            Spacer(modifier = Modifier.height(80.dp))
                         }
                     }
                 }
             }
         }
+
+        // Floating Action Button with gradient
+        FloatingActionButton(
+            onClick = { onNavigateToPublish?.invoke() },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            containerColor = Color.Transparent,
+            contentColor = Color.White
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF6366F1),
+                                Color(0xFF8B5CF6)
+                            )
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "পণ্য যোগ করুন",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+    }
+
+    // Sort Bottom Sheet
+    if (showSortSheet) {
+        SortBottomSheet(
+            onSortSelected = {
+                onAction(ShopsAction.SortProducts(it))
+                showSortSheet = false
+            },
+            onDismiss = { showSortSheet = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShopsTopBar(
+    onAction: (ShopsAction) -> Unit,
+    uiState: ShopsUiState,
+    onSortClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF10B981),
+                        Color(0xFF059669)
+                    )
+                )
+            )
+            .padding(16.dp)
+    ) {
+        // Title Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "দোকান পাট",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = "Shops & Products",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+            }
+
+            IconButton(
+                onClick = onSortClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                    contentDescription = "সাজান",
+                    tint = Color.White
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Modern Search Bar
+        OutlinedTextField(
+            value = uiState.searchQuery,
+            onValueChange = { onAction(ShopsAction.SearchProducts(it)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(4.dp, RoundedCornerShape(28.dp)),
+            placeholder = {
+                Text(
+                    "পণ্য খুঁজুন...",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            trailingIcon = {
+                if (uiState.searchQuery.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onAction(ShopsAction.SearchProducts("")) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = "মুছুন"
+                        )
+                    }
+                }
+            },
+            shape = RoundedCornerShape(28.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent
+            ),
+            singleLine = true
+        )
     }
 }
 
 @Composable
-private fun SearchSection(
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
-    onAddProductClick: () -> Unit
+fun ShopsStatsCard(
+    totalProducts: Int,
+    categories: Int
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearchChange,
-            placeholder = { Text("পণ্য খোঁজ করুন...") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = null)
-            },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { onSearchChange("") }) {
-                        Icon(Icons.Default.Clear, contentDescription = null)
-                    }
-                }
-            },
-            modifier = Modifier.weight(1f),
-            singleLine = true
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
         )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatItem(
+                icon = Icons.Outlined.ShoppingBag,
+                value = totalProducts.toString(),
+                label = "পণ্য",
+                color = Color(0xFF10B981)
+            )
 
-        FilledTonalButton(onClick = onAddProductClick) {
-            Icon(Icons.Default.Add, contentDescription = null)
+            VerticalDivider(
+                modifier = Modifier.height(48.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
+
+            StatItem(
+                icon = Icons.Outlined.Category,
+                value = categories.toString(),
+                label = "ক্যাটাগরি",
+                color = Color(0xFF8B5CF6)
+            )
         }
     }
 }
 
 @Composable
-private fun CategorySection(
+fun StatItem(
+    icon: ImageVector,
+    value: String,
+    label: String,
+    color: Color
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(32.dp),
+            tint = color
+        )
+
+        Column {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun ModernCategorySection(
     categories: List<ProductCategory>,
     selectedCategory: ProductCategory?,
     onCategorySelected: (ProductCategory?) -> Unit
 ) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            FilterChip(
-                onClick = { onCategorySelected(null) },
-                label = { Text("সব") },
-                selected = selectedCategory == null
-            )
-        }
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "ক্যাটাগরি",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
 
-        items(categories) { category ->
-            FilterChip(
-                onClick = { onCategorySelected(category) },
-                label = { Text(category.name) },
-                selected = selectedCategory == category
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 4.dp)
+        ) {
+            item {
+                CategoryChip(
+                    text = "সব",
+                    icon = Icons.Outlined.GridView,
+                    isSelected = selectedCategory == null,
+                    onClick = { onCategorySelected(null) }
+                )
+            }
+
+            items(categories) { category ->
+                CategoryChip(
+                    text = category.name,
+                    icon = Icons.Outlined.Category,
+                    isSelected = selectedCategory == category,
+                    onClick = { onCategorySelected(category) },
+                    count = category.productCount
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryChip(
+    text: String,
+    icon: ImageVector,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    count: Int? = null
+) {
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isSelected) 1.05f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "scale"
+    )
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.scale(animatedScale),
+        shape = RoundedCornerShape(20.dp),
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        tonalElevation = if (isSelected) 8.dp else 2.dp,
+        shadowElevation = if (isSelected) 4.dp else 0.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = if (isSelected) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
+            )
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color = if (isSelected) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
+            )
+
+            if (count != null && count > 0) {
+                Text(
+                    text = "($count)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FilterChipsRow(hasFilters: Boolean) {
+    if (hasFilters) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.FilterAlt,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = "ফিল্টার সক্রিয়",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium
             )
         }
     }
 }
 
 @Composable
-private fun ProductGrid(
+fun ModernProductGrid(
     products: List<Product>,
     onProductClick: (Product) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.heightIn(max = 2000.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.heightIn(max = 5000.dp),
+        userScrollEnabled = false
     ) {
-        items(products) { product ->
-            ProductCard(
+        items(products, key = { it.id }) { product ->
+            ModernProductCard(
                 product = product,
                 onClick = { onProductClick(product) }
             )
@@ -177,124 +519,443 @@ private fun ProductGrid(
 }
 
 @Composable
-private fun ProductCard(
+fun ModernProductCard(
     product: Product,
     onClick: () -> Unit
 ) {
-    // Provide a dummy image like Jobs screen if the product has no image (blank string)
     val placeholderChar = product.name.firstOrNull()?.uppercaseChar() ?: 'P'
     val imageModel = product.imageUrl.ifBlank {
-        // Similar style to job placeholders: light background color with primary accent text
-        "https://via.placeholder.com/400x300/E8F5E8/4CAF50?text=$placeholderChar"
+        "https://via.placeholder.com/400x300/E8F5E8/10B981?text=$placeholderChar"
     }
 
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp)
+            .animateContentSize(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+            pressedElevation = 8.dp
+        )
     ) {
         Column {
-            AsyncImage(
-                model = imageModel,
-                contentDescription = product.name,
+            // Product Image with badges
+            Box {
+                AsyncImage(
+                    model = imageModel,
+                    contentDescription = product.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Featured Badge
+                if (product.isFeatured) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFFF59E0B)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                modifier = Modifier.size(12.dp),
+                                tint = Color.White
+                            )
+                            Text(
+                                text = "Featured",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+                }
+
+                // New Badge
+                if (product.isNew) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFF10B981)
+                    ) {
+                        Text(
+                            text = "নতুন",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+
+                // Stock badge
+                if (!product.isInStock) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "স্টক নেই",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            // Product Info
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Product Name
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Text(
-                    text = "৳${product.price.toInt()}",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                // Price Section
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "৳${NumberFormat.getNumberInstance(Locale("bn", "BD")).format(product.price.toInt())}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF10B981)
+                        )
 
-                Text(
-                    text = product.location,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                        if (product.originalPrice != null && product.originalPrice > product.price) {
+                            Text(
+                                text = "৳${product.originalPrice.toInt()}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            )
+                        }
+                    }
+                }
+
+                // Rating and Location
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Rating
+                    if (product.rating > 0) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = Color(0xFFF59E0B)
+                            )
+                            Text(
+                                text = String.format("%.1f", product.rating),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    // Location
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LocationOn,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = product.location,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun LoadingState() {
+fun ModernLoadingState() {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun ErrorState(onRetry: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                strokeWidth = 4.dp,
+                color = Color(0xFF10B981)
+            )
+            Text(
+                text = "পণ্য লোড হচ্ছে...",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun ModernErrorState(
+    errorMessage: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.ErrorOutline,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+            )
+
             Text(
                 text = "কিছু সমস্যা হয়েছে",
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Button(onClick = onRetry) {
-                Text("আবার চেষ্টা করুন")
+
+            Text(
+                text = errorMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+
+            FilledTonalButton(
+                onClick = onRetry,
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "আবার চেষ্টা করুন",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
 }
 
 @Composable
-private fun EmptyState(onAddProductClick: () -> Unit) {
-    Column(
+fun ModernEmptyState(onAddProductClick: () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Outlined.ShoppingBag,
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.ShoppingBag,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = Color(0xFF10B981).copy(alpha = 0.6f)
+            )
 
-        Text(
-            text = "কোনো পণ্য পাওয়া যায়নি",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            Text(
+                text = "কোনো পণ্য পাওয়া যায়নি",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-        Button(onClick = onAddProductClick) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("পণ্য যোগ করুন")
+            Text(
+                text = "এখনো কোনো পণ্য যুক্ত হয়নি।\nপ্রথম পণ্য যোগ করুন!",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = onAddProductClick,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(52.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 8.dp
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "পণ্য যোগ করুন",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SortBottomSheet(
+    onSortSelected: (SortOption) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "সাজান",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            SortOptionItem(
+                text = "নতুন আগে",
+                icon = Icons.Outlined.NewReleases,
+                onClick = {
+                    onSortSelected(SortOption.NEWEST)
+                }
+            )
+
+            SortOptionItem(
+                text = "দাম: কম থেকে বেশি",
+                icon = Icons.AutoMirrored.Outlined.TrendingUp,
+                onClick = {
+                    onSortSelected(SortOption.PRICE_LOW_TO_HIGH)
+                }
+            )
+
+            SortOptionItem(
+                text = "দাম: বেশি থেকে কম",
+                icon = Icons.AutoMirrored.Outlined.TrendingDown,
+                onClick = {
+                    onSortSelected(SortOption.PRICE_HIGH_TO_LOW)
+                }
+            )
+
+            SortOptionItem(
+                text = "রেটিং",
+                icon = Icons.Outlined.Star,
+                onClick = {
+                    onSortSelected(SortOption.RATING)
+                }
+            )
+
+            SortOptionItem(
+                text = "নাম",
+                icon = Icons.Outlined.SortByAlpha,
+                onClick = {
+                    onSortSelected(SortOption.NAME)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun SortOptionItem(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
