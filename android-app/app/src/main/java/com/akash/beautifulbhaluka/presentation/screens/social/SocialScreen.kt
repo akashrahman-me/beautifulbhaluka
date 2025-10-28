@@ -341,6 +341,9 @@ fun SocialScreen(
                                     },
                                     onMessageClick = { friend ->
                                         // TODO: Navigate to chat with friend
+                                    }
+                                )
+                            }
                         }
                     }
 

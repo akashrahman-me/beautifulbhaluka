@@ -634,12 +634,13 @@ private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>, onSe
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 20.dp, bottom = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -662,43 +663,16 @@ private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>, onSe
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Friends Grid Preview (2x3) - Show actual friend data
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    friends.take(3).forEachIndexed { index, friend ->
-                        FriendPreviewCard(
-                            name = friend.userName,
-                            profileImage = friend.profileImage,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    // Fill empty slots if less than 3 friends
-                    repeat(maxOf(0, 3 - minOf(3, friends.size))) {
-                        Box(modifier = Modifier.weight(1f))
-                    }
-                }
-                if (friends.size > 3) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        friends.drop(3).take(3).forEachIndexed { index, friend ->
-                            FriendPreviewCard(
-                                name = friend.userName,
-                                profileImage = friend.profileImage,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        // Fill empty slots if less than 3 friends in second row
-                        repeat(maxOf(0, 3 - minOf(3, friends.drop(3).size))) {
-                            Box(modifier = Modifier.weight(1f))
-                        }
-                    }
+            // Horizontal Scrollable Friends Slider
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(friends) { friend ->
+                    FriendPreviewCard(
+                        name = friend.userName,
+                        profileImage = friend.profileImage
+                    )
                 }
             }
         }
@@ -708,18 +682,14 @@ private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>, onSe
 @Composable
 private fun FriendPreviewCard(
     name: String,
-    profileImage: String = "",
-    modifier: Modifier = Modifier
+    profileImage: String = ""
 ) {
     Column(
-        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f),
+            modifier = Modifier.size(100.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
@@ -735,7 +705,7 @@ private fun FriendPreviewCard(
                     Icon(
                         imageVector = Icons.Outlined.Person,
                         contentDescription = null,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(40.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -747,9 +717,10 @@ private fun FriendPreviewCard(
             style = MaterialTheme.typography.bodySmall.copy(
                 fontWeight = FontWeight.Medium
             ),
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(100.dp)
         )
     }
 }
@@ -770,12 +741,13 @@ private fun PhotosPreviewSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 20.dp, bottom = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -791,45 +763,48 @@ private fun PhotosPreviewSection(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Photos Grid (3x3) - Show actual photo data
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                repeat(3) { rowIndex ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        repeat(3) { colIndex ->
-                            val photoIndex = rowIndex * 3 + colIndex
-                            Surface(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant
-                            ) {
-                                if (photoIndex < photos.size) {
-                                    AsyncImage(
-                                        model = photos[photoIndex].imageUrl,
-                                        contentDescription = photos[photoIndex].caption,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                } else {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Photo,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(32.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+            // Horizontal Scrollable Photos Slider
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(photos) { photo ->
+                    PhotoPreviewCard(
+                        imageUrl = photo.imageUrl,
+                        caption = photo.caption
+                    )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhotoPreviewCard(
+    imageUrl: String,
+    caption: String = ""
+) {
+    Surface(
+        modifier = Modifier
+            .size(120.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant
+    ) {
+        if (imageUrl.isNotEmpty()) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = caption,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Outlined.Photo,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
