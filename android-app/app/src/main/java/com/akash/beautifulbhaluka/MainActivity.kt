@@ -36,8 +36,9 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            // Hide bars when in Social screen
-            val shouldShowBars = currentRoute != NavigationRoutes.SOCIAL
+            // Hide bars when in Social screen or Buy-Sell screen
+            val shouldShowBars = currentRoute != NavigationRoutes.SOCIAL &&
+                                 currentRoute != NavigationRoutes.BUY_SELL
 
             BeautifulBhalukaTheme(dynamicColor = false) {
                 ModalNavigationDrawer(

@@ -121,14 +121,13 @@ fun BuySellContent(
             onClick = { onNavigateToPublish?.invoke() },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
-                .shadow(8.dp, CircleShape),
+                .padding(24.dp),
             containerColor = Color.Transparent,
             contentColor = Color.White
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .size(56.dp)
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
