@@ -67,7 +67,9 @@ import java.util.Locale
 @Composable
 fun SocialProfileScreen(
     viewModel: SocialProfileViewModel,
-    onNavigateToEditProfile: () -> Unit = {}
+    onNavigateToEditProfile: () -> Unit = {},
+    onNavigateToAllPhotos: () -> Unit = {},
+    onNavigateToAllFriends: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showMoreOptions by remember { mutableStateOf(false) }
@@ -146,13 +148,17 @@ fun SocialProfileScreen(
                     item {
                         FriendsPreviewSection(
                             friendsCount = profile.friendsCount,
-                            friends = uiState.friends
+                            friends = uiState.friends,
+                            onSeeAllClick = onNavigateToAllFriends
                         )
                     }
 
                     // Photos Preview Section
                     item {
-                        PhotosPreviewSection(photos = uiState.photos)
+                        PhotosPreviewSection(
+                            photos = uiState.photos,
+                            onSeeAllClick = onNavigateToAllPhotos
+                        )
                     }
 
                     // Create Post Section (if own profile)
@@ -616,7 +622,7 @@ private fun IntroItem(
 }
 
 @Composable
-private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>) {
+private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>, onSeeAllClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -651,7 +657,7 @@ private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>) {
                     )
                 }
 
-                TextButton(onClick = { /* See all friends */ }) {
+                TextButton(onClick = onSeeAllClick) {
                     Text("See All")
                 }
             }
@@ -749,7 +755,10 @@ private fun FriendPreviewCard(
 }
 
 @Composable
-private fun PhotosPreviewSection(photos: List<Photo>) {
+private fun PhotosPreviewSection(
+    photos: List<Photo>,
+    onSeeAllClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -777,7 +786,7 @@ private fun PhotosPreviewSection(photos: List<Photo>) {
                     )
                 )
 
-                TextButton(onClick = { /* See all photos */ }) {
+                TextButton(onClick = onSeeAllClick) {
                     Text("See All")
                 }
             }

@@ -291,6 +291,12 @@ fun SocialScreen(
                                     viewModel = viewModel,
                                     onNavigateToEditProfile = {
                                         profileNavController.navigate("edit_profile")
+                                    },
+                                    onNavigateToAllPhotos = {
+                                        profileNavController.navigate("all_photos")
+                                    },
+                                    onNavigateToAllFriends = {
+                                        profileNavController.navigate("all_friends")
                                     }
                                 )
                             }
@@ -303,6 +309,38 @@ fun SocialScreen(
                                     }
                                 )
                             }
+
+                            composable("all_photos") {
+                                val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.photos.AllPhotosViewModel = viewModel()
+                                LaunchedEffect(Unit) {
+                                    viewModel.onAction(
+                                        com.akash.beautifulbhaluka.presentation.screens.social.profile.photos.AllPhotosAction.LoadPhotos("current_user_id")
+                                    )
+                                }
+                                com.akash.beautifulbhaluka.presentation.screens.social.profile.photos.AllPhotosScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { profileNavController.popBackStack() },
+                                    onPhotoClick = { photo ->
+                                        // TODO: Navigate to photo detail or open viewer
+                                    }
+                                )
+                            }
+
+                            composable("all_friends") {
+                                val viewModel: com.akash.beautifulbhaluka.presentation.screens.social.profile.friends.AllFriendsViewModel = viewModel()
+                                LaunchedEffect(Unit) {
+                                    viewModel.onAction(
+                                        com.akash.beautifulbhaluka.presentation.screens.social.profile.friends.AllFriendsAction.LoadFriends("current_user_id")
+                                    )
+                                }
+                                com.akash.beautifulbhaluka.presentation.screens.social.profile.friends.AllFriendsScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { profileNavController.popBackStack() },
+                                    onFriendClick = { friend ->
+                                        // TODO: Navigate to friend's profile
+                                    },
+                                    onMessageClick = { friend ->
+                                        // TODO: Navigate to chat with friend
                         }
                     }
 
