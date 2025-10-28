@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
@@ -61,6 +62,11 @@ fun NavigationDrawer(
                 route = NavigationRoutes.PROFILE,
                 label = "Profile",
                 icon = Icons.Default.AccountCircle
+            ),
+            DrawerItem(
+                route = NavigationRoutes.MATCHMAKING,
+                label = "💍 Matchmaking (বিবাহ)",
+                icon = Icons.Default.Favorite
             ),
             DrawerItem(
                 route = NavigationRoutes.BUY_SELL,

@@ -55,6 +55,9 @@ import com.akash.beautifulbhaluka.presentation.screens.kazioffice.KaziOfficeScre
 import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.LadiesParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.LawyerScreen
 import com.akash.beautifulbhaluka.presentation.screens.maps.MapsScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.MatchmakingScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.details.MatchmakingDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish.PublishMatchmakingScreen
 import com.akash.beautifulbhaluka.presentation.screens.museums.MuseumsScreen
 import com.akash.beautifulbhaluka.presentation.screens.news.NewsScreen
 import com.akash.beautifulbhaluka.presentation.screens.notifications.NotificationsScreen
@@ -444,6 +447,41 @@ fun AppNavigation(
         // Buy-Sell Publish Screen
         composable(NavigationRoutes.BUY_SELL_PUBLISH) {
             PublishBuySellScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Matchmaking & Marriage Platform
+        composable(NavigationRoutes.MATCHMAKING) {
+            MatchmakingScreen(
+                onNavigateToDetails = { profileId ->
+                    navController.navigate(NavigationRoutes.matchmakingDetails(profileId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.MATCHMAKING_PUBLISH)
+                }
+            )
+        }
+
+        // Matchmaking Details Screen
+        composable(
+            route = NavigationRoutes.MATCHMAKING_DETAILS,
+            arguments = listOf(navArgument("profileId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val profileId = backStackEntry.arguments?.getString("profileId") ?: ""
+            MatchmakingDetailsScreen(
+                profileId = profileId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Matchmaking Publish Screen
+        composable(NavigationRoutes.MATCHMAKING_PUBLISH) {
+            PublishMatchmakingScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

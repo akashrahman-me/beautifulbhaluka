@@ -49,6 +49,11 @@ object NavigationRoutes {
     const val BUY_SELL_DETAILS = "buy_sell_details/{itemId}"
     const val BUY_SELL_PUBLISH = "buy_sell_publish"
 
+    // Matchmaking & Marriage Platform
+    const val MATCHMAKING = "matchmaking"
+    const val MATCHMAKING_DETAILS = "matchmaking_details/{profileId}"
+    const val MATCHMAKING_PUBLISH = "matchmaking_publish"
+
     // Existing screens
     const val JOBS = "jobs"
     const val PUBLISH_JOB = "publish_job"
@@ -132,4 +137,5 @@ object NavigationRoutes {
     fun jobDetails(jobId: String) = "job_details/$jobId"
     fun productDetails(productId: String) = "product_details/$productId"
     fun buySellDetails(itemId: String) = "buy_sell_details/$itemId"
+    fun matchmakingDetails(profileId: String) = "matchmaking_details/$profileId"
 }
