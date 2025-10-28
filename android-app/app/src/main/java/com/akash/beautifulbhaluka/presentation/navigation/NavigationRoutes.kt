@@ -44,6 +44,11 @@ object NavigationRoutes {
     const val BOOKINGS = "bookings"
     const val NEWS = "news"
 
+    // Buy-Sell Marketplace
+    const val BUY_SELL = "buy_sell"
+    const val BUY_SELL_DETAILS = "buy_sell_details/{itemId}"
+    const val BUY_SELL_PUBLISH = "buy_sell_publish"
+
     // Existing screens
     const val JOBS = "jobs"
     const val PUBLISH_JOB = "publish_job"
@@ -126,4 +131,5 @@ object NavigationRoutes {
     // Helper builder for concrete detail routes (avoids hardcoding pattern everywhere)
     fun jobDetails(jobId: String) = "job_details/$jobId"
     fun productDetails(productId: String) = "product_details/$productId"
+    fun buySellDetails(itemId: String) = "buy_sell_details/$itemId"
 }

@@ -18,6 +18,9 @@ import com.akash.beautifulbhaluka.presentation.screens.bloodbank.BloodBankScreen
 import com.akash.beautifulbhaluka.presentation.screens.bookings.BookingsScreen
 import com.akash.beautifulbhaluka.presentation.screens.broadband.BroadbandScreen
 import com.akash.beautifulbhaluka.presentation.screens.butchercook.ButcherCookScreen
+import com.akash.beautifulbhaluka.presentation.screens.buysell.BuySellScreen
+import com.akash.beautifulbhaluka.presentation.screens.buysell.details.BuySellDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.buysell.publish.PublishBuySellScreen
 import com.akash.beautifulbhaluka.presentation.screens.calculator.CalculatorScreen
 import com.akash.beautifulbhaluka.presentation.screens.carrent.CarRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.cleaner.CleanerScreen
@@ -83,7 +86,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.SOCIAL
+    startDestination: String = NavigationRoutes.HOME
 ) {
     NavHost(
         navController = navController,
@@ -192,6 +195,18 @@ fun AppNavigation(
         }
         composable(NavigationRoutes.NEWS) {
             NewsScreen()
+        }
+
+        // Buy-Sell Marketplace
+        composable(NavigationRoutes.BUY_SELL) {
+            BuySellScreen(
+                onNavigateToDetails = { itemId ->
+                    navController.navigate(NavigationRoutes.buySellDetails(itemId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.BUY_SELL_PUBLISH)
+                }
+            )
         }
 
         // Existing screens
@@ -406,6 +421,29 @@ fun AppNavigation(
             val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
             JobDetailsScreen(
                 jobId = jobId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Buy-Sell Details Screen
+        composable(
+            route = NavigationRoutes.BUY_SELL_DETAILS,
+            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+            BuySellDetailsScreen(
+                itemId = itemId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Buy-Sell Publish Screen
+        composable(NavigationRoutes.BUY_SELL_PUBLISH) {
+            PublishBuySellScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
