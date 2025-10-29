@@ -3,14 +3,20 @@ package com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.akash.beautifulbhaluka.domain.usecase.SaveProfileImageUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PublishMatchmakingViewModel : ViewModel() {
+@HiltViewModel
+class PublishMatchmakingViewModel @Inject constructor(
+    private val saveProfileImageUseCase: SaveProfileImageUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PublishMatchmakingUiState())
     val uiState: StateFlow<PublishMatchmakingUiState> = _uiState.asStateFlow()
@@ -110,7 +116,30 @@ class PublishMatchmakingViewModel : ViewModel() {
     }
 
     private fun selectImage(uri: Uri?) {
-        _uiState.update { it.copy(selectedImageUri = uri) }
+        if (uri == null) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isUploadingImage = true) }
+
+            saveProfileImageUseCase(uri)
+                .onSuccess { savedPath ->
+                    _uiState.update {
+                        it.copy(
+                            selectedImageUri = uri,
+                            savedImagePath = savedPath,
+                            isUploadingImage = false
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isUploadingImage = false,
+                            error = "Failed to save image: ${error.message}"
+                        )
+                    }
+                }
+        }
     }
 
     private fun publishProfile() {
@@ -121,7 +150,13 @@ class PublishMatchmakingViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isPublishing = true, error = null, validationErrors = emptyMap()) }
+            _uiState.update {
+                it.copy(
+                    isPublishing = true,
+                    error = null,
+                    validationErrors = emptyMap()
+                )
+            }
             try {
                 // TODO: Implement actual API call
                 delay(2000) // Simulate network call

@@ -23,7 +23,9 @@ import com.akash.beautifulbhaluka.presentation.components.layout.Topbar
 import com.akash.beautifulbhaluka.presentation.navigation.AppNavigation
 import com.akash.beautifulbhaluka.presentation.navigation.NavigationRoutes
 import com.akash.beautifulbhaluka.presentation.theme.BeautifulBhalukaTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

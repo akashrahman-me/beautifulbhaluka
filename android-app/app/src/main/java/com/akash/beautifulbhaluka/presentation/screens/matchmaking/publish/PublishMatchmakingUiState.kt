@@ -18,6 +18,8 @@ data class PublishMatchmakingUiState(
     val phoneNumber: String = "",
     val email: String = "",
     val selectedImageUri: Uri? = null,
+    val savedImagePath: String? = null,
+    val isUploadingImage: Boolean = false,
     val currentInterest: String = "",
     val error: String? = null,
     val isPublishing: Boolean = false,

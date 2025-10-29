@@ -1,6 +1,8 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -28,7 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,9 +38,18 @@ import coil.compose.AsyncImage
 fun PublishMatchmakingScreen(
     onNavigateBack: () -> Unit,
     onProfilePublished: () -> Unit = {},
-    viewModel: PublishMatchmakingViewModel = viewModel()
+    viewModel: PublishMatchmakingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.onAction(PublishMatchmakingAction.SelectImage(it))
+        }
+    }
 
     LaunchedEffect(uiState.publishSuccess) {
         if (uiState.publishSuccess) {
@@ -62,26 +73,30 @@ fun PublishMatchmakingScreen(
             .fillMaxSize()
             .background(gradientBrush)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Modern Header
-            ModernPublishHeader(onNavigateBack = onNavigateBack)
+        if (uiState.isPublishing) {
+            ModernLoadingState()
+        } else {
+            // Scrollable Content with Header
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Modern Header (scrolls with content)
+                ModernPublishHeader(onNavigateBack = onNavigateBack)
 
-            if (uiState.isPublishing) {
-                ModernLoadingState()
-            } else {
-                // Scrollable Content
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     // Profile Image Upload
                     ModernImageUploadCard(
                         selectedImageUri = uiState.selectedImageUri,
-                        onSelectImage = { viewModel.onAction(PublishMatchmakingAction.SelectImage(it)) }
+                        isUploading = uiState.isUploadingImage,
+                        onSelectImage = { imagePickerLauncher.launch("image/*") }
                     )
 
                     // Personal Information Card
@@ -93,7 +108,13 @@ fun PublishMatchmakingScreen(
                     ) {
                         ModernTextField(
                             value = uiState.name,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateName(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateName(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Full Name",
                             placeholder = "Enter your full name",
                             leadingIcon = Icons.Outlined.Badge,
@@ -104,7 +125,13 @@ fun PublishMatchmakingScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             ModernTextField(
                                 value = uiState.age,
-                                onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateAge(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishMatchmakingAction.UpdateAge(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "Age",
                                 placeholder = "26",
                                 leadingIcon = Icons.Outlined.Cake,
@@ -116,7 +143,13 @@ fun PublishMatchmakingScreen(
 
                             ModernTextField(
                                 value = uiState.height,
-                                onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateHeight(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishMatchmakingAction.UpdateHeight(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "Height",
                                 placeholder = "5'6\"",
                                 leadingIcon = Icons.Outlined.Height,
@@ -126,7 +159,13 @@ fun PublishMatchmakingScreen(
 
                         ModernDropdownField(
                             value = uiState.gender,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateGender(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateGender(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Gender",
                             options = listOf("Male", "Female"),
                             leadingIcon = Icons.Outlined.Wc
@@ -142,7 +181,13 @@ fun PublishMatchmakingScreen(
                     ) {
                         ModernTextField(
                             value = uiState.occupation,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateOccupation(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateOccupation(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Occupation",
                             placeholder = "Software Engineer",
                             leadingIcon = Icons.Outlined.Work,
@@ -152,7 +197,13 @@ fun PublishMatchmakingScreen(
 
                         ModernTextField(
                             value = uiState.education,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateEducation(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateEducation(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Education",
                             placeholder = "B.Sc in Computer Science",
                             leadingIcon = Icons.Outlined.School,
@@ -170,7 +221,13 @@ fun PublishMatchmakingScreen(
                     ) {
                         ModernTextField(
                             value = uiState.location,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateLocation(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateLocation(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Location",
                             placeholder = "Bhaluka, Mymensingh",
                             leadingIcon = Icons.Outlined.LocationOn,
@@ -180,15 +237,33 @@ fun PublishMatchmakingScreen(
 
                         ModernDropdownField(
                             value = uiState.religion,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateReligion(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateReligion(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Religion",
-                            options = listOf("Islam", "Hinduism", "Buddhism", "Christianity", "Other"),
+                            options = listOf(
+                                "Islam",
+                                "Hinduism",
+                                "Buddhism",
+                                "Christianity",
+                                "Other"
+                            ),
                             leadingIcon = Icons.Outlined.Star
                         )
 
                         ModernDropdownField(
                             value = uiState.maritalStatus,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateMaritalStatus(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateMaritalStatus(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Marital Status",
                             options = listOf("Never Married", "Divorced", "Widowed"),
                             leadingIcon = Icons.Outlined.Favorite
@@ -204,7 +279,13 @@ fun PublishMatchmakingScreen(
                     ) {
                         ModernTextField(
                             value = uiState.bio,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateBio(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateBio(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Bio",
                             placeholder = "Write a brief description about yourself, your interests, and what you're looking for...",
                             leadingIcon = Icons.Outlined.Description,
@@ -247,7 +328,13 @@ fun PublishMatchmakingScreen(
                     ) {
                         ModernTextField(
                             value = uiState.phoneNumber,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdatePhoneNumber(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdatePhoneNumber(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Phone Number",
                             placeholder = "+880 1XXX-XXXXXX",
                             leadingIcon = Icons.Outlined.Phone,
@@ -257,7 +344,13 @@ fun PublishMatchmakingScreen(
 
                         ModernTextField(
                             value = uiState.email,
-                            onValueChange = { viewModel.onAction(PublishMatchmakingAction.UpdateEmail(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishMatchmakingAction.UpdateEmail(
+                                        it
+                                    )
+                                )
+                            },
                             label = "Email",
                             placeholder = "your.email@example.com",
                             leadingIcon = Icons.Outlined.Email,
@@ -329,9 +422,8 @@ fun ModernPublishHeader(
             containerColor = Color.Transparent
         ),
         modifier = Modifier
-            .statusBarsPadding()
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 4.dp)
+            .padding(top = 16.dp, bottom = 4.dp)
     )
 }
 
@@ -353,14 +445,15 @@ fun ModernLoadingState() {
 @Composable
 fun ModernImageUploadCard(
     selectedImageUri: Uri?,
-    onSelectImage: (Uri) -> Unit
+    isUploading: Boolean,
+    onSelectImage: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(16.dp))
-            .clickable { /* Open image picker */ },
+            .clickable(enabled = !isUploading) { onSelectImage() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -407,21 +500,37 @@ fun ModernImageUploadCard(
                 }
             }
 
-            IconButton(
-                onClick = { /* Open image picker */ },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AddAPhoto,
-                    contentDescription = "Add photo",
-                    tint = Color.White,
+            // Loading overlay
+            if (isUploading) {
+                Box(
                     modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFF6200EE), CircleShape)
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
+
+            // Edit button (shows on both placeholder and selected image)
+            if (!isUploading) {
+                IconButton(
+                    onClick = { onSelectImage() },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
                         .padding(8.dp)
-                )
+                        .background(Color(0xFFFF6B9D), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddAPhoto,
+                        contentDescription = "Add photo",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }

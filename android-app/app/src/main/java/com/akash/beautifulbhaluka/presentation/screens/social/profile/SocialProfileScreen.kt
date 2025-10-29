@@ -79,12 +79,14 @@ fun SocialProfileScreen(
             uiState.isLoading -> {
                 ModernLoadingState()
             }
+
             uiState.error != null -> {
                 ModernErrorState(
                     errorMessage = uiState.error ?: "An error occurred",
                     onRetry = { viewModel.onAction(SocialProfileAction.LoadProfile("current_user_id")) }
                 )
             }
+
             uiState.profile != null -> {
                 val profile = uiState.profile!!
                 val isOwnProfile = profile.userId == "current_user_id"
@@ -195,16 +197,37 @@ fun SocialProfileScreen(
                                         onLikeClick = {
                                             if (post.isLiked) {
                                                 // Unlike the post by selecting LIKE again
-                                                viewModel.onAction(SocialProfileAction.ReactToPost(post.id, com.akash.beautifulbhaluka.domain.model.Reaction.LIKE))
+                                                viewModel.onAction(
+                                                    SocialProfileAction.ReactToPost(
+                                                        post.id,
+                                                        com.akash.beautifulbhaluka.domain.model.Reaction.LIKE
+                                                    )
+                                                )
                                             } else {
-                                                viewModel.onAction(SocialProfileAction.ReactToPost(post.id, com.akash.beautifulbhaluka.domain.model.Reaction.LIKE))
+                                                viewModel.onAction(
+                                                    SocialProfileAction.ReactToPost(
+                                                        post.id,
+                                                        com.akash.beautifulbhaluka.domain.model.Reaction.LIKE
+                                                    )
+                                                )
                                             }
                                         },
                                         onReactionSelected = { reaction ->
-                                            viewModel.onAction(SocialProfileAction.ReactToPost(post.id, reaction))
+                                            viewModel.onAction(
+                                                SocialProfileAction.ReactToPost(
+                                                    post.id,
+                                                    reaction
+                                                )
+                                            )
                                         },
                                         onCustomEmojiSelected = { emoji, label ->
-                                            viewModel.onAction(SocialProfileAction.ReactToPostWithCustomEmoji(post.id, emoji, label))
+                                            viewModel.onAction(
+                                                SocialProfileAction.ReactToPostWithCustomEmoji(
+                                                    post.id,
+                                                    emoji,
+                                                    label
+                                                )
+                                            )
                                         },
                                         onCommentClick = { /* Handle comment */ },
                                         onShareClick = { /* Handle share */ },
@@ -213,16 +236,19 @@ fun SocialProfileScreen(
                                 }
                             }
                         }
+
                         ProfileTab.ABOUT -> {
                             item {
                                 DetailedAboutSection(profile = profile)
                             }
                         }
+
                         ProfileTab.FRIENDS -> {
                             item {
                                 FriendsGridSection()
                             }
                         }
+
                         ProfileTab.PHOTOS -> {
                             item {
                                 PhotosGridSection()
@@ -362,7 +388,7 @@ private fun NameAndBioSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(top =36.dp, bottom = 16.dp)
+            .padding(top = 36.dp, bottom = 16.dp)
     ) {
         // Name with verification badge
         Row(
@@ -622,7 +648,11 @@ private fun IntroItem(
 }
 
 @Composable
-private fun FriendsPreviewSection(friendsCount: Int, friends: List<Friend>, onSeeAllClick: () -> Unit) {
+private fun FriendsPreviewSection(
+    friendsCount: Int,
+    friends: List<Friend>,
+    onSeeAllClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -933,6 +963,7 @@ private fun CreateActionButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ContentTabsSection(
     selectedTab: ProfileTab,

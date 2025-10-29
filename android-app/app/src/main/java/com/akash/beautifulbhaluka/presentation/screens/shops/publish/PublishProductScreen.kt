@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,9 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 
@@ -91,7 +88,13 @@ fun PublishProductScreen(
                     ) {
                         ModernTextField(
                             value = uiState.productName,
-                            onValueChange = { viewModel.onAction(PublishProductAction.UpdateProductName(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishProductAction.UpdateProductName(
+                                        it
+                                    )
+                                )
+                            },
                             label = "পণ্যের নাম",
                             placeholder = "যেমন: স্যামসাং গ্যালাক্সি A54",
                             leadingIcon = Icons.Outlined.ShoppingBag,
@@ -125,7 +128,13 @@ fun PublishProductScreen(
                             selectedCategory = uiState.selectedCategory?.name ?: "",
                             onCategorySelect = { categoryName ->
                                 val category = uiState.categories.find { it.name == categoryName }
-                                category?.let { viewModel.onAction(PublishProductAction.SelectCategory(it)) }
+                                category?.let {
+                                    viewModel.onAction(
+                                        PublishProductAction.SelectCategory(
+                                            it
+                                        )
+                                    )
+                                }
                             },
                             isError = uiState.validationErrors.containsKey("category")
                         )
@@ -135,7 +144,13 @@ fun PublishProductScreen(
                         ) {
                             ModernTextField(
                                 value = uiState.price,
-                                onValueChange = { viewModel.onAction(PublishProductAction.UpdatePrice(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishProductAction.UpdatePrice(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "দাম",
                                 placeholder = "0",
                                 leadingIcon = Icons.Outlined.AttachMoney,
@@ -147,7 +162,13 @@ fun PublishProductScreen(
 
                             ModernTextField(
                                 value = uiState.stock,
-                                onValueChange = { viewModel.onAction(PublishProductAction.UpdateStock(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishProductAction.UpdateStock(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "স্টক",
                                 placeholder = "0",
                                 leadingIcon = Icons.Outlined.Inventory,
@@ -167,7 +188,13 @@ fun PublishProductScreen(
                     ) {
                         ModernTextField(
                             value = uiState.sellerName,
-                            onValueChange = { viewModel.onAction(PublishProductAction.UpdateSellerName(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishProductAction.UpdateSellerName(
+                                        it
+                                    )
+                                )
+                            },
                             label = "আপনার নাম",
                             placeholder = "যেমন: মোহাম্মদ আলী",
                             leadingIcon = Icons.Outlined.Person,
@@ -177,7 +204,13 @@ fun PublishProductScreen(
 
                         ModernTextField(
                             value = uiState.sellerContact,
-                            onValueChange = { viewModel.onAction(PublishProductAction.UpdateSellerContact(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishProductAction.UpdateSellerContact(
+                                        it
+                                    )
+                                )
+                            },
                             label = "মোবাইল নম্বর",
                             placeholder = "+880 1XXX XXXXXX",
                             leadingIcon = Icons.Outlined.Phone,
@@ -187,7 +220,13 @@ fun PublishProductScreen(
 
                         ModernTextField(
                             value = uiState.location,
-                            onValueChange = { viewModel.onAction(PublishProductAction.UpdateLocation(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishProductAction.UpdateLocation(
+                                        it
+                                    )
+                                )
+                            },
                             label = "এলাকা/ঠিকানা",
                             placeholder = "যেমন: ধানমন্ডি, ঢাকা",
                             leadingIcon = Icons.Outlined.LocationOn,
@@ -616,7 +655,7 @@ private fun ModernCategoryDropdown(
             ),
             isError = isError,
             modifier = Modifier
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                 .fillMaxWidth()
         )
 
