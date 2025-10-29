@@ -1,8 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,7 +26,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
 import com.akash.beautifulbhaluka.domain.model.ProfileCategory
-import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,115 +44,121 @@ fun MatchmakingContent(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
-                    )
-                )
-        ) {
-            // Animated Top Bar with Scroll
-            ScrollAnimatedHeader(visible = showHeader) {
-                MatchmakingTopBar(
-                    searchQuery = uiState.searchQuery,
-                    onSearchChange = { onAction(MatchmakingAction.Search(it)) },
-                    onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
-                    showFilters = uiState.showFilters
-                )
-            }
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Sticky Top Bar (always visible at top)
+            MatchmakingTopBar(
+                onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
+                showFilters = uiState.showFilters
+            )
 
-            // Hero Section with Gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .background(
-                        Brush.horizontalGradient(gradientColors)
-                    ),
-                contentAlignment = Alignment.Center
+            // Scrollable Content
+            LazyColumn(
+                state = scrollState,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp),
-                        tint = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Find Your Perfect Match",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "${uiState.filteredProfiles.size} Profiles Available",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.9f)
+                // Search Bar (scrolls with content)
+                item {
+                    SearchBar(
+                        searchQuery = uiState.searchQuery,
+                        onSearchChange = { onAction(MatchmakingAction.Search(it)) }
                     )
                 }
-            }
 
-            // Category Chips
-            LazyRow(
-                modifier = Modifier.padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                items(ProfileCategory.entries) { category ->
-                    CategoryChip(
-                        category = category,
-                        isSelected = uiState.selectedCategory == category,
-                        onClick = { onAction(MatchmakingAction.SelectCategory(category)) }
-                    )
-                }
-            }
-
-            // Filters Section
-            AnimatedVisibility(
-                visible = uiState.showFilters,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                FiltersSection(
-                    selectedGender = uiState.selectedGenderFilter,
-                    selectedAgeRange = uiState.selectedAgeRange,
-                    onGenderChange = { onAction(MatchmakingAction.FilterByGender(it)) },
-                    onAgeRangeChange = { onAction(MatchmakingAction.FilterByAgeRange(it)) },
-                    onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
-                )
-            }
-
-            // Profiles List
-            if (uiState.isLoading) {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(3) {
-                        ProfileCardShimmer()
+                // Hero Section with Gradient
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .background(
+                                Brush.horizontalGradient(gradientColors)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp),
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Find Your Perfect Match",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "${uiState.filteredProfiles.size} Profiles Available",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
                     }
                 }
-            } else if (uiState.filteredProfiles.isEmpty()) {
-                EmptyState()
-            } else {
-                LazyColumn(
-                    state = scrollState,
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(uiState.filteredProfiles) { profile ->
-                        ProfileCard(
-                            profile = profile,
-                            onClick = { onNavigateToDetails?.invoke(profile.id) }
+
+                // Category Chips
+                item {
+                    LazyRow(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        items(ProfileCategory.entries) { category ->
+                            CategoryChip(
+                                category = category,
+                                isSelected = uiState.selectedCategory == category,
+                                onClick = { onAction(MatchmakingAction.SelectCategory(category)) }
+                            )
+                        }
+                    }
+                }
+
+                // Filters Section
+                item {
+                    AnimatedVisibility(
+                        visible = uiState.showFilters,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut()
+                    ) {
+                        FiltersSection(
+                            selectedGender = uiState.selectedGenderFilter,
+                            selectedAgeRange = uiState.selectedAgeRange,
+                            onGenderChange = { onAction(MatchmakingAction.FilterByGender(it)) },
+                            onAgeRangeChange = { onAction(MatchmakingAction.FilterByAgeRange(it)) },
+                            onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
                         )
                     }
+                }
+
+                // Profiles List
+                if (uiState.isLoading) {
+                    items(3) {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            ProfileCardShimmer()
+                        }
+                    }
+                } else if (uiState.filteredProfiles.isEmpty()) {
+                    item {
+                        EmptyState()
+                    }
+                } else {
+                    items(uiState.filteredProfiles) { profile ->
+                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            ProfileCard(
+                                profile = profile,
+                                onClick = { onNavigateToDetails?.invoke(profile.id) }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
@@ -183,8 +186,6 @@ fun MatchmakingContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MatchmakingTopBar(
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
     onFilterClick: () -> Unit,
     showFilters: Boolean
 ) {
@@ -193,75 +194,79 @@ fun MatchmakingTopBar(
         shadowElevation = 4.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(start = 16.dp, end = 10.dp, top = 8.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "💍 Matchmaking",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            Text(
+                text = "💍 Matchmaking",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-                IconButton(
-                    onClick = onFilterClick,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = if (showFilters)
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                        else Color.Transparent
-                    )
-                ) {
+            IconButton(
+                onClick = onFilterClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = if (showFilters)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    else Color.Transparent
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = "Filters",
+                    tint = if (showFilters)
+                        MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchBar(
+    searchQuery: String,
+    onSearchChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        placeholder = {
+            Text(
+                text = "Search by name, occupation, location...",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search"
+            )
+        },
+        trailingIcon = {
+            if (searchQuery.isNotEmpty()) {
+                IconButton(onClick = { onSearchChange("") }) {
                     Icon(
-                        imageVector = Icons.Default.FilterList,
-                        contentDescription = "Filters",
-                        tint = if (showFilters)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear"
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Search Bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchChange,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(
-                        text = "Search by name, occupation, location...",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { onSearchChange("") }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear"
-                            )
-                        }
-                    }
-                },
-                shape = RoundedCornerShape(16.dp),
-                singleLine = true,
-                maxLines = 1
-            )
-        }
-    }
+        },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        maxLines = 1
+    )
 }
 
 @Composable
@@ -395,7 +400,7 @@ fun ProfileCard(
     profile: MatchmakingProfile,
     onClick: () -> Unit
 ) {
-      Card(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -532,7 +537,12 @@ fun ProfileCard(
                         items(profile.interests.take(3)) { interest ->
                             AssistChip(
                                 onClick = { },
-                                label = { Text(interest, style = MaterialTheme.typography.bodySmall) },
+                                label = {
+                                    Text(
+                                        interest,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Tag,
@@ -610,8 +620,7 @@ fun ProfileCardShimmer() {
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-//        elevation = CardDefaults.cardElevation(0.dp)
+        )
     ) {
         Box(
             modifier = Modifier
@@ -621,7 +630,6 @@ fun ProfileCardShimmer() {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-//                 Shimmer placeholder content
                 Box(
                     modifier = Modifier
                         .size(60.dp)
@@ -676,3 +684,4 @@ fun EmptyState() {
         }
     }
 }
+
