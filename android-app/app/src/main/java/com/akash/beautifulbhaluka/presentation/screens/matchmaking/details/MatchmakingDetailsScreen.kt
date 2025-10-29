@@ -55,7 +55,7 @@ fun MatchmakingDetailsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 90.dp)
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 // Hero Section with Gradient
                 item {
@@ -95,15 +95,6 @@ fun MatchmakingDetailsScreen(
                                         else
                                             Icons.Outlined.FavoriteBorder,
                                         contentDescription = "Favorite",
-                                        tint = Color.White
-                                    )
-                                }
-                                IconButton(
-                                    onClick = { viewModel.onAction(MatchmakingDetailsAction.ShareProfile) }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Share,
-                                        contentDescription = "Share",
                                         tint = Color.White
                                     )
                                 }
@@ -305,14 +296,6 @@ fun MatchmakingDetailsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-
-            // Bottom Action Buttons
-            BottomActionBar(
-                isContactingInProgress = uiState.isContactingInProgress,
-                onSendInterest = {
-                    viewModel.onAction(MatchmakingDetailsAction.SendInterest)
-                }
-            )
         } else if (uiState.error != null) {
             val errorMsg = uiState.error ?: "Unknown error"
             ErrorState(
@@ -531,9 +514,6 @@ private fun ContactInfoCard(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFF6B9D).copy(alpha = 0.1f)
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
         )
     ) {
         Column(
@@ -653,53 +633,3 @@ private fun ContactInfoRow(
     }
 }
 
-@Composable
-private fun BottomActionBar(
-    isContactingInProgress: Boolean,
-    onSendInterest: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shadowElevation = 8.dp,
-        color = MaterialTheme.colorScheme.surface
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Button(
-                onClick = onSendInterest,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF6B9D)
-                ),
-                enabled = !isContactingInProgress
-            ) {
-                if (isContactingInProgress) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Send Interest",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            }
-        }
-    }
-}

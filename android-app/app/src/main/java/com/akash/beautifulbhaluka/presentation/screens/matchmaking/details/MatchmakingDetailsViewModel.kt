@@ -23,7 +23,6 @@ class MatchmakingDetailsViewModel : ViewModel() {
             is MatchmakingDetailsAction.SendInterest -> sendInterest()
             is MatchmakingDetailsAction.CallContact -> callContact()
             is MatchmakingDetailsAction.SendEmail -> sendEmail()
-            is MatchmakingDetailsAction.ShareProfile -> shareProfile()
             is MatchmakingDetailsAction.ClearError -> clearError()
         }
     }
@@ -48,7 +47,14 @@ class MatchmakingDetailsViewModel : ViewModel() {
                     religion = "Islam",
                     maritalStatus = "Never Married",
                     bio = "I'm a passionate software engineer who loves creating innovative solutions. Looking for a life partner who values education, family, and personal growth. I enjoy reading, traveling, and exploring new cuisines.",
-                    interests = listOf("Reading", "Traveling", "Cooking", "Technology", "Photography", "Music"),
+                    interests = listOf(
+                        "Reading",
+                        "Traveling",
+                        "Cooking",
+                        "Technology",
+                        "Photography",
+                        "Music"
+                    ),
                     verified = true,
                     contactNumber = "+880 1XXX-XXXXXX",
                     email = "contact@example.com"
@@ -85,7 +91,12 @@ class MatchmakingDetailsViewModel : ViewModel() {
             try {
                 // TODO: Implement actual API call
                 delay(1000)
-                _uiState.update { it.copy(isContactingInProgress = false) }
+                _uiState.update {
+                    it.copy(
+                        isContactingInProgress = false,
+                        interestSent = true
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -105,9 +116,6 @@ class MatchmakingDetailsViewModel : ViewModel() {
         // TODO: Implement email functionality
     }
 
-    private fun shareProfile() {
-        // TODO: Implement share functionality
-    }
 
     private fun clearError() {
         _uiState.update { it.copy(error = null) }

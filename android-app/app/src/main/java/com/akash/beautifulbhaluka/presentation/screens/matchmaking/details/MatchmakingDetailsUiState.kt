@@ -8,7 +8,8 @@ data class MatchmakingDetailsUiState(
     val showContactInfo: Boolean = false,
     val error: String? = null,
     val isFavorite: Boolean = false,
-    val isContactingInProgress: Boolean = false
+    val isContactingInProgress: Boolean = false,
+    val interestSent: Boolean = false
 )
 
 sealed class MatchmakingDetailsAction {
@@ -18,7 +19,6 @@ sealed class MatchmakingDetailsAction {
     object SendInterest : MatchmakingDetailsAction()
     object CallContact : MatchmakingDetailsAction()
     object SendEmail : MatchmakingDetailsAction()
-    object ShareProfile : MatchmakingDetailsAction()
     object ClearError : MatchmakingDetailsAction()
 }
 
