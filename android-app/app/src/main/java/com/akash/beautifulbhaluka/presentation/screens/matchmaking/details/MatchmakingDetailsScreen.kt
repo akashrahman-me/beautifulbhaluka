@@ -1,7 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking.details
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,33 +22,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MatchmakingDetailsScreen(
     profileId: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: MatchmakingDetailsViewModel = viewModel()
 ) {
-    // Mock data - In real app, fetch from ViewModel
-    val profile = remember {
-        MatchmakingProfile(
-            id = profileId,
-            name = "Fatima Rahman",
-            age = 26,
-            gender = "Female",
-            occupation = "Software Engineer",
-            education = "B.Sc in CSE, BUET",
-            location = "Bhaluka, Mymensingh",
-            height = "5'4\"",
-            religion = "Islam",
-            maritalStatus = "Never Married",
-            bio = "I'm a passionate software engineer who loves creating innovative solutions. Looking for a life partner who values education, family, and personal growth. I enjoy reading, traveling, and exploring new cuisines.",
-            interests = listOf("Reading", "Traveling", "Cooking", "Technology", "Photography", "Music"),
-            verified = true,
-            contactNumber = "+880 1XXX-XXXXXX",
-            email = "contact@example.com"
-        )
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(profileId) {
+        viewModel.onAction(MatchmakingDetailsAction.LoadProfile(profileId))
     }
 
     val gradientColors = listOf(
@@ -57,367 +43,412 @@ fun MatchmakingDetailsScreen(
         Color(0xFF6C5B7B)
     )
 
-    var showContactInfo by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+        if (uiState.isLoading) {
+            ModernLoadingState()
+        } else if (uiState.profile != null) {
+            val profile = uiState.profile!!
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile Details") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            // Hero Section
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(Brush.horizontalGradient(gradientColors)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 90.dp)
+            ) {
+                // Hero Section with Gradient
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(280.dp)
                     ) {
+                        // Gradient Background
                         Box(
                             modifier = Modifier
-                                .size(100.dp)
-                                .clip(CircleShape)
-                                .background(Color.White),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = profile.name.first().toString(),
-                                style = MaterialTheme.typography.displayLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = gradientColors[0]
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(gradientColors)
+                                )
+                        )
+
+                        // Top Bar
+                        TopAppBar(
+                            title = { },
+                            navigationIcon = {
+                                IconButton(onClick = onNavigateBack) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back",
+                                        tint = Color.White
+                                    )
+                                }
+                            },
+                            actions = {
+                                IconButton(
+                                    onClick = { viewModel.onAction(MatchmakingDetailsAction.ToggleFavorite) }
+                                ) {
+                                    Icon(
+                                        imageVector = if (uiState.isFavorite)
+                                            Icons.Filled.Favorite
+                                        else
+                                            Icons.Outlined.FavoriteBorder,
+                                        contentDescription = "Favorite",
+                                        tint = Color.White
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { viewModel.onAction(MatchmakingDetailsAction.ShareProfile) }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Share,
+                                        contentDescription = "Share",
+                                        tint = Color.White
+                                    )
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent
                             )
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        )
+
+                        // Profile Avatar and Name
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 40.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = profile.name,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            if (profile.verified) {
-                                Icon(
-                                    imageVector = Icons.Default.Verified,
-                                    contentDescription = "Verified",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = profile.name.first().toString(),
+                                    style = MaterialTheme.typography.displayLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = gradientColors[0]
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = profile.name,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                if (profile.verified) {
+                                    Icon(
+                                        imageVector = Icons.Default.Verified,
+                                        contentDescription = "Verified",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                QuickInfoChip(
+                                    icon = Icons.Default.Cake,
+                                    text = "${profile.age} years"
+                                )
+                                QuickInfoChip(
+                                    icon = Icons.Default.Height,
+                                    text = profile.height
+                                )
+                                QuickInfoChip(
+                                    icon = if (profile.gender == "Male") Icons.Default.Male else Icons.Default.Female,
+                                    text = profile.gender
                                 )
                             }
                         }
                     }
                 }
-            }
 
-            // Quick Info Cards
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    QuickInfoCard(
-                        icon = Icons.Default.Cake,
-                        label = "Age",
-                        value = "${profile.age} years",
-                        modifier = Modifier.weight(1f)
-                    )
-                    QuickInfoCard(
-                        icon = Icons.Default.Height,
-                        label = "Height",
-                        value = profile.height,
-                        modifier = Modifier.weight(1f)
-                    )
-                    QuickInfoCard(
-                        icon = if (profile.gender == "Male") Icons.Default.Male else Icons.Default.Female,
-                        label = "Gender",
-                        value = profile.gender,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            // Bio Section
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-                SectionCard(
-                    title = "About Me",
-                    icon = Icons.Default.Person
-                ) {
-                    Text(
-                        text = profile.bio,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                        lineHeight = MaterialTheme.typography.bodyLarge.fontSize * 1.5
-                    )
-                }
-            }
-
-            // Personal Information
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                SectionCard(
-                    title = "Personal Information",
-                    icon = Icons.Default.Info
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        InfoRow(
-                            icon = Icons.Default.Work,
-                            label = "Occupation",
-                            value = profile.occupation
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        InfoRow(
-                            icon = Icons.Default.School,
-                            label = "Education",
-                            value = profile.education
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        InfoRow(
-                            icon = Icons.Default.LocationOn,
-                            label = "Location",
-                            value = profile.location
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        InfoRow(
-                            icon = Icons.Default.Favorite,
-                            label = "Marital Status",
-                            value = profile.maritalStatus
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        InfoRow(
-                            icon = Icons.Default.Star,
-                            label = "Religion",
-                            value = profile.religion
+                // About Me Section
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    ModernSectionCard(
+                        title = "About Me",
+                        icon = Icons.Outlined.Person,
+                        iconColor = Color(0xFFFF6B9D)
+                    ) {
+                        Text(
+                            text = profile.bio,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                            lineHeight = MaterialTheme.typography.bodyLarge.fontSize * 1.5
                         )
                     }
                 }
-            }
 
-            // Interests
-            if (profile.interests.isNotEmpty()) {
+                // Personal Information
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
-                    SectionCard(
-                        title = "Interests & Hobbies",
-                        icon = Icons.Default.Psychology
+                    ModernSectionCard(
+                        title = "Personal Information",
+                        icon = Icons.Outlined.Info,
+                        iconColor = Color(0xFF6366F1)
                     ) {
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(profile.interests) { interest ->
-                                AssistChip(
-                                    onClick = { },
-                                    label = { Text(interest) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Tag,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    },
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    )
-                                )
-                            }
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            DetailInfoRow(
+                                icon = Icons.Outlined.Work,
+                                label = "Occupation",
+                                value = profile.occupation,
+                                iconColor = Color(0xFF6366F1)
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            DetailInfoRow(
+                                icon = Icons.Outlined.School,
+                                label = "Education",
+                                value = profile.education,
+                                iconColor = Color(0xFF10B981)
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            DetailInfoRow(
+                                icon = Icons.Outlined.LocationOn,
+                                label = "Location",
+                                value = profile.location,
+                                iconColor = Color(0xFFF59E0B)
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            DetailInfoRow(
+                                icon = Icons.Outlined.Favorite,
+                                label = "Marital Status",
+                                value = profile.maritalStatus,
+                                iconColor = Color(0xFFEC4899)
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            DetailInfoRow(
+                                icon = Icons.Outlined.Star,
+                                label = "Religion",
+                                value = profile.religion,
+                                iconColor = Color(0xFF8B5CF6)
+                            )
                         }
                     }
                 }
-            }
 
-            // Contact Section
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ContactPhone,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = "Contact Information",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
+                // Interests & Hobbies
+                if (profile.interests.isNotEmpty()) {
+                    item {
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        AnimatedVisibility(
-                            visible = showContactInfo,
-                            enter = expandVertically() + fadeIn(),
-                            exit = shrinkVertically() + fadeOut()
+                        ModernSectionCard(
+                            title = "Interests & Hobbies",
+                            icon = Icons.Outlined.Psychology,
+                            iconColor = Color(0xFFEC4899)
                         ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                if (profile.contactNumber != null) {
-                                    ContactInfoRow(
-                                        icon = Icons.Default.Phone,
-                                        label = "Phone",
-                                        value = profile.contactNumber
-                                    )
-                                }
-                                if (profile.email != null) {
-                                    ContactInfoRow(
-                                        icon = Icons.Default.Email,
-                                        label = "Email",
-                                        value = profile.email
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(profile.interests) { interest ->
+                                    AssistChip(
+                                        onClick = { },
+                                        label = {
+                                            Text(
+                                                interest,
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Tag,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        },
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            labelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
                                     )
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Button(
-                            onClick = { showContactInfo = !showContactInfo },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (showContactInfo) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(if (showContactInfo) "Hide Contact Info" else "Show Contact Info")
-                        }
                     }
+                }
+
+                // Contact Section
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ContactInfoCard(
+                        profile = profile,
+                        showContactInfo = uiState.showContactInfo,
+                        onToggleContactInfo = {
+                            viewModel.onAction(MatchmakingDetailsAction.ToggleContactInfo)
+                        },
+                        onCallContact = {
+                            viewModel.onAction(MatchmakingDetailsAction.CallContact)
+                        },
+                        onSendEmail = {
+                            viewModel.onAction(MatchmakingDetailsAction.SendEmail)
+                        }
+                    )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
 
-            // Action Buttons
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = { /* Share profile */ },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Share, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Share")
-                    }
-                    Button(
-                        onClick = { /* Send interest */ },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF6B9D)
-                        )
-                    ) {
-                        Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Express Interest")
-                    }
+            // Bottom Action Buttons
+            BottomActionBar(
+                isContactingInProgress = uiState.isContactingInProgress,
+                onSendInterest = {
+                    viewModel.onAction(MatchmakingDetailsAction.SendInterest)
                 }
+            )
+        } else if (uiState.error != null) {
+            val errorMsg = uiState.error ?: "Unknown error"
+            ErrorState(
+                errorMessage = errorMsg,
+                onRetry = {
+                    viewModel.onAction(MatchmakingDetailsAction.LoadProfile(profileId))
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ModernLoadingState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                strokeWidth = 4.dp,
+                color = Color(0xFFFF6B9D)
+            )
+            Text(
+                text = "Loading profile...",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorState(
+    errorMessage: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.ErrorOutline,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+            )
+            Text(
+                text = "Something went wrong",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = errorMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+            FilledTonalButton(
+                onClick = onRetry,
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Try again")
             }
         }
     }
 }
 
 @Composable
-fun QuickInfoCard(
+private fun QuickInfoChip(
     icon: ImageVector,
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
+    text: String
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White.copy(alpha = 0.2f)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                modifier = Modifier.size(16.dp),
+                tint = Color.White
             )
             Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White,
+                fontWeight = FontWeight.Medium
             )
         }
     }
 }
 
 @Composable
-fun SectionCard(
+private fun ModernSectionCard(
     title: String,
     icon: ImageVector,
-    content: @Composable () -> Unit
+    iconColor: Color,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -426,7 +457,7 @@ fun SectionCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = iconColor,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
@@ -435,65 +466,169 @@ fun SectionCard(
                     fontWeight = FontWeight.Bold
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
             content()
         }
     }
 }
 
 @Composable
-fun InfoRow(
+private fun DetailInfoRow(
     icon: ImageVector,
     label: String,
-    value: String
+    value: String,
+    iconColor: Color
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
-        )
-        Column {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(iconColor.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                fontWeight = FontWeight.Medium
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
 }
 
 @Composable
-fun ContactInfoRow(
+private fun ContactInfoCard(
+    profile: com.akash.beautifulbhaluka.domain.model.MatchmakingProfile,
+    showContactInfo: Boolean,
+    onToggleContactInfo: () -> Unit,
+    onCallContact: () -> Unit,
+    onSendEmail: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFF6B9D).copy(alpha = 0.1f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ContactPhone,
+                    contentDescription = null,
+                    tint = Color(0xFFFF6B9D),
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "Contact Information",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            AnimatedVisibility(
+                visible = showContactInfo,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (profile.contactNumber != null) {
+                        ContactInfoRow(
+                            icon = Icons.Outlined.Phone,
+                            label = "Phone",
+                            value = profile.contactNumber,
+                            onAction = onCallContact
+                        )
+                    }
+                    if (profile.email != null) {
+                        ContactInfoRow(
+                            icon = Icons.Outlined.Email,
+                            label = "Email",
+                            value = profile.email,
+                            onAction = onSendEmail
+                        )
+                    }
+                }
+            }
+
+            Button(
+                onClick = onToggleContactInfo,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF6B9D)
+                )
+            ) {
+                Icon(
+                    imageVector = if (showContactInfo) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (showContactInfo) "Hide Contact Info" else "View Contact Info",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContactInfoRow(
     icon: ImageVector,
     label: String,
-    value: String
+    value: String,
+    onAction: () -> Unit
 ) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = Color(0xFFFF6B9D),
+                modifier = Modifier.size(20.dp)
             )
             Column {
                 Text(
@@ -508,6 +643,63 @@ fun ContactInfoRow(
                 )
             }
         }
+        IconButton(onClick = onAction) {
+            Icon(
+                imageVector = Icons.Filled.ArrowForward,
+                contentDescription = "Action",
+                tint = Color(0xFFFF6B9D)
+            )
+        }
     }
 }
 
+@Composable
+private fun BottomActionBar(
+    isContactingInProgress: Boolean,
+    onSendInterest: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shadowElevation = 8.dp,
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(
+                onClick = onSendInterest,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF6B9D)
+                ),
+                enabled = !isContactingInProgress
+            ) {
+                if (isContactingInProgress) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Send Interest",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+        }
+    }
+}

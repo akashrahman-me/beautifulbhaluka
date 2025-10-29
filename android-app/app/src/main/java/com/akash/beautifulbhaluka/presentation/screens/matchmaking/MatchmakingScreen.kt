@@ -1,9 +1,11 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 
 @Composable
 fun MatchmakingScreen(
@@ -13,11 +15,16 @@ fun MatchmakingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // Track scroll state for smooth header animation
+    val scrollState = rememberLazyListState()
+    val showHeader = rememberScrollHeaderState(scrollState = scrollState)
+
     MatchmakingContent(
         uiState = uiState,
         onAction = viewModel::onAction,
         onNavigateToDetails = onNavigateToDetails,
-        onNavigateToPublish = onNavigateToPublish
+        onNavigateToPublish = onNavigateToPublish,
+        scrollState = scrollState,
+        showHeader = showHeader
     )
 }
-

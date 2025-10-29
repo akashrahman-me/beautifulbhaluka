@@ -38,7 +38,8 @@ class MainActivity : ComponentActivity() {
 
             // Hide bars when in Social screen or Buy-Sell screen
             val shouldShowBars = currentRoute != NavigationRoutes.SOCIAL &&
-                                 currentRoute != NavigationRoutes.BUY_SELL
+                                 currentRoute != NavigationRoutes.BUY_SELL &&
+                                    currentRoute !== NavigationRoutes.MATCHMAKING
 
             BeautifulBhalukaTheme(dynamicColor = false) {
                 ModalNavigationDrawer(

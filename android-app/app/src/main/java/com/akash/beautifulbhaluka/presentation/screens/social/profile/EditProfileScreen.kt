@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -281,10 +282,13 @@ private fun EditProfileTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = if (maxLines > 1) maxLines else 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             shape = RoundedCornerShape(12.dp),
+            singleLine = maxLines == 1,
             maxLines = maxLines,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -305,4 +309,3 @@ data class ProfileEditData(
     val website: String,
     val relationship: String
 )
-

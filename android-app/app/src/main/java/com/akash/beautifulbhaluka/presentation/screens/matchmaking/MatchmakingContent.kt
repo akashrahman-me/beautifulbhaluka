@@ -1,12 +1,14 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
 import com.akash.beautifulbhaluka.domain.model.ProfileCategory
+import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +36,9 @@ fun MatchmakingContent(
     uiState: MatchmakingUiState,
     onAction: (MatchmakingAction) -> Unit,
     onNavigateToDetails: ((String) -> Unit)?,
-    onNavigateToPublish: (() -> Unit)?
+    onNavigateToPublish: (() -> Unit)?,
+    scrollState: LazyListState,
+    showHeader: Boolean
 ) {
     val gradientColors = listOf(
         Color(0xFFFF6B9D),
@@ -41,33 +46,27 @@ fun MatchmakingContent(
         Color(0xFF6C5B7B)
     )
 
-    Scaffold(
-        topBar = {
-            MatchmakingTopBar(
-                searchQuery = uiState.searchQuery,
-                onSearchChange = { onAction(MatchmakingAction.Search(it)) },
-                onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
-                showFilters = uiState.showFilters
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigateToPublish?.invoke() },
-                containerColor = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.shadow(8.dp, CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Create Profile"
-                )
-            }
-        }
-    ) { paddingValues ->
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                )
         ) {
+            // Animated Top Bar with Scroll
+            ScrollAnimatedHeader(visible = showHeader) {
+                MatchmakingTopBar(
+                    searchQuery = uiState.searchQuery,
+                    onSearchChange = { onAction(MatchmakingAction.Search(it)) },
+                    onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
+                    showFilters = uiState.showFilters
+                )
+            }
+
             // Hero Section with Gradient
             Box(
                 modifier = Modifier
@@ -147,6 +146,7 @@ fun MatchmakingContent(
                 EmptyState()
             } else {
                 LazyColumn(
+                    state = scrollState,
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -157,6 +157,24 @@ fun MatchmakingContent(
                         )
                     }
                 }
+            }
+        }
+
+        // Floating Action Button
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { onNavigateToPublish?.invoke() },
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.shadow(8.dp, CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create Profile"
+                )
             }
         }
     }
@@ -215,7 +233,13 @@ fun MatchmakingTopBar(
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search by name, occupation, location...") },
+                placeholder = {
+                    Text(
+                        text = "Search by name, occupation, location...",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -233,7 +257,8 @@ fun MatchmakingTopBar(
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
-                singleLine = true
+                singleLine = true,
+                maxLines = 1
             )
         }
     }
@@ -370,19 +395,7 @@ fun ProfileCard(
     profile: MatchmakingProfile,
     onClick: () -> Unit
 ) {
-    val gradientColors = if (profile.verified) {
-        listOf(
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f)
-        )
-    } else {
-        listOf(
-            MaterialTheme.colorScheme.surface,
-            MaterialTheme.colorScheme.surface
-        )
-    }
-
-    Card(
+      Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -395,7 +408,7 @@ fun ProfileCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Brush.verticalGradient(gradientColors))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp)
@@ -597,7 +610,8 @@ fun ProfileCardShimmer() {
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        )
+        ),
+//        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Box(
             modifier = Modifier
@@ -607,7 +621,7 @@ fun ProfileCardShimmer() {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Shimmer placeholder content
+//                 Shimmer placeholder content
                 Box(
                     modifier = Modifier
                         .size(60.dp)
