@@ -2,7 +2,6 @@ package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,12 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
 import com.akash.beautifulbhaluka.domain.model.ProfileCategory
+import com.akash.beautifulbhaluka.presentation.components.common.MatchmakingProfileCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +32,7 @@ fun MatchmakingContent(
     onAction: (MatchmakingAction) -> Unit,
     onNavigateToDetails: ((String) -> Unit)?,
     onNavigateToPublish: (() -> Unit)?,
+    onNavigateToManageProfiles: (() -> Unit)?,
     scrollState: LazyListState,
     showHeader: Boolean
 ) {
@@ -48,7 +47,8 @@ fun MatchmakingContent(
             // Sticky Top Bar (always visible at top)
             MatchmakingTopBar(
                 onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
-                showFilters = uiState.showFilters
+                showFilters = uiState.showFilters,
+                onManageProfilesClick = { onNavigateToManageProfiles?.invoke() }
             )
 
             // Scrollable Content
@@ -149,7 +149,7 @@ fun MatchmakingContent(
                 } else {
                     items(uiState.filteredProfiles) { profile ->
                         Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            ProfileCard(
+                            MatchmakingProfileCard(
                                 profile = profile,
                                 onClick = { onNavigateToDetails?.invoke(profile.id) }
                             )
@@ -187,7 +187,8 @@ fun MatchmakingContent(
 @Composable
 fun MatchmakingTopBar(
     onFilterClick: () -> Unit,
-    showFilters: Boolean
+    showFilters: Boolean,
+    onManageProfilesClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -209,21 +210,38 @@ fun MatchmakingTopBar(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            IconButton(
-                onClick = onFilterClick,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = if (showFilters)
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    else Color.Transparent
-                )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.FilterList,
-                    contentDescription = "Filters",
-                    tint = if (showFilters)
-                        MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface
-                )
+                // Manage Profiles button
+                IconButton(
+                    onClick = onManageProfilesClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "My Profiles",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Filter button
+                IconButton(
+                    onClick = onFilterClick,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = if (showFilters)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        else Color.Transparent
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = "Filters",
+                        tint = if (showFilters)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
     }
@@ -395,221 +413,6 @@ fun FiltersSection(
     }
 }
 
-@Composable
-fun ProfileCard(
-    profile: MatchmakingProfile,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .shadow(4.dp, RoundedCornerShape(20.dp)),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                // Header Row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Avatar
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(
-                                            Color(0xFFFF6B9D),
-                                            Color(0xFFC06C84)
-                                        )
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = profile.name.first().toString(),
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Text(
-                                    text = profile.name,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                if (profile.verified) {
-                                    Icon(
-                                        imageVector = Icons.Default.Verified,
-                                        contentDescription = "Verified",
-                                        tint = Color(0xFF1DA1F2),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                            Text(
-                                text = "${profile.age} years • ${profile.height}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-
-                    // Gender Icon
-                    Icon(
-                        imageVector = if (profile.gender == "Male")
-                            Icons.Default.Male
-                        else Icons.Default.Female,
-                        contentDescription = profile.gender,
-                        tint = if (profile.gender == "Male")
-                            Color(0xFF2196F3)
-                        else Color(0xFFE91E63),
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Info Grid
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    InfoChip(
-                        icon = Icons.Default.Work,
-                        text = profile.occupation,
-                        modifier = Modifier.weight(1f)
-                    )
-                    InfoChip(
-                        icon = Icons.Default.School,
-                        text = profile.education,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                InfoChip(
-                    icon = Icons.Default.LocationOn,
-                    text = profile.location,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Bio
-                Text(
-                    text = profile.bio,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                )
-
-                if (profile.interests.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(profile.interests.take(3)) { interest ->
-                            AssistChip(
-                                onClick = { },
-                                label = {
-                                    Text(
-                                        interest,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Tag,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Action Button
-                Button(
-                    onClick = onClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.RemoveRedEye,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("View Full Profile")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun InfoChip(
-    icon: ImageVector,
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
 
 @Composable
 fun ProfileCardShimmer() {

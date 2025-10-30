@@ -43,7 +43,8 @@ class MainActivity : ComponentActivity() {
                     currentRoute != NavigationRoutes.BUY_SELL &&
                     currentRoute != NavigationRoutes.MATCHMAKING &&
                     currentRoute != NavigationRoutes.MATCHMAKING_DETAILS &&
-                    currentRoute != NavigationRoutes.MATCHMAKING_PUBLISH
+                    currentRoute != NavigationRoutes.MATCHMAKING_PUBLISH &&
+                    currentRoute != NavigationRoutes.MANAGE_MATCHMAKING_PROFILES
 
 
             BeautifulBhalukaTheme(dynamicColor = false) {

@@ -53,6 +53,7 @@ object NavigationRoutes {
     const val MATCHMAKING = "matchmaking"
     const val MATCHMAKING_DETAILS = "matchmaking_details/{profileId}"
     const val MATCHMAKING_PUBLISH = "matchmaking_publish"
+    const val MANAGE_MATCHMAKING_PROFILES = "manage_matchmaking_profiles"
 
     // Existing screens
     const val JOBS = "jobs"

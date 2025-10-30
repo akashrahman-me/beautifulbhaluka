@@ -461,6 +461,9 @@ fun AppNavigation(
                 },
                 onNavigateToPublish = {
                     navController.navigate(NavigationRoutes.MATCHMAKING_PUBLISH)
+                },
+                onNavigateToManageProfiles = {
+                    navController.navigate(NavigationRoutes.MANAGE_MATCHMAKING_PROFILES)
                 }
             )
         }
@@ -484,6 +487,22 @@ fun AppNavigation(
             PublishMatchmakingScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        // Manage Matchmaking Profiles Screen
+        composable(NavigationRoutes.MANAGE_MATCHMAKING_PROFILES) {
+            com.akash.beautifulbhaluka.presentation.screens.matchmaking.manage.ManageProfilesScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onEditProfile = { profileId ->
+                    // TODO: Add edit profile navigation when edit screen is ready
+                    navController.navigate(NavigationRoutes.matchmakingDetails(profileId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.MATCHMAKING_PUBLISH)
                 }
             )
         }

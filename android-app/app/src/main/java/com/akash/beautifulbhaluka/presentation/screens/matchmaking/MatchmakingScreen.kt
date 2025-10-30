@@ -5,26 +5,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 
 @Composable
 fun MatchmakingScreen(
     viewModel: MatchmakingViewModel = viewModel(),
     onNavigateToDetails: ((String) -> Unit)? = null,
-    onNavigateToPublish: (() -> Unit)? = null
+    onNavigateToPublish: (() -> Unit)? = null,
+    onNavigateToManageProfiles: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     // Track scroll state for smooth header animation
     val scrollState = rememberLazyListState()
-    val showHeader = rememberScrollHeaderState(scrollState = scrollState)
 
     MatchmakingContent(
         uiState = uiState,
         onAction = viewModel::onAction,
         onNavigateToDetails = onNavigateToDetails,
         onNavigateToPublish = onNavigateToPublish,
+        onNavigateToManageProfiles = onNavigateToManageProfiles,
         scrollState = scrollState,
-        showHeader = showHeader
+        showHeader = true
     )
 }
