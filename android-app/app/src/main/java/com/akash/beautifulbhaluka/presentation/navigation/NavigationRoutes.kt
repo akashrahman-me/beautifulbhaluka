@@ -78,6 +78,9 @@ object NavigationRoutes {
     const val POLICE = "police"
     const val AMBULANCE = "ambulance"
     const val BLOOD_BANK = "blood_bank"
+    const val BLOOD_DONATION_GUIDELINES = "blood_donation_guidelines"
+    const val BLOOD_BANK_PUBLISH = "blood_bank_publish"
+    const val BLOOD_BANK_MANAGE = "blood_bank_manage"
 
     // Healthcare Services
     const val DOCTOR = "doctor"

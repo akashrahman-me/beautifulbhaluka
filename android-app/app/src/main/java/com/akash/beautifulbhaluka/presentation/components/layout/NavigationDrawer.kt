@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,6 +73,11 @@ fun NavigationDrawer(
                 route = NavigationRoutes.BUY_SELL,
                 label = "ক্রয়-বিক্রয় (Buy & Sell)",
                 icon = Icons.Default.ShoppingBag
+            ),
+            DrawerItem(
+                route = NavigationRoutes.BLOOD_BANK,
+                label = "🩸 রক্তদান (Blood Donate)",
+                icon = Icons.Default.WaterDrop
             ),
             DrawerItem(
                 route = NavigationRoutes.SETTINGS,

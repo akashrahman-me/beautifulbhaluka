@@ -15,6 +15,9 @@ import com.akash.beautifulbhaluka.presentation.screens.ambulance.AmbulanceScreen
 import com.akash.beautifulbhaluka.presentation.screens.attractions.AttractionsScreen
 import com.akash.beautifulbhaluka.presentation.screens.bank.BankScreen
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.BloodBankScreen
+import com.akash.beautifulbhaluka.presentation.screens.bloodbank.guidelines.BloodDonationGuidelinesScreen
+import com.akash.beautifulbhaluka.presentation.screens.bloodbank.publish.PublishDonorScreen
+import com.akash.beautifulbhaluka.presentation.screens.bloodbank.manage.ManageDonorsScreen
 import com.akash.beautifulbhaluka.presentation.screens.bookings.BookingsScreen
 import com.akash.beautifulbhaluka.presentation.screens.broadband.BroadbandScreen
 import com.akash.beautifulbhaluka.presentation.screens.butchercook.ButcherCookScreen
@@ -266,7 +269,44 @@ fun AppNavigation(
             AmbulanceScreen()
         }
         composable(NavigationRoutes.BLOOD_BANK) {
-            BloodBankScreen()
+            BloodBankScreen(
+                onNavigateToGuidelines = {
+                    navController.navigate(NavigationRoutes.BLOOD_DONATION_GUIDELINES)
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.BLOOD_BANK_PUBLISH)
+                },
+                onNavigateToManage = {
+                    navController.navigate(NavigationRoutes.BLOOD_BANK_MANAGE)
+                }
+            )
+        }
+        composable(NavigationRoutes.BLOOD_DONATION_GUIDELINES) {
+            BloodDonationGuidelinesScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(NavigationRoutes.BLOOD_BANK_PUBLISH) {
+            PublishDonorScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onPublishSuccess = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(NavigationRoutes.BLOOD_BANK_MANAGE) {
+            ManageDonorsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onEditDonor = { donorId ->
+                    // TODO: Navigate to edit screen
+                }
+            )
         }
 
         // Healthcare Services
