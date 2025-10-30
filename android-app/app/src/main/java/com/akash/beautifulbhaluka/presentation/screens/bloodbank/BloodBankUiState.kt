@@ -19,8 +19,6 @@ data class DonorInfo(
 sealed class BloodBankAction {
     object LoadData : BloodBankAction()
     data class CallPhone(val phoneNumber: String) : BloodBankAction()
-    object NavigateToPublish : BloodBankAction()
-    object NavigateToManage : BloodBankAction()
 }
 
 private fun getDefaultDonors(): List<DonorInfo> {

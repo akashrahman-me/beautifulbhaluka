@@ -31,11 +31,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BloodDonationGuidelinesScreen(
+    viewModel: BloodDonationGuidelinesViewModel = viewModel(),
     onNavigateBack: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    BloodDonationGuidelinesContent(
+        uiState = uiState,
+        guidelineData = viewModel.guidelineData,
+        onAction = viewModel::onAction,
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BloodDonationGuidelinesContent(
+    uiState: BloodDonationGuidelinesUiState,
+    guidelineData: GuidelineData,
+    onAction: (GuidelinesAction) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -100,14 +120,9 @@ fun BloodDonationGuidelinesScreen(
                 title = "রক্তদানের পূর্বে করণীয়",
                 icon = Icons.Outlined.EventAvailable,
                 gradientColors = listOf(Color(0xFF2196F3), Color(0xFF42A5F5)),
-                items = listOf(
-                    "পর্যাপ্ত পরিমাণে পানি ও তরল জাতীয় খাবার গ্রহণ করুন",
-                    "রক্তদানের আগের রাতে ভালোভাবে ঘুমান",
-                    "হালকা খাবার গ্রহণ করুন রক্তদানের ২-৩ ঘন্টা আগে",
-                    "ফ্যাটি বা চর্বিযুক্ত খাবার এড়িয়ে চলুন",
-                    "রক্তদানের আগে কোনো প্রকার অ্যালকোহল সেবন করবেন না",
-                    "নিজের স্বাস্থ্য সম্পর্কে ডাক্তারকে সকল তথ্য প্রদান করুন"
-                )
+                items = guidelineData.beforeDonation,
+                expanded = uiState.expandedSections.contains(GuidelineSection.BEFORE_DONATION),
+                onToggle = { onAction(GuidelinesAction.ToggleSection(GuidelineSection.BEFORE_DONATION)) }
             )
 
             // During Donation Section
@@ -115,12 +130,9 @@ fun BloodDonationGuidelinesScreen(
                 title = "রক্তদানের সময় করণীয়",
                 icon = Icons.Outlined.LocalHospital,
                 gradientColors = listOf(Color(0xFF4CAF50), Color(0xFF66BB6A)),
-                items = listOf(
-                    "রিল্যাক্স থাকুন এবং স্বাভাবিকভাবে শ্বাস নিন",
-                    "ডাক্তার বা নার্সের সকল নির্দেশনা মেনে চলুন",
-                    "রক্তদান প্রক্রিয়ার সময় অন্য কথায় মনোনিবেশ করুন",
-                    "কোনো অসুবিধা অনুভব করলে সঙ্গে সঙ্গে স্টাফকে জানান"
-                )
+                items = guidelineData.duringDonation,
+                expanded = uiState.expandedSections.contains(GuidelineSection.DURING_DONATION),
+                onToggle = { onAction(GuidelinesAction.ToggleSection(GuidelineSection.DURING_DONATION)) }
             )
 
             // After Donation Section
@@ -128,14 +140,9 @@ fun BloodDonationGuidelinesScreen(
                 title = "রক্তদানের পরে করণীয়",
                 icon = Icons.Outlined.CheckCircle,
                 gradientColors = listOf(Color(0xFFFF9800), Color(0xFFFFB74D)),
-                items = listOf(
-                    "রক্তদান শেষে কমপক্ষে ১০-১৫ মিনিট বিশ্রাম নিন",
-                    "পর্যাপ্ত পরিমাণে তরল পানীয় ও জুস গ্রহণ করুন",
-                    "রক্তদানের পরের ৪-৫ ঘন্টা ভারী কাজ করা থেকে বিরত থাকুন",
-                    "সিগারেট বা অ্যালকোহল সেবন থেকে বিরত থাকুন",
-                    "রক্তদানের পরের ২৪ ঘন্টা গরম পানি দিয়ে গোসল করবেন না",
-                    "মাথা ঘুরানো বা দুর্বলতা অনুভব করলে সঙ্গে সঙ্গে শুয়ে পড়ুন"
-                )
+                items = guidelineData.afterDonation,
+                expanded = uiState.expandedSections.contains(GuidelineSection.AFTER_DONATION),
+                onToggle = { onAction(GuidelinesAction.ToggleSection(GuidelineSection.AFTER_DONATION)) }
             )
 
             // Health Benefits Section
@@ -212,9 +219,10 @@ private fun ExpandableSection(
     title: String,
     icon: ImageVector,
     gradientColors: List<Color>,
-    items: List<String>
+    items: List<String>,
+    expanded: Boolean,
+    onToggle: () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = tween(300),
@@ -238,7 +246,7 @@ private fun ExpandableSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { expanded = !expanded }
+                    .clickable { onToggle() }
                     .padding(20.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically

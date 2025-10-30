@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BloodBankViewModel : ViewModel() {
@@ -27,19 +28,23 @@ class BloodBankViewModel : ViewModel() {
 
     private fun loadData() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.update { it.copy(isLoading = true) }
 
             try {
                 // Data is already loaded from default values in UiState
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = null
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = null
+                    )
+                }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
             }
         }
     }

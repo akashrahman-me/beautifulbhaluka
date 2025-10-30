@@ -22,28 +22,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageDonorsScreen(
+    viewModel: ManageDonorsViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onEditDonor: (String) -> Unit = {}
 ) {
-    // Sample published donors - in real app, this would come from ViewModel
-    val myPublishedDonors = remember {
-        listOf(
-            PublishedDonor(
-                id = "1",
-                name = "Kibriya zaman munna",
-                phone = "০১৭২৬৭৮৮৮৮",
-                bloodGroup = "A+",
-                location = "মাসতালবেড়ি, বালুকা",
-                status = "Active",
-                publishedDate = "২ দিন আগে"
-            )
-        )
-    }
+    val uiState by viewModel.uiState.collectAsState()
 
+    ManageDonorsContent(
+        uiState = uiState,
+        onAction = viewModel::onAction,
+        onNavigateBack = onNavigateBack,
+        onEditDonor = onEditDonor
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ManageDonorsContent(
+    uiState: ManageDonorsUiState,
+    onAction: (ManageDonorsAction) -> Unit,
+    onNavigateBack: () -> Unit,
+    onEditDonor: (String) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,33 +96,91 @@ fun ManageDonorsScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                StatsCard(donorCount = myPublishedDonors.size)
-            }
-
-            if (myPublishedDonors.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 item {
-                    EmptyStateCard()
+                    StatsCard(donorCount = uiState.myPublishedDonors.size)
                 }
-            } else {
-                items(myPublishedDonors) { donor ->
-                    ManageDonorCard(
-                        donor = donor,
-                        onEdit = { onEditDonor(donor.id) },
-                        onDelete = { /* TODO: Handle delete */ }
-                    )
+
+                if (uiState.error != null) {
+                    item {
+                        ErrorCard(
+                            error = uiState.error,
+                            onDismiss = { onAction(ManageDonorsAction.ClearError) }
+                        )
+                    }
+                }
+
+                if (uiState.myPublishedDonors.isEmpty() && !uiState.isLoading) {
+                    item {
+                        EmptyStateCard()
+                    }
+                } else {
+                    items(uiState.myPublishedDonors, key = { it.id }) { donor ->
+                        ManageDonorCard(
+                            donor = donor,
+                            onEdit = { onEditDonor(donor.id) },
+                            onDelete = { onAction(ManageDonorsAction.DeleteDonor(donor.id)) }
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
+            // Loading Overlay
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorCard(
+    error: String,
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onErrorContainer
+                )
             }
         }
     }
@@ -561,13 +624,4 @@ private fun InfoChip(
     }
 }
 
-data class PublishedDonor(
-    val id: String,
-    val name: String,
-    val phone: String,
-    val bloodGroup: String,
-    val location: String,
-    val status: String,
-    val publishedDate: String
-)
 

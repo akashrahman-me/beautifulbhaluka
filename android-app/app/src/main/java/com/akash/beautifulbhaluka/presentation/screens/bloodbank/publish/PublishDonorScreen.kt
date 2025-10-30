@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,24 +23,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PublishDonorScreen(
+    viewModel: PublishDonorViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onPublishSuccess: () -> Unit = {}
 ) {
-    var fullName by remember { mutableStateOf("") }
-    var mobileNumber by remember { mutableStateOf("") }
-    var bloodGroup by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var facebookLink by remember { mutableStateOf("") }
-    var whatsappNumber by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
 
-    val bloodGroups = listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+    LaunchedEffect(Unit) {
+        viewModel.setPublishSuccessCallback(onPublishSuccess)
+    }
 
+    // Show success and navigate back
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onPublishSuccess()
+        }
+    }
+
+    PublishDonorContent(
+        uiState = uiState,
+        onAction = viewModel::onAction,
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PublishDonorContent(
+    uiState: PublishDonorUiState,
+    onAction: (PublishDonorAction) -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -100,6 +117,14 @@ fun PublishDonorScreen(
             // Hero Card
             HeroCard()
 
+            // Error Message
+            if (uiState.error != null) {
+                ErrorCard(
+                    error = uiState.error,
+                    onDismiss = { onAction(PublishDonorAction.ClearError) }
+                )
+            }
+
             // Personal Information Section
             SectionCard(
                 title = "ব্যক্তিগত তথ্য",
@@ -109,44 +134,50 @@ fun PublishDonorScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Full Name Field
                     ModernTextField(
-                        value = fullName,
-                        onValueChange = { fullName = it },
+                        value = uiState.fullName,
+                        onValueChange = { onAction(PublishDonorAction.UpdateFullName(it)) },
                         label = "পূর্ণ নাম",
                         placeholder = "আপনার পূর্ণ নাম লিখুন",
                         leadingIcon = Icons.Outlined.Badge,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        error = uiState.validationErrors.fullName
                     )
 
-                    // Mobile Number Field
                     ModernTextField(
-                        value = mobileNumber,
-                        onValueChange = { mobileNumber = it },
+                        value = uiState.mobileNumber,
+                        onValueChange = { onAction(PublishDonorAction.UpdateMobileNumber(it)) },
                         label = "মোবাইল নম্বর",
                         placeholder = "01XXXXXXXXX",
                         leadingIcon = Icons.Outlined.Phone,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        error = uiState.validationErrors.mobileNumber
                     )
 
-                    // Blood Group Dropdown
                     BloodGroupDropdown(
-                        selectedBloodGroup = bloodGroup,
-                        onBloodGroupSelected = { bloodGroup = it },
-                        expanded = expanded,
-                        onExpandedChange = { expanded = it },
-                        bloodGroups = bloodGroups
+                        selectedBloodGroup = uiState.bloodGroup,
+                        onBloodGroupSelected = { onAction(PublishDonorAction.UpdateBloodGroup(it)) },
+                        expanded = uiState.isBloodGroupDropdownExpanded,
+                        onExpandedChange = {
+                            onAction(
+                                PublishDonorAction.SetBloodGroupDropdownExpanded(
+                                    it
+                                )
+                            )
+                        },
+                        bloodGroups = getBloodGroups(),
+                        error = uiState.validationErrors.bloodGroup
                     )
 
-                    // Address Field
                     ModernTextField(
-                        value = address,
-                        onValueChange = { address = it },
+                        value = uiState.address,
+                        onValueChange = { onAction(PublishDonorAction.UpdateAddress(it)) },
                         label = "বর্তমান ঠিকানা",
                         placeholder = "আপনার সম্পূর্ণ ঠিকানা লিখুন",
                         leadingIcon = Icons.Outlined.LocationOn,
                         minLines = 3,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        error = uiState.validationErrors.address
                     )
                 }
             }
@@ -160,20 +191,18 @@ fun PublishDonorScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Facebook Link
                     ModernTextField(
-                        value = facebookLink,
-                        onValueChange = { facebookLink = it },
+                        value = uiState.facebookLink,
+                        onValueChange = { onAction(PublishDonorAction.UpdateFacebookLink(it)) },
                         label = "Facebook প্রোফাইল লিংক",
                         placeholder = "https://facebook.com/...",
                         leadingIcon = Icons.Outlined.Link,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
                     )
 
-                    // WhatsApp Number
                     ModernTextField(
-                        value = whatsappNumber,
-                        onValueChange = { whatsappNumber = it },
+                        value = uiState.whatsappNumber,
+                        onValueChange = { onAction(PublishDonorAction.UpdateWhatsAppNumber(it)) },
                         label = "WhatsApp নম্বর",
                         placeholder = "01XXXXXXXXX",
                         leadingIcon = Icons.Outlined.ChatBubble,
@@ -183,63 +212,109 @@ fun PublishDonorScreen(
             }
 
             // Submit Button
-            Button(
-                onClick = {
-                    isLoading = true
-                    // TODO: Handle submission
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                ),
-                contentPadding = PaddingValues(0.dp),
-                enabled = !isLoading && fullName.isNotEmpty() &&
-                        mobileNumber.isNotEmpty() && bloodGroup.isNotEmpty() &&
-                        address.isNotEmpty()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFF4CAF50),
-                                    Color(0xFF66BB6A)
-                                )
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                            Text(
-                                text = "প্রকাশ করুন",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                }
-            }
+            SubmitButton(
+                isLoading = uiState.isLoading,
+                enabled = uiState.fullName.isNotEmpty() &&
+                        uiState.mobileNumber.isNotEmpty() &&
+                        uiState.bloodGroup.isNotEmpty() &&
+                        uiState.address.isNotEmpty(),
+                onClick = { onAction(PublishDonorAction.Submit) }
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}
+
+@Composable
+private fun ErrorCard(
+    error: String,
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubmitButton(
+    isLoading: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent
+        ),
+        contentPadding = PaddingValues(0.dp),
+        enabled = enabled && !isLoading
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF4CAF50),
+                            Color(0xFF66BB6A)
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Text(
+                        text = "প্রকাশ করুন",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
         }
     }
 }
@@ -362,7 +437,8 @@ private fun ModernTextField(
     leadingIcon: ImageVector,
     modifier: Modifier = Modifier,
     minLines: Int = 1,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    error: String? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -371,7 +447,7 @@ private fun ModernTextField(
             text = label,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
 
         OutlinedTextField(
@@ -388,18 +464,27 @@ private fun ModernTextField(
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             },
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                focusedBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant
             ),
             minLines = minLines,
-            keyboardOptions = keyboardOptions
+            keyboardOptions = keyboardOptions,
+            isError = error != null
         )
+
+        if (error != null) {
+            Text(
+                text = error,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }
 
@@ -410,7 +495,8 @@ private fun BloodGroupDropdown(
     onBloodGroupSelected: (String) -> Unit,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
-    bloodGroups: List<String>
+    bloodGroups: List<String>,
+    error: String? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -419,7 +505,7 @@ private fun BloodGroupDropdown(
             text = "রক্তের গ্রুপ",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
 
         ExposedDropdownMenuBox(
@@ -451,9 +537,10 @@ private fun BloodGroupDropdown(
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
-                )
+                    focusedBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant
+                ),
+                isError = error != null
             )
 
             ExposedDropdownMenu(
@@ -482,6 +569,14 @@ private fun BloodGroupDropdown(
                     )
                 }
             }
+        }
+
+        if (error != null) {
+            Text(
+                text = error,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
