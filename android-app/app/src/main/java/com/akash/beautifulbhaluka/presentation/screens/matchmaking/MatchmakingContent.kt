@@ -9,8 +9,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.akash.beautifulbhaluka.domain.model.ProfileCategory
 import com.akash.beautifulbhaluka.presentation.components.common.MatchmakingProfileCard
+import com.composables.icons.lucide.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +79,7 @@ fun MatchmakingContent(
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Favorite,
+                                imageVector = Lucide.Heart,
                                 contentDescription = null,
                                 modifier = Modifier.size(40.dp),
                                 tint = Color.White
@@ -175,7 +174,7 @@ fun MatchmakingContent(
                 modifier = Modifier.shadow(8.dp, CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Lucide.Plus,
                     contentDescription = "Create Profile"
                 )
             }
@@ -219,7 +218,7 @@ fun MatchmakingTopBar(
                     onClick = onManageProfilesClick
                 ) {
                     Icon(
-                        imageVector = Icons.Default.AccountCircle,
+                        imageVector = Lucide.CircleUserRound,
                         contentDescription = "My Profiles",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -235,7 +234,7 @@ fun MatchmakingTopBar(
                     )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.FilterList,
+                        imageVector = Lucide.ListFilter,
                         contentDescription = "Filters",
                         tint = if (showFilters)
                             MaterialTheme.colorScheme.primary
@@ -267,7 +266,7 @@ fun SearchBar(
         },
         leadingIcon = {
             Icon(
-                imageVector = Icons.Default.Search,
+                imageVector = Lucide.Search,
                 contentDescription = "Search"
             )
         },
@@ -275,7 +274,7 @@ fun SearchBar(
             if (searchQuery.isNotEmpty()) {
                 IconButton(onClick = { onSearchChange("") }) {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        imageVector = Lucide.X,
                         contentDescription = "Clear"
                     )
                 }
@@ -294,10 +293,10 @@ fun CategoryChip(
     onClick: () -> Unit
 ) {
     val icon = when (category) {
-        ProfileCategory.ALL -> Icons.Default.People
-        ProfileCategory.RECENT -> Icons.Default.Schedule
-        ProfileCategory.VERIFIED -> Icons.Default.Verified
-        ProfileCategory.PREMIUM -> Icons.Default.Star
+        ProfileCategory.ALL -> Lucide.Users
+        ProfileCategory.RECENT -> Lucide.Clock
+        ProfileCategory.VERIFIED -> Lucide.BadgeCheck
+        ProfileCategory.PREMIUM -> Lucide.Star
     }
 
     val label = when (category) {
@@ -469,7 +468,7 @@ fun EmptyState() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.SearchOff,
+                imageVector = Lucide.SearchX,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)

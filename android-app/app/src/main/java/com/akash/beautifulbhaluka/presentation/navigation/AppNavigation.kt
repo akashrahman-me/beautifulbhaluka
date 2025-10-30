@@ -89,7 +89,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.MATCHMAKING
+    startDestination: String = NavigationRoutes.HOME
 ) {
     NavHost(
         navController = navController,

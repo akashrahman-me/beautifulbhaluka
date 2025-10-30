@@ -39,12 +39,17 @@ class MainActivity : ComponentActivity() {
             val currentRoute = navBackStackEntry?.destination?.route
 
             // Hide bars when in Social screen or Buy-Sell screen
-            val shouldShowBars = currentRoute != NavigationRoutes.SOCIAL &&
-                    currentRoute != NavigationRoutes.BUY_SELL &&
-                    currentRoute != NavigationRoutes.MATCHMAKING &&
-                    currentRoute != NavigationRoutes.MATCHMAKING_DETAILS &&
-                    currentRoute != NavigationRoutes.MATCHMAKING_PUBLISH &&
-                    currentRoute != NavigationRoutes.MANAGE_MATCHMAKING_PROFILES
+            val hiddenRoutes = listOf(
+                NavigationRoutes.SOCIAL,
+                NavigationRoutes.BUY_SELL,
+                NavigationRoutes.MATCHMAKING,
+                NavigationRoutes.MATCHMAKING_DETAILS,
+                NavigationRoutes.MATCHMAKING_PUBLISH,
+                NavigationRoutes.MANAGE_MATCHMAKING_PROFILES
+            )
+
+            val shouldShowBars = currentRoute !in hiddenRoutes
+
 
 
             BeautifulBhalukaTheme(dynamicColor = false) {

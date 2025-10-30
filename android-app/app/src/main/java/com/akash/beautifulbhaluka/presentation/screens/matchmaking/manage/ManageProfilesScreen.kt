@@ -99,17 +99,10 @@ private fun ModernTopAppBar(
     isElevated: Boolean,
     profileCount: Int
 ) {
-    val elevation by animateDpAsState(
-        targetValue = if (isElevated) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "elevation"
-    )
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.statusBars),
-        shadowElevation = elevation,
         color = MaterialTheme.colorScheme.surface,
     ) {
         Column {
