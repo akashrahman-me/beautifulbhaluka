@@ -13,7 +13,9 @@ data class DonorInfo(
     val phone: String,
     val bloodGroup: String,
     val location: String,
-    val lastDonation: String
+    val lastDonation: String,
+    val facebookLink: String? = null,
+    val whatsappNumber: String? = null
 )
 
 sealed class BloodBankAction {

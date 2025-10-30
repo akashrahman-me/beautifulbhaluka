@@ -1,19 +1,11 @@
 package com.akash.beautifulbhaluka.presentation.screens.bloodbank.manage
 
+import com.akash.beautifulbhaluka.presentation.screens.bloodbank.DonorInfo
+
 data class ManageDonorsUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val myPublishedDonors: List<PublishedDonor> = getDefaultPublishedDonors()
-)
-
-data class PublishedDonor(
-    val id: String,
-    val name: String,
-    val phone: String,
-    val bloodGroup: String,
-    val location: String,
-    val status: String,
-    val publishedDate: String
+    val myPublishedDonors: List<DonorInfo> = getDefaultPublishedDonors()
 )
 
 sealed class ManageDonorsAction {
@@ -22,16 +14,18 @@ sealed class ManageDonorsAction {
     object ClearError : ManageDonorsAction()
 }
 
-private fun getDefaultPublishedDonors(): List<PublishedDonor> {
+private fun getDefaultPublishedDonors(): List<DonorInfo> {
     return listOf(
-        PublishedDonor(
+        DonorInfo(
             id = "1",
             name = "Kibriya zaman munna",
             phone = "০১৭২৬৭৮৮৮৮",
             bloodGroup = "A+",
             location = "মাসতালবেড়ি, বালুকা",
             status = "Active",
-            publishedDate = "২ দিন আগে"
+            lastDonation = "২ দিন",
+            facebookLink = "https://facebook.com/kibriya",
+            whatsappNumber = "০১৭২৬৭৮৮৮৮"
         )
     )
 }
