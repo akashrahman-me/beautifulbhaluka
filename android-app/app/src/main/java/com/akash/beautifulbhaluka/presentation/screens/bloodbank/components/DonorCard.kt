@@ -8,9 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +22,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.DonorInfo
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.User
+import com.composables.icons.lucide.Phone
+import com.composables.icons.lucide.MapPin
+import com.composables.icons.lucide.Clock
+import com.composables.icons.lucide.Globe
+import com.composables.icons.lucide.MessageCircle
+import com.composables.icons.lucide.PencilLine
+import com.composables.icons.lucide.Trash2
 
 @Composable
 fun DonorCard(
@@ -94,7 +100,7 @@ fun DonorCard(
                                 )
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Person,
+                                imageVector = Lucide.User,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier
@@ -148,6 +154,21 @@ fun DonorCard(
                             }
                         }
                     }
+
+                    // Edit icon button at top right (only shown when onEditClick is provided)
+                    if (onEditClick != null) {
+                        IconButton(
+                            onClick = { onEditClick.invoke() },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Lucide.PencilLine,
+                                contentDescription = "Edit",
+                                tint = Color(0xFF2196F3),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
                 }
 
 
@@ -193,7 +214,7 @@ fun DonorCard(
 
                     // Contact Info
                     InfoRow(
-                        icon = Icons.Default.Phone,
+                        icon = Lucide.Phone,
                         label = "Contact",
                         value = donor.phone,
                         iconTint = Color(0xFF4CAF50)
@@ -201,7 +222,7 @@ fun DonorCard(
 
                     // Location Info
                     InfoRow(
-                        icon = Icons.Default.LocationOn,
+                        icon = Lucide.MapPin,
                         label = "Location",
                         value = donor.location,
                         iconTint = Color(0xFF2196F3)
@@ -209,7 +230,7 @@ fun DonorCard(
 
                     // Last Donation Info
                     InfoRow(
-                        icon = Icons.Outlined.AccessTime,
+                        icon = Lucide.Clock,
                         label = "Last Donation",
                         value = "${donor.lastDonation} আগে",
                         iconTint = Color(0xFFFF9800)
@@ -223,7 +244,7 @@ fun DonorCard(
                         ) {
                             if (!donor.facebookLink.isNullOrEmpty()) {
                                 SocialChip(
-                                    icon = Icons.Default.Public,
+                                    icon = Lucide.Globe,
                                     label = "Facebook",
                                     color = Color(0xFF1877F2),
                                     modifier = Modifier.weight(1f)
@@ -231,7 +252,7 @@ fun DonorCard(
                             }
                             if (!donor.whatsappNumber.isNullOrEmpty()) {
                                 SocialChip(
-                                    icon = Icons.Default.ChatBubble,
+                                    icon = Lucide.MessageCircle,
                                     label = "WhatsApp",
                                     color = Color(0xFF25D366),
                                     modifier = Modifier.weight(1f)
@@ -281,7 +302,7 @@ fun DonorCard(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Call,
+                                        imageVector = Lucide.Phone,
                                         contentDescription = null,
                                         modifier = Modifier.size(20.dp),
                                         tint = Color.White
@@ -296,27 +317,21 @@ fun DonorCard(
                             }
                         }
 
-                        // Edit or Delete Button
-                        if (onEditClick != null || onDeleteClick != null) {
+                        // Delete Button (only shown when onDeleteClick is provided)
+                        if (onDeleteClick != null) {
                             OutlinedButton(
-                                onClick = { onEditClick?.invoke() ?: onDeleteClick?.invoke() },
+                                onClick = { onDeleteClick.invoke() },
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(52.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = if (onEditClick != null) Color(0xFF2196F3) else Color(
-                                        0xFFE53935
-                                    )
+                                    contentColor = Color(0xFFE53935)
                                 ),
                                 border = androidx.compose.foundation.BorderStroke(
                                     width = 1.5.dp,
                                     brush = Brush.horizontalGradient(
-                                        colors = if (onEditClick != null) {
-                                            listOf(Color(0xFF2196F3), Color(0xFF42A5F5))
-                                        } else {
-                                            listOf(Color(0xFFE53935), Color(0xFFFF6B6B))
-                                        }
+                                        colors = listOf(Color(0xFFE53935), Color(0xFFFF6B6B))
                                     )
                                 )
                             ) {
@@ -325,12 +340,12 @@ fun DonorCard(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
-                                        imageVector = if (onEditClick != null) Icons.Default.Edit else Icons.Default.Delete,
+                                        imageVector = Lucide.Trash2,
                                         contentDescription = null,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Text(
-                                        text = if (onEditClick != null) "Edit" else "Delete",
+                                        text = "Delete",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
                                     )
