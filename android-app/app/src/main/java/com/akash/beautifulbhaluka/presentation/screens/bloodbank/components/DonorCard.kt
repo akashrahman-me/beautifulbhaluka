@@ -27,7 +27,7 @@ import com.composables.icons.lucide.User
 import com.composables.icons.lucide.Phone
 import com.composables.icons.lucide.MapPin
 import com.composables.icons.lucide.Clock
-import com.composables.icons.lucide.Globe
+import com.composables.icons.lucide.Facebook
 import com.composables.icons.lucide.MessageCircle
 import com.composables.icons.lucide.PencilLine
 import com.composables.icons.lucide.Trash2
@@ -250,7 +250,7 @@ fun DonorCard(
                         ) {
                             if (!donor.facebookLink.isNullOrEmpty()) {
                                 SocialChip(
-                                    icon = Lucide.Globe,
+                                    icon = Lucide.Facebook,
                                     label = "Facebook",
                                     color = Color(0xFF1877F2),
                                     modifier = Modifier.weight(1f)
@@ -263,6 +263,10 @@ fun DonorCard(
                                     color = Color(0xFF25D366),
                                     modifier = Modifier.weight(1f)
                                 )
+                            }
+                            // Add spacer if only one social link to maintain grid layout
+                            if (donor.facebookLink.isNullOrEmpty() || donor.whatsappNumber.isNullOrEmpty()) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }

@@ -32,7 +32,9 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৭২৬৭৮৮৮৮",
             bloodGroup = "A+",
             location = "মাসতালবেড়ি, বালুকা",
-            lastDonation = "২ মাস ২৪ দিন"
+            lastDonation = "২ মাস ২৪ দিন",
+            facebookLink = "https://facebook.com/kibriya",
+            whatsappNumber = "০১৭২৬৭৮৮৮৮"
         ),
         DonorInfo(
             id = "2",
@@ -41,7 +43,9 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৮১২৩৪৫৬৭৮",
             bloodGroup = "B+",
             location = "ভালুকা পৌরসভা",
-            lastDonation = "১ মাস ১০ দিন"
+            lastDonation = "১ মাস ১০ দিন",
+            facebookLink = "https://facebook.com/rakib",
+            whatsappNumber = null
         ),
         DonorInfo(
             id = "3",
@@ -50,7 +54,9 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৭১৫৬৭৮৯০১",
             bloodGroup = "O+",
             location = "রামপুর, ভালুকা",
-            lastDonation = "৪ মাস ৫ দিন"
+            lastDonation = "৪ মাস ৫ দিন",
+            facebookLink = null,
+            whatsappNumber = "০১৭১৫৬৭৮৯০১"
         ),
         DonorInfo(
             id = "4",
@@ -59,7 +65,9 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৯২৩৪৫৬৭৮৯",
             bloodGroup = "AB+",
             location = "ভালুকা বাজার",
-            lastDonation = "২ মাস ১৫ দিন"
+            lastDonation = "২ মাস ১৫ দিন",
+            facebookLink = "https://facebook.com/tanvir",
+            whatsappNumber = "০১৯২৩৪৫৬৭৮৯"
         ),
         DonorInfo(
             id = "5",
@@ -68,7 +76,9 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৩১২৩৪৫৬৭৮",
             bloodGroup = "A-",
             location = "মাসতালবেড়ি, বালুকা",
-            lastDonation = "৫ মাস ২ দিন"
+            lastDonation = "৫ মাস ২ দিন",
+            facebookLink = "https://facebook.com/farhan",
+            whatsappNumber = "০১৩১২৩৪৫৬৭৮"
         )
     )
 }
