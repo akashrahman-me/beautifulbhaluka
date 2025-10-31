@@ -25,9 +25,11 @@ class PublishDonorViewModel : ViewModel() {
             is PublishDonorAction.UpdateMobileNumber -> updateMobileNumber(action.number)
             is PublishDonorAction.UpdateBloodGroup -> updateBloodGroup(action.group)
             is PublishDonorAction.UpdateAddress -> updateAddress(action.address)
+            is PublishDonorAction.UpdateLastDonationDate -> updateLastDonationDate(action.date)
             is PublishDonorAction.UpdateFacebookLink -> updateFacebookLink(action.link)
             is PublishDonorAction.UpdateWhatsAppNumber -> updateWhatsAppNumber(action.number)
             is PublishDonorAction.SetBloodGroupDropdownExpanded -> setDropdownExpanded(action.expanded)
+            is PublishDonorAction.SetShowDatePicker -> setShowDatePicker(action.show)
             is PublishDonorAction.Submit -> submitDonor()
             is PublishDonorAction.ClearError -> clearError()
         }
@@ -49,6 +51,10 @@ class PublishDonorViewModel : ViewModel() {
         _uiState.update { it.copy(address = address) }
     }
 
+    private fun updateLastDonationDate(date: String) {
+        _uiState.update { it.copy(lastDonationDate = date) }
+    }
+
     private fun updateFacebookLink(link: String) {
         _uiState.update { it.copy(facebookLink = link) }
     }
@@ -59,6 +65,10 @@ class PublishDonorViewModel : ViewModel() {
 
     private fun setDropdownExpanded(expanded: Boolean) {
         _uiState.update { it.copy(isBloodGroupDropdownExpanded = expanded) }
+    }
+
+    private fun setShowDatePicker(show: Boolean) {
+        _uiState.update { it.copy(showDatePicker = show) }
     }
 
     private fun clearError() {
@@ -126,12 +136,15 @@ class PublishDonorViewModel : ViewModel() {
                 state.address.isBlank() -> "ঠিকানা প্রয়োজন"
                 state.address.length < 5 -> "ঠিকানা কমপক্ষে ৫ অক্ষরের হতে হবে"
                 else -> null
-            }
+            },
+            lastDonationDate = if (state.lastDonationDate.isBlank()) {
+                "সর্বশেষ রক্তদান তারিখ প্রয়োজন"
+            } else null
         )
     }
 }
 
 private fun ValidationErrors.hasErrors(): Boolean {
-    return fullName != null || mobileNumber != null || bloodGroup != null || address != null
+    return fullName != null || mobileNumber != null || bloodGroup != null || address != null || lastDonationDate != null
 }
 

@@ -24,6 +24,7 @@ private fun getDefaultPublishedDonors(): List<DonorInfo> {
             location = "মাসতালবেড়ি, বালুকা",
             status = "সময় হয়েছে",
             lastDonation = "৩ মাস",
+            lastDonationDate = "০১/০৮/২০২৫",
             facebookLink = "https://facebook.com/kibriya",
             whatsappNumber = "০১৭২৬৭৮৮৮৮"
         ),
@@ -35,6 +36,7 @@ private fun getDefaultPublishedDonors(): List<DonorInfo> {
             location = "ভালুকা পৌরসভা",
             status = "সময় হয়নি",
             lastDonation = "১ মাস",
+            lastDonationDate = "০১/১০/২০২৫",
             facebookLink = null,
             whatsappNumber = "০১৮১২৩৪৫৬৭৮"
         )

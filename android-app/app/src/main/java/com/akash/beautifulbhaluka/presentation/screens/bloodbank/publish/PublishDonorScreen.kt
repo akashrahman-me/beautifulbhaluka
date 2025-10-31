@@ -179,6 +179,16 @@ fun PublishDonorContent(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         error = uiState.validationErrors.address
                     )
+
+                    ModernTextField(
+                        value = uiState.lastDonationDate,
+                        onValueChange = { onAction(PublishDonorAction.UpdateLastDonationDate(it)) },
+                        label = "সর্বশেষ রক্তদান তারিখ",
+                        placeholder = "DD/MM/YYYY",
+                        leadingIcon = Icons.Outlined.CalendarToday,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        error = uiState.validationErrors.lastDonationDate
+                    )
                 }
             }
 
@@ -217,7 +227,8 @@ fun PublishDonorContent(
                 enabled = uiState.fullName.isNotEmpty() &&
                         uiState.mobileNumber.isNotEmpty() &&
                         uiState.bloodGroup.isNotEmpty() &&
-                        uiState.address.isNotEmpty(),
+                        uiState.address.isNotEmpty() &&
+                        uiState.lastDonationDate.isNotEmpty(),
                 onClick = { onAction(PublishDonorAction.Submit) }
             )
 

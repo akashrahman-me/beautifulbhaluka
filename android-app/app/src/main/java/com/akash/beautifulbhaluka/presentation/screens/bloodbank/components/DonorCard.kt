@@ -27,6 +27,7 @@ import com.composables.icons.lucide.User
 import com.composables.icons.lucide.Phone
 import com.composables.icons.lucide.MapPin
 import com.composables.icons.lucide.Clock
+import com.composables.icons.lucide.Calendar
 import com.composables.icons.lucide.Facebook
 import com.composables.icons.lucide.MessageCircle
 import com.composables.icons.lucide.PencilLine
@@ -203,7 +204,7 @@ fun DonorCard(
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
-                                    text = "Blood Group",
+                                    text = "রক্তের গ্রুপ",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontWeight = FontWeight.Medium
@@ -221,7 +222,7 @@ fun DonorCard(
                     // Contact Info
                     InfoRow(
                         icon = Lucide.Phone,
-                        label = "Contact",
+                        label = "যোগাযোগ",
                         value = donor.phone,
                         iconTint = Color(0xFF4CAF50)
                     )
@@ -229,7 +230,7 @@ fun DonorCard(
                     // Location Info
                     InfoRow(
                         icon = Lucide.MapPin,
-                        label = "Location",
+                        label = "ঠিকানা",
                         value = donor.location,
                         iconTint = Color(0xFF2196F3)
                     )
@@ -237,9 +238,17 @@ fun DonorCard(
                     // Last Donation Info
                     InfoRow(
                         icon = Lucide.Clock,
-                        label = "Last Donation",
+                        label = "সর্বশেষ রক্তদান",
                         value = "${donor.lastDonation} আগে",
                         iconTint = Color(0xFFFF9800)
+                    )
+
+                    // Last Donation Date
+                    InfoRow(
+                        icon = Lucide.Calendar,
+                        label = "রক্তদান তারিখ",
+                        value = donor.lastDonationDate,
+                        iconTint = Color(0xFF9C27B0)
                     )
 
                     // Social Links (if available)

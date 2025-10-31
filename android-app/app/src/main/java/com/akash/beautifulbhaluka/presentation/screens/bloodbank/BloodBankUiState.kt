@@ -14,6 +14,7 @@ data class DonorInfo(
     val bloodGroup: String,
     val location: String,
     val lastDonation: String,
+    val lastDonationDate: String, // সর্বশেষ রক্তদান তারিখ
     val facebookLink: String? = null,
     val whatsappNumber: String? = null
 )
@@ -33,6 +34,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             bloodGroup = "A+",
             location = "মাসতালবেড়ি, বালুকা",
             lastDonation = "২ মাস ২৪ দিন",
+            lastDonationDate = "০৮/০৮/২০২৫",
             facebookLink = "https://facebook.com/kibriya",
             whatsappNumber = "০১৭২৬৭৮৮৮৮"
         ),
@@ -44,6 +46,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             bloodGroup = "B+",
             location = "ভালুকা পৌরসভা",
             lastDonation = "১ মাস ১০ দিন",
+            lastDonationDate = "২০/০৯/২০২৫",
             facebookLink = "https://facebook.com/rakib",
             whatsappNumber = null
         ),
@@ -55,6 +58,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             bloodGroup = "O+",
             location = "রামপুর, ভালুকা",
             lastDonation = "৪ মাস ৫ দিন",
+            lastDonationDate = "২৫/০৬/২০২৫",
             facebookLink = null,
             whatsappNumber = "০১৭১৫৬৭৮৯০১"
         ),
@@ -66,6 +70,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             bloodGroup = "AB+",
             location = "ভালুকা বাজার",
             lastDonation = "২ মাস ১৫ দিন",
+            lastDonationDate = "১৫/০৮/২০২৫",
             facebookLink = "https://facebook.com/tanvir",
             whatsappNumber = "০১৯২৩৪৫৬৭৮৯"
         ),
@@ -77,6 +82,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             bloodGroup = "A-",
             location = "মাসতালবেড়ি, বালুকা",
             lastDonation = "৫ মাস ২ দিন",
+            lastDonationDate = "২৮/০৫/২০২৫",
             facebookLink = "https://facebook.com/farhan",
             whatsappNumber = "০১৩১২৩৪৫৬৭৮"
         )

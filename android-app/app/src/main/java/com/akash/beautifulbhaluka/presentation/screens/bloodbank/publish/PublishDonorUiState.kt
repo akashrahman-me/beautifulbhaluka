@@ -8,9 +8,11 @@ data class PublishDonorUiState(
     val mobileNumber: String = "",
     val bloodGroup: String = "",
     val address: String = "",
+    val lastDonationDate: String = "",
     val facebookLink: String = "",
     val whatsappNumber: String = "",
     val isBloodGroupDropdownExpanded: Boolean = false,
+    val showDatePicker: Boolean = false,
     val validationErrors: ValidationErrors = ValidationErrors()
 )
 
@@ -18,7 +20,8 @@ data class ValidationErrors(
     val fullName: String? = null,
     val mobileNumber: String? = null,
     val bloodGroup: String? = null,
-    val address: String? = null
+    val address: String? = null,
+    val lastDonationDate: String? = null
 )
 
 sealed class PublishDonorAction {
@@ -26,9 +29,11 @@ sealed class PublishDonorAction {
     data class UpdateMobileNumber(val number: String) : PublishDonorAction()
     data class UpdateBloodGroup(val group: String) : PublishDonorAction()
     data class UpdateAddress(val address: String) : PublishDonorAction()
+    data class UpdateLastDonationDate(val date: String) : PublishDonorAction()
     data class UpdateFacebookLink(val link: String) : PublishDonorAction()
     data class UpdateWhatsAppNumber(val number: String) : PublishDonorAction()
     data class SetBloodGroupDropdownExpanded(val expanded: Boolean) : PublishDonorAction()
+    data class SetShowDatePicker(val show: Boolean) : PublishDonorAction()
     object Submit : PublishDonorAction()
     object ClearError : PublishDonorAction()
 }
