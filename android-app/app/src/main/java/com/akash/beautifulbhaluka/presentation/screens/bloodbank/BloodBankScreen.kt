@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.components.DonorCard
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.LogOut
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +34,8 @@ fun BloodBankScreen(
     onPhoneCall: (String) -> Unit = {},
     onNavigateToGuidelines: () -> Unit = {},
     onNavigateToPublish: () -> Unit = {},
-    onNavigateToManage: () -> Unit = {}
+    onNavigateToManage: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -46,7 +49,8 @@ fun BloodBankScreen(
         onAction = viewModel::onAction,
         onNavigateToGuidelines = onNavigateToGuidelines,
         onNavigateToPublish = onNavigateToPublish,
-        onNavigateToManage = onNavigateToManage
+        onNavigateToManage = onNavigateToManage,
+        onNavigateToHome = onNavigateToHome
     )
 }
 
@@ -57,7 +61,8 @@ fun BloodBankContent(
     onAction: (BloodBankAction) -> Unit,
     onNavigateToGuidelines: () -> Unit,
     onNavigateToPublish: () -> Unit,
-    onNavigateToManage: () -> Unit
+    onNavigateToManage: () -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -106,6 +111,15 @@ fun BloodBankContent(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToHome) {
+                        Icon(
+                            imageVector = Lucide.LogOut,
+                            contentDescription = "Go to Home",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
