@@ -32,16 +32,16 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৭২৬৭৮৮৮৮",
             bloodGroup = "A+",
             location = "মাসতালবেড়ি, বালুকা",
-            lastDonation = "২ মাস ২৪ দিন পূর্বে"
+            lastDonation = "২ মাস ২৪ দিন"
         ),
         DonorInfo(
             id = "2",
             name = "রাকিব হাসান",
-            status = "সময় হয়েছে",
+            status = "সময় হয়নি",
             phone = "০১৮১২৩৪৫৬৭৮",
             bloodGroup = "B+",
             location = "ভালুকা পৌরসভা",
-            lastDonation = "৩ মাস ১০ দিন পূর্বে"
+            lastDonation = "১ মাস ১০ দিন"
         ),
         DonorInfo(
             id = "3",
@@ -50,16 +50,16 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৭১৫৬৭৮৯০১",
             bloodGroup = "O+",
             location = "রামপুর, ভালুকা",
-            lastDonation = "৪ মাস ৫ দিন পূর্বে"
+            lastDonation = "৪ মাস ৫ দিন"
         ),
         DonorInfo(
             id = "4",
             name = "তানভীর আলম",
-            status = "সময় হয়েছে",
+            status = "সময় হয়নি",
             phone = "০১৯২৩৪৫৬৭৮৯",
             bloodGroup = "AB+",
             location = "ভালুকা বাজার",
-            lastDonation = "২ মাস ১৫ দিন পূর্বে"
+            lastDonation = "২ মাস ১৫ দিন"
         ),
         DonorInfo(
             id = "5",
@@ -68,7 +68,7 @@ private fun getDefaultDonors(): List<DonorInfo> {
             phone = "০১৩১২৩৪৫৬৭৮",
             bloodGroup = "A-",
             location = "মাসতালবেড়ি, বালুকা",
-            lastDonation = "৫ মাস ২ দিন পূর্বে"
+            lastDonation = "৫ মাস ২ দিন"
         )
     )
 }

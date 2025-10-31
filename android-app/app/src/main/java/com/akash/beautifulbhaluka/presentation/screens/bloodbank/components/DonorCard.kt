@@ -123,8 +123,14 @@ fun DonorCard(
                             )
 
                             // Status Badge with Icon
+                            val isEligible = donor.status == "সময় হয়েছে"
+                            val statusColor =
+                                if (isEligible) Color(0xFF4CAF50) else Color(0xFFE53935)
+                            val statusTextColor =
+                                if (isEligible) Color(0xFF2E7D32) else Color(0xFFB71C1C)
+
                             Surface(
-                                color = Color(0xFF4CAF50).copy(alpha = 0.12f),
+                                color = statusColor.copy(alpha = 0.12f),
                                 shape = RoundedCornerShape(20.dp),
                                 modifier = Modifier.wrapContentWidth()
                             ) {
@@ -140,14 +146,14 @@ fun DonorCard(
                                         modifier = Modifier
                                             .size(6.dp)
                                             .background(
-                                                Color(0xFF4CAF50),
+                                                statusColor,
                                                 CircleShape
                                             )
                                     )
                                     Text(
                                         text = donor.status,
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF2E7D32),
+                                        color = statusTextColor,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                 }

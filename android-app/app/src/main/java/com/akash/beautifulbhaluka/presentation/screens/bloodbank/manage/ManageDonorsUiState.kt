@@ -22,10 +22,21 @@ private fun getDefaultPublishedDonors(): List<DonorInfo> {
             phone = "০১৭২৬৭৮৮৮৮",
             bloodGroup = "A+",
             location = "মাসতালবেড়ি, বালুকা",
-            status = "Active",
-            lastDonation = "২ দিন",
+            status = "সময় হয়েছে",
+            lastDonation = "৩ মাস",
             facebookLink = "https://facebook.com/kibriya",
             whatsappNumber = "০১৭২৬৭৮৮৮৮"
+        ),
+        DonorInfo(
+            id = "2",
+            name = "আরিফুল ইসলাম",
+            phone = "০১৮১২৩৪৫৬৭৮",
+            bloodGroup = "B+",
+            location = "ভালুকা পৌরসভা",
+            status = "সময় হয়নি",
+            lastDonation = "১ মাস",
+            facebookLink = null,
+            whatsappNumber = "০১৮১২৩৪৫৬৭৮"
         )
     )
 }
