@@ -57,22 +57,6 @@ fun DonorCard(
         )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // Gradient Background Accent
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                Color(0xFFE53935),
-                                Color(0xFFFF6B6B),
-                                Color(0xFFE53935)
-                            )
-                        )
-                    )
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,42 +148,8 @@ fun DonorCard(
                             }
                         }
                     }
-
-                    // Verified Badge with Animation
-                    Surface(
-                        color = Color(0xFF2196F3).copy(alpha = 0.12f),
-                        shape = CircleShape,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Verified",
-                                tint = Color(0xFF2196F3),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
                 }
 
-                // Divider with Gradient
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                )
 
                 // Info Grid Section
                 Column(

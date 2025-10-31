@@ -65,7 +65,8 @@ fun BloodBankContent(
                 title = {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Box(
                             modifier = Modifier
@@ -96,7 +97,8 @@ fun BloodBankContent(
                                 text = "রক্তদাতা",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = (-0.5).sp
+                                letterSpacing = (-0.5).sp,
+                                modifier = Modifier.fillMaxWidth()
                             )
                             Text(
                                 text = "${uiState.donors.size} জন উপলব্ধ",
@@ -119,10 +121,7 @@ fun BloodBankContent(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Hero Stats Card
-            item {
-                HeroStatsCard(donorCount = uiState.donors.size)
-            }
+
 
             // Quick Actions Grid
             item {
@@ -191,83 +190,6 @@ fun BloodBankContent(
 }
 
 @Composable
-private fun HeroStatsCard(donorCount: Int) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(24.dp),
-                spotColor = Color(0xFFE53935).copy(alpha = 0.2f)
-            ),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFE53935),
-                            Color(0xFFD32F2F),
-                            Color(0xFFC62828)
-                        )
-                    )
-                )
-                .padding(24.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "রক্তদান করুন",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "জীবন বাঁচান",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                Surface(
-                    color = Color.White.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "$donorCount",
-                            style = MaterialTheme.typography.displayMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Donors",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun QuickActionsGrid(
     onGuidelinesClick: () -> Unit,
     onPublishClick: () -> Unit,
@@ -283,7 +205,8 @@ private fun QuickActionsGrid(
             icon = Icons.AutoMirrored.Outlined.MenuBook,
             gradientColors = listOf(Color(0xFF2196F3), Color(0xFF42A5F5)),
             onClick = onGuidelinesClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            nextArrow = true
         )
 
         // Publish and Manage Row
@@ -319,7 +242,8 @@ private fun QuickActionButton(
     icon: ImageVector,
     gradientColors: List<Color>,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    nextArrow: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -381,13 +305,14 @@ private fun QuickActionButton(
                         color = Color.White.copy(alpha = 0.9f)
                     )
                 }
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.8f),
-                    modifier = Modifier.size(24.dp)
-                )
+                if (nextArrow) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }

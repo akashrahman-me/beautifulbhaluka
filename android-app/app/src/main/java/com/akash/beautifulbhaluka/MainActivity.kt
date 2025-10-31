@@ -45,8 +45,13 @@ class MainActivity : ComponentActivity() {
                 NavigationRoutes.MATCHMAKING,
                 NavigationRoutes.MATCHMAKING_DETAILS,
                 NavigationRoutes.MATCHMAKING_PUBLISH,
-                NavigationRoutes.MANAGE_MATCHMAKING_PROFILES
-            )
+                NavigationRoutes.MANAGE_MATCHMAKING_PROFILES,
+                NavigationRoutes.BLOOD_BANK,
+                NavigationRoutes.BLOOD_BANK_PUBLISH,
+                NavigationRoutes.BLOOD_BANK_MANAGE,
+                NavigationRoutes.BLOOD_DONATION_GUIDELINES,
+
+                )
 
             val shouldShowBars = currentRoute !in hiddenRoutes
 
