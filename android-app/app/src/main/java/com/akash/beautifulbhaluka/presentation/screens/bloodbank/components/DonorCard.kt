@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,18 +13,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.DonorInfo
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.User
 import com.composables.icons.lucide.Phone
 import com.composables.icons.lucide.MapPin
 import com.composables.icons.lucide.Clock
@@ -32,6 +37,7 @@ import com.composables.icons.lucide.Facebook
 import com.composables.icons.lucide.MessageCircle
 import com.composables.icons.lucide.PencilLine
 import com.composables.icons.lucide.Trash2
+import com.composables.icons.lucide.X
 
 @Composable
 fun DonorCard(
@@ -43,11 +49,17 @@ fun DonorCard(
     modifier: Modifier = Modifier
 ) {
     var isPressed by remember { mutableStateOf(false) }
+    var showFullScreenImage by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.97f else 1f,
         animationSpec = tween(100, easing = LinearEasing),
         label = "scale"
     )
+
+    // Generate avatar URL using UI Avatars API
+    val avatarUrl = remember(donor.name) {
+        generateAvatarUrl(donor.name)
+    }
 
     Card(
         modifier = modifier
@@ -81,8 +93,10 @@ fun DonorCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.weight(1f)
                     ) {
-                        // Gradient Profile Avatar
-                        Box(
+                        // Profile Avatar with Real Image
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = "Profile picture of ${donor.name}",
                             modifier = Modifier
                                 .size(64.dp)
                                 .shadow(
@@ -90,25 +104,10 @@ fun DonorCard(
                                     shape = CircleShape,
                                     spotColor = Color(0xFFE53935).copy(alpha = 0.2f)
                                 )
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFFF6B6B),
-                                            Color(0xFFE53935)
-                                        )
-                                    ),
-                                    shape = CircleShape
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Lucide.User,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .align(Alignment.Center)
-                            )
-                        }
+                                .clip(CircleShape)
+                                .clickable { showFullScreenImage = true },
+                            contentScale = ContentScale.Crop
+                        )
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -376,6 +375,15 @@ fun DonorCard(
             }
         }
     }
+
+    // Full Screen Image Dialog
+    if (showFullScreenImage) {
+        FullScreenImageDialog(
+            imageUrl = avatarUrl,
+            donorName = donor.name,
+            onDismiss = { showFullScreenImage = false }
+        )
+    }
 }
 
 @Composable
@@ -462,5 +470,78 @@ private fun SocialChip(
             )
         }
     }
+}
+
+@Composable
+private fun FullScreenImageDialog(
+    imageUrl: String,
+    donorName: String,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable { onDismiss() }
+        ) {
+            // Close button
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Lucide.X,
+                    contentDescription = "Close",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            // Full screen image
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "Full size profile picture of $donorName",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            // Donor name at bottom
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                color = Color.Black.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = donorName,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+// Helper function to generate avatar URL using Picsum Photos API
+private fun generateAvatarUrl(name: String): String {
+    // Using Picsum Photos API - free public service with real images
+    // Format: https://picsum.photos/seed/{seed}/{width}/{height}
+    // Use name as seed for consistent images per donor
+    val seed = name.replace(" ", "-").lowercase()
+    return "https://picsum.photos/seed/$seed/256/256"
 }
 

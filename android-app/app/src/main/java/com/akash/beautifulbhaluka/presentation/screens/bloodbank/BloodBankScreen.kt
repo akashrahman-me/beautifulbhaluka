@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.components.DonorCard
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.LogOut
@@ -30,7 +30,7 @@ import com.composables.icons.lucide.LogOut
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BloodBankScreen(
-    viewModel: BloodBankViewModel = viewModel(),
+    viewModel: BloodBankViewModel = hiltViewModel(),
     onPhoneCall: (String) -> Unit = {},
     onNavigateToGuidelines: () -> Unit = {},
     onNavigateToPublish: () -> Unit = {},

@@ -20,13 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.components.DonorCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageDonorsScreen(
-    viewModel: ManageDonorsViewModel = viewModel(),
+    viewModel: ManageDonorsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onEditDonor: (String) -> Unit = {}
 ) {

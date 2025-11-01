@@ -1,6 +1,8 @@
 package com.akash.beautifulbhaluka.di
 
+import com.akash.beautifulbhaluka.data.repository.BloodBankRepositoryImpl
 import com.akash.beautifulbhaluka.data.repository.ImageRepositoryImpl
+import com.akash.beautifulbhaluka.domain.repository.BloodBankRepository
 import com.akash.beautifulbhaluka.domain.repository.ImageRepository
 import dagger.Binds
 import dagger.Module
@@ -17,5 +19,11 @@ abstract class RepositoryModule {
     abstract fun bindImageRepository(
         imageRepositoryImpl: ImageRepositoryImpl
     ): ImageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBloodBankRepository(
+        bloodBankRepositoryImpl: BloodBankRepositoryImpl
+    ): BloodBankRepository
 }
 

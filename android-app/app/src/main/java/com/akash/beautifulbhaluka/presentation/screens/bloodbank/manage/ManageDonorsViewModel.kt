@@ -2,13 +2,20 @@ package com.akash.beautifulbhaluka.presentation.screens.bloodbank.manage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.akash.beautifulbhaluka.domain.repository.BloodBankRepository
+import com.akash.beautifulbhaluka.presentation.screens.bloodbank.toDonorInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ManageDonorsViewModel : ViewModel() {
+@HiltViewModel
+class ManageDonorsViewModel @Inject constructor(
+    private val repository: BloodBankRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ManageDonorsUiState())
     val uiState: StateFlow<ManageDonorsUiState> = _uiState.asStateFlow()
@@ -30,16 +37,23 @@ class ManageDonorsViewModel : ViewModel() {
             _uiState.update { it.copy(isLoading = true) }
 
             try {
-                // TODO: Fetch from repository
-                // Simulating API call
-                kotlinx.coroutines.delay(500)
+                val result = repository.getMyPublishedDonors()
 
-                // Data is already loaded from default values in UiState
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = null
-                    )
+                result.onSuccess { donors ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            myPublishedDonors = donors.map { donor -> donor.toDonorInfo() },
+                            error = null
+                        )
+                    }
+                }.onFailure { exception ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = exception.message ?: "Failed to load your donors"
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -57,19 +71,18 @@ class ManageDonorsViewModel : ViewModel() {
             _uiState.update { it.copy(isLoading = true) }
 
             try {
-                // TODO: Delete from repository
-                // Simulating API call
-                kotlinx.coroutines.delay(800)
+                val result = repository.deleteDonor(donorId)
 
-                // Remove from list
-                val updatedDonors = _uiState.value.myPublishedDonors.filter { it.id != donorId }
-
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        myPublishedDonors = updatedDonors,
-                        error = null
-                    )
+                result.onSuccess {
+                    // Reload data after successful deletion
+                    loadData()
+                }.onFailure { exception ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = exception.message ?: "Failed to delete donor"
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update {
