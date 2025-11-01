@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import com.composables.icons.lucide.MessageCircle
 import com.composables.icons.lucide.PencilLine
 import com.composables.icons.lucide.Trash2
 import com.composables.icons.lucide.X
+import com.composables.icons.lucide.Droplet
 
 @Composable
 fun DonorCard(
@@ -183,26 +185,38 @@ fun DonorCard(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    // Blood Group - Prominent Display
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = 1.dp,
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFFE53935).copy(0.25f),
+                                        Color(0xFFFF9800).copy(0.25f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(24.dp)
+                            )
                     ) {
-                        // Blood Group - Prominent Display
-                        Surface(
-                            color = Color(0xFFE53935).copy(alpha = 0.08f),
-                            shape = RoundedCornerShape(16.dp),
+                        Row(
                             modifier = Modifier
-                                .wrapContentSize()
+                                .fillMaxSize()
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .padding(16.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "🩸",
-                                    fontSize = 28.sp
+                                Icon(
+                                    imageVector = Lucide.Droplet,
+                                    contentDescription = "Blood Type",
+                                    modifier = Modifier.size(28.dp),
+                                    tint = Color(0xFFDC143C)
                                 )
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -221,28 +235,30 @@ fun DonorCard(
                                     )
                                 }
                             }
-                        }
+                            // Social Links (if available)
+                            if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalAlignment = Alignment.End
+                                ) {
+                                    if (!donor.facebookLink.isNullOrEmpty()) {
+                                        SocialChip(
+                                            icon = Lucide.Facebook,
+                                            color = Color(0xFF1877F2),
+                                        )
+                                    }
+                                    if (!donor.whatsappNumber.isNullOrEmpty()) {
+                                        SocialChip(
+                                            icon = Lucide.MessageCircle,
+                                            color = Color(0xFF25D366),
+                                        )
+                                    }
 
-                        // Social Links (if available)
-                        if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                if (!donor.facebookLink.isNullOrEmpty()) {
-                                    SocialChip(
-                                        icon = Lucide.Facebook,
-                                        color = Color(0xFF1877F2),
-                                    )
                                 }
-                                if (!donor.whatsappNumber.isNullOrEmpty()) {
-                                    SocialChip(
-                                        icon = Lucide.MessageCircle,
-                                        color = Color(0xFF25D366),
-                                    )
-                                }
-
                             }
                         }
+
                     }
 
 
@@ -471,7 +487,7 @@ private fun SocialChip(
 ) {
     Box(
         modifier = modifier
-            .size(24.dp)
+            .size(28.dp)
             .clip(shape = CircleShape)
             .background(color.copy(alpha = 0.1f)),
         contentAlignment = Alignment.Center
