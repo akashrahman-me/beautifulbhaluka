@@ -3,6 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.bloodbank
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akash.beautifulbhaluka.domain.repository.BloodBankRepository
+import com.akash.beautifulbhaluka.domain.usecase.FilterDonorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,18 +14,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BloodBankViewModel @Inject constructor(
-    private val repository: BloodBankRepository
+    private val repository: BloodBankRepository,
+    private val filterDonorsUseCase: FilterDonorsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BloodBankUiState())
     val uiState: StateFlow<BloodBankUiState> = _uiState.asStateFlow()
 
-    private var allDonors: List<DonorInfo> = emptyList()
+    private var allDonors: List<com.akash.beautifulbhaluka.domain.model.Donor> = emptyList()
     private var onPhoneCall: ((String) -> Unit)? = null
 
     fun setPhoneCallback(callback: (String) -> Unit) {
         onPhoneCall = callback
     }
+
+    fun getBloodGroups(): List<String> = filterDonorsUseCase.getAvailableBloodGroups()
+
+    fun getAvailabilityStatuses(): List<String> = filterDonorsUseCase.getAvailabilityStatuses()
 
     fun onAction(action: BloodBankAction) {
         when (action) {
@@ -44,7 +50,7 @@ class BloodBankViewModel @Inject constructor(
                 val result = repository.getDonors()
 
                 result.onSuccess { donors ->
-                    allDonors = donors.map { donor -> donor.toDonorInfo() }
+                    allDonors = donors
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -93,23 +99,15 @@ class BloodBankViewModel @Inject constructor(
         bloodGroup: String? = _uiState.value.selectedBloodGroup,
         availability: String? = _uiState.value.selectedAvailability
     ): List<DonorInfo> {
-        var filtered = allDonors
+        // Use domain use case for filtering business logic
+        val filteredDomainModels = filterDonorsUseCase(
+            donors = allDonors,
+            bloodGroup = bloodGroup,
+            availability = availability
+        )
 
-        // Filter by blood group
-        if (bloodGroup != null) {
-            filtered = filtered.filter { it.bloodGroup == bloodGroup }
-        }
-
-        // Filter by availability
-        if (availability != null) {
-            filtered = when (availability) {
-                "সময় হয়েছে" -> filtered.filter { it.status == "সময় হয়েছে" }
-                "সময় হয়নি" -> filtered.filter { it.status == "সময় হয়নি" }
-                else -> filtered
-            }
-        }
-
-        return filtered
+        // Map to presentation models
+        return filteredDomainModels.map { it.toDonorInfo() }
     }
 
     private fun callPhone(phoneNumber: String) {

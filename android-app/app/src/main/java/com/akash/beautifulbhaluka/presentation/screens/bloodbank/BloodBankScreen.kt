@@ -40,6 +40,8 @@ fun BloodBankScreen(
     onNavigateToHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val bloodGroups = viewModel.getBloodGroups()
+    val availabilityStatuses = viewModel.getAvailabilityStatuses()
 
     LaunchedEffect(Unit) {
         viewModel.setPhoneCallback(onPhoneCall)
@@ -48,6 +50,8 @@ fun BloodBankScreen(
 
     BloodBankContent(
         uiState = uiState,
+        bloodGroups = bloodGroups,
+        availabilityStatuses = availabilityStatuses,
         onAction = viewModel::onAction,
         onNavigateToGuidelines = onNavigateToGuidelines,
         onNavigateToPublish = onNavigateToPublish,
@@ -60,6 +64,8 @@ fun BloodBankScreen(
 @Composable
 fun BloodBankContent(
     uiState: BloodBankUiState,
+    bloodGroups: List<String>,
+    availabilityStatuses: List<String>,
     onAction: (BloodBankAction) -> Unit,
     onNavigateToGuidelines: () -> Unit,
     onNavigateToPublish: () -> Unit,
@@ -153,6 +159,8 @@ fun BloodBankContent(
             // Filters Section
             item {
                 FiltersSection(
+                    bloodGroups = bloodGroups,
+                    availabilityStatuses = availabilityStatuses,
                     selectedBloodGroup = uiState.selectedBloodGroup,
                     selectedAvailability = uiState.selectedAvailability,
                     onBloodGroupSelected = { onAction(BloodBankAction.FilterByBloodGroup(it)) },
@@ -574,6 +582,8 @@ private fun EmptyStateCard() {
 
 @Composable
 private fun FiltersSection(
+    bloodGroups: List<String>,
+    availabilityStatuses: List<String>,
     selectedBloodGroup: String?,
     selectedAvailability: String?,
     onBloodGroupSelected: (String?) -> Unit,
@@ -607,8 +617,6 @@ private fun FiltersSection(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val bloodGroups = listOf("A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-")
-
                 item {
                     FilterChip(
                         selected = selectedBloodGroup == null,
@@ -699,65 +707,43 @@ private fun FiltersSection(
                     )
                 )
 
-                FilterChip(
-                    selected = selectedAvailability == "সময় হয়েছে",
-                    onClick = {
-                        onAvailabilitySelected(if (selectedAvailability == "সময় হয়েছে") null else "সময় হয়েছে")
-                    },
-                    label = { Text("সময় হয়েছে") },
-                    leadingIcon = if (selectedAvailability == "সময় হয়েছে") {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    } else {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        selectedLabelColor = Color.White
-                    )
-                )
+                availabilityStatuses.forEachIndexed { index, status ->
+                    val (color, icon) = when (status) {
+                        "সময় হয়েছে" -> Color(0xFF4CAF50) to Icons.Default.CheckCircle
+                        "সময় হয়নি" -> Color(0xFFFF9800) to Icons.Default.Cancel
+                        else -> MaterialTheme.colorScheme.primary to Icons.Default.Circle
+                    }
 
-                FilterChip(
-                    selected = selectedAvailability == "সময় হয়নি",
-                    onClick = {
-                        onAvailabilitySelected(if (selectedAvailability == "সময় হয়নি") null else "সময় হয়নি")
-                    },
-                    label = { Text("সময় হয়নি") },
-                    leadingIcon = if (selectedAvailability == "সময় হয়নি") {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    } else {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.Cancel,
-                                contentDescription = null,
-                                tint = Color(0xFFFF9800),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFFF9800),
-                        selectedLabelColor = Color.White
+                    FilterChip(
+                        selected = selectedAvailability == status,
+                        onClick = {
+                            onAvailabilitySelected(if (selectedAvailability == status) null else status)
+                        },
+                        label = { Text(status) },
+                        leadingIcon = if (selectedAvailability == status) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        } else {
+                            {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = color,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = color,
+                            selectedLabelColor = Color.White
+                        )
                     )
-                )
+                }
             }
         }
     }
