@@ -13,8 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.akash.beautifulbhaluka.presentation.components.layout.Bottombar
@@ -31,75 +33,90 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+            BeautifulBhalukaApp()
+        }
+    }
+}
 
-            // Observe current destination
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
+@Composable
+fun BeautifulBhalukaApp() {
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-            // Hide bars when in Social screen or Buy-Sell screen
-            val hiddenRoutes = listOf(
-                NavigationRoutes.SOCIAL,
-                NavigationRoutes.BUY_SELL,
-                NavigationRoutes.MATCHMAKING,
-                NavigationRoutes.MATCHMAKING_DETAILS,
-                NavigationRoutes.MATCHMAKING_PUBLISH,
-                NavigationRoutes.MANAGE_MATCHMAKING_PROFILES,
-                NavigationRoutes.BLOOD_BANK,
-                NavigationRoutes.BLOOD_BANK_PUBLISH,
-                NavigationRoutes.BLOOD_BANK_MANAGE,
-                NavigationRoutes.BLOOD_DONATION_GUIDELINES,
+    // Observe current destination
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-                )
+    // Hide bars when in Social screen or Buy-Sell screen
+    val hiddenRoutes = listOf(
+        NavigationRoutes.SOCIAL,
+        NavigationRoutes.BUY_SELL,
+        NavigationRoutes.MATCHMAKING,
+        NavigationRoutes.MATCHMAKING_DETAILS,
+        NavigationRoutes.MATCHMAKING_PUBLISH,
+        NavigationRoutes.MANAGE_MATCHMAKING_PROFILES,
+        NavigationRoutes.BLOOD_BANK,
+        NavigationRoutes.BLOOD_BANK_PUBLISH,
+        NavigationRoutes.BLOOD_BANK_MANAGE,
+        NavigationRoutes.BLOOD_DONATION_GUIDELINES,
+    )
 
-            val shouldShowBars = currentRoute !in hiddenRoutes
+    val shouldShowBars = currentRoute !in hiddenRoutes
 
+    BeautifulBhalukaTheme(dynamicColor = false) {
+        MainScaffold(
+            navController = navController,
+            drawerState = drawerState,
+            shouldShowBars = shouldShowBars
+        )
+    }
+}
 
-
-            BeautifulBhalukaTheme(dynamicColor = false) {
-                ModalNavigationDrawer(
-                    drawerState = drawerState,
-                    drawerContent = {
-                        NavigationDrawer(
-                            navController = navController,
-                            drawerState = drawerState
-                        )
-                    }
-                ) {
-                    Scaffold(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background),
-                        bottomBar = {
-                            if (shouldShowBars) {
-                                Bottombar(
-                                    navController = navController,
-                                    drawerState = drawerState
-                                )
-                            }
-                        },
-                        topBar = {
-                            if (shouldShowBars) {
-                                Topbar()
-                            }
-                        },
-                    ) { innerPadding ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .then(
-                                    if (shouldShowBars) {
-                                        Modifier.padding(innerPadding)
-                                    } else {
-                                        Modifier
-                                    }
-                                )
-                        ) {
-                            AppNavigation(navController = navController)
-                        }
-                    }
+@Composable
+private fun MainScaffold(
+    navController: NavHostController,
+    drawerState: androidx.compose.material3.DrawerState,
+    shouldShowBars: Boolean
+) {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            NavigationDrawer(
+                navController = navController,
+                drawerState = drawerState
+            )
+        }
+    ) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            bottomBar = {
+                if (shouldShowBars) {
+                    Bottombar(
+                        navController = navController,
+                        drawerState = drawerState
+                    )
                 }
+            },
+            topBar = {
+                if (shouldShowBars) {
+                    Topbar()
+                }
+            },
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (shouldShowBars) {
+                            Modifier.padding(innerPadding)
+                        } else {
+                            Modifier
+                        }
+                    )
+            ) {
+                AppNavigation(navController = navController)
             }
         }
     }
