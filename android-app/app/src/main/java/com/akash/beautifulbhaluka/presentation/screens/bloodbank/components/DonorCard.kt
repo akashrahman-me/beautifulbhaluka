@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -182,16 +183,19 @@ fun DonorCard(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         // Blood Group - Prominent Display
                         Surface(
                             color = Color(0xFFE53935).copy(alpha = 0.08f),
                             shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier.weight(0.5f)
+                            modifier = Modifier
+                                .wrapContentSize()
                         ) {
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .padding(16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -219,28 +223,22 @@ fun DonorCard(
                             }
                         }
 
-                        Column(modifier = Modifier.weight(0.5f)) {
-                            // Social Links (if available)
-                            if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
+                        // Social Links (if available)
+                        if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
                                 if (!donor.facebookLink.isNullOrEmpty()) {
                                     SocialChip(
                                         icon = Lucide.Facebook,
-                                        label = ".",
                                         color = Color(0xFF1877F2),
-                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                                 if (!donor.whatsappNumber.isNullOrEmpty()) {
                                     SocialChip(
                                         icon = Lucide.MessageCircle,
-                                        label = ".",
                                         color = Color(0xFF25D366),
-                                        modifier = Modifier.weight(1f)
                                     )
-                                }
-                                // Add spacer if only one social link to maintain grid layout
-                                if (donor.facebookLink.isNullOrEmpty() || donor.whatsappNumber.isNullOrEmpty()) {
-                                    Spacer(modifier = Modifier.weight(1f))
                                 }
 
                             }
@@ -468,33 +466,22 @@ private fun InfoRow(
 @Composable
 private fun SocialChip(
     icon: ImageVector,
-    label: String,
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        color = color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp),
+    Box(
         modifier = modifier
+            .size(24.dp)
+            .clip(shape = CircleShape)
+            .background(color.copy(alpha = 0.1f)),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(16.dp)
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = color,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(16.dp)
+        )
     }
 }
 
