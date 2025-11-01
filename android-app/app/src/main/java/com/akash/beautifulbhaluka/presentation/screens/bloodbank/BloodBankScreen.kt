@@ -734,7 +734,7 @@ private fun FiltersSection(
                     onClick = {
                         onAvailabilitySelected(if (selectedAvailability == "সময় হয়নি") null else "সময় হয়নি")
                     },
-                    label = { Text("সময় হ��়নি") },
+                    label = { Text("সময় হয়নি") },
                     leadingIcon = if (selectedAvailability == "সময় হয়নি") {
                         {
                             Icon(

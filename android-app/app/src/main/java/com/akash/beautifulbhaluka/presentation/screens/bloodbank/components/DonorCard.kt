@@ -68,9 +68,9 @@ fun DonorCard(
         modifier = modifier
             .scale(scale)
             .shadow(
-                elevation = 8.dp,
+                elevation = 2.dp,
                 shape = RoundedCornerShape(24.dp),
-                spotColor = Color(0xFFE53935).copy(alpha = 0.15f)
+                spotColor = Color(0xFF272731).copy(alpha = 0.9f)
             )
             .animateContentSize(),
         shape = RoundedCornerShape(24.dp),
