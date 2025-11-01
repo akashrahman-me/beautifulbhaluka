@@ -5,7 +5,9 @@ import com.akash.beautifulbhaluka.domain.model.Donor
 data class BloodBankUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val donors: List<DonorInfo> = emptyList()
+    val donors: List<DonorInfo> = emptyList(),
+    val selectedBloodGroup: String? = null,
+    val selectedAvailability: String? = null
 )
 
 data class DonorInfo(
@@ -24,6 +26,8 @@ data class DonorInfo(
 sealed class BloodBankAction {
     object LoadData : BloodBankAction()
     data class CallPhone(val phoneNumber: String) : BloodBankAction()
+    data class FilterByBloodGroup(val bloodGroup: String?) : BloodBankAction()
+    data class FilterByAvailability(val availability: String?) : BloodBankAction()
 }
 
 /**

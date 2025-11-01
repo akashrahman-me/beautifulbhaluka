@@ -19,6 +19,7 @@ class BloodBankViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(BloodBankUiState())
     val uiState: StateFlow<BloodBankUiState> = _uiState.asStateFlow()
 
+    private var allDonors: List<DonorInfo> = emptyList()
     private var onPhoneCall: ((String) -> Unit)? = null
 
     fun setPhoneCallback(callback: (String) -> Unit) {
@@ -29,6 +30,8 @@ class BloodBankViewModel @Inject constructor(
         when (action) {
             is BloodBankAction.LoadData -> loadData()
             is BloodBankAction.CallPhone -> callPhone(action.phoneNumber)
+            is BloodBankAction.FilterByBloodGroup -> filterByBloodGroup(action.bloodGroup)
+            is BloodBankAction.FilterByAvailability -> filterByAvailability(action.availability)
         }
     }
 
@@ -41,10 +44,11 @@ class BloodBankViewModel @Inject constructor(
                 val result = repository.getDonors()
 
                 result.onSuccess { donors ->
+                    allDonors = donors.map { donor -> donor.toDonorInfo() }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            donors = donors.map { donor -> donor.toDonorInfo() },
+                            donors = getFilteredDonors(),
                             error = null
                         )
                     }
@@ -65,6 +69,47 @@ class BloodBankViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun filterByBloodGroup(bloodGroup: String?) {
+        _uiState.update {
+            it.copy(
+                selectedBloodGroup = bloodGroup,
+                donors = getFilteredDonors(bloodGroup, it.selectedAvailability)
+            )
+        }
+    }
+
+    private fun filterByAvailability(availability: String?) {
+        _uiState.update {
+            it.copy(
+                selectedAvailability = availability,
+                donors = getFilteredDonors(it.selectedBloodGroup, availability)
+            )
+        }
+    }
+
+    private fun getFilteredDonors(
+        bloodGroup: String? = _uiState.value.selectedBloodGroup,
+        availability: String? = _uiState.value.selectedAvailability
+    ): List<DonorInfo> {
+        var filtered = allDonors
+
+        // Filter by blood group
+        if (bloodGroup != null) {
+            filtered = filtered.filter { it.bloodGroup == bloodGroup }
+        }
+
+        // Filter by availability
+        if (availability != null) {
+            filtered = when (availability) {
+                "সময় হয়েছে" -> filtered.filter { it.status == "সময় হয়েছে" }
+                "সময় হয়নি" -> filtered.filter { it.status == "সময় হয়নি" }
+                else -> filtered
+            }
+        }
+
+        return filtered
     }
 
     private fun callPhone(phoneNumber: String) {

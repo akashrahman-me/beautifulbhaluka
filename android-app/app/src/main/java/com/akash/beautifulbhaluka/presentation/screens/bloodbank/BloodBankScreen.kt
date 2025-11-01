@@ -3,6 +3,7 @@ package com.akash.beautifulbhaluka.presentation.screens.bloodbank
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.presentation.screens.bloodbank.components.DonorCard
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.LogOut
+import com.composables.icons.lucide.Droplet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,9 +94,11 @@ fun BloodBankContent(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "🩸",
-                                fontSize = 20.sp
+                            Icon(
+                                imageVector = Lucide.Droplet,
+                                contentDescription = "Blood Donor",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                         Column {
@@ -143,6 +147,16 @@ fun BloodBankContent(
                     onGuidelinesClick = onNavigateToGuidelines,
                     onPublishClick = onNavigateToPublish,
                     onManageClick = onNavigateToManage
+                )
+            }
+
+            // Filters Section
+            item {
+                FiltersSection(
+                    selectedBloodGroup = uiState.selectedBloodGroup,
+                    selectedAvailability = uiState.selectedAvailability,
+                    onBloodGroupSelected = { onAction(BloodBankAction.FilterByBloodGroup(it)) },
+                    onAvailabilitySelected = { onAction(BloodBankAction.FilterByAvailability(it)) }
                 )
             }
 
@@ -362,3 +376,193 @@ private fun ErrorCard(error: String) {
     }
 }
 
+@Composable
+private fun FiltersSection(
+    selectedBloodGroup: String?,
+    selectedAvailability: String?,
+    onBloodGroupSelected: (String?) -> Unit,
+    onAvailabilitySelected: (String?) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Blood Group Filter
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Lucide.Droplet,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = "রক্তের গ্রুপ",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val bloodGroups = listOf("A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-")
+
+                item {
+                    FilterChip(
+                        selected = selectedBloodGroup == null,
+                        onClick = { onBloodGroupSelected(null) },
+                        label = { Text("সকল") },
+                        leadingIcon = if (selectedBloodGroup == null) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        } else null,
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+
+                items(bloodGroups) { bloodGroup ->
+                    FilterChip(
+                        selected = selectedBloodGroup == bloodGroup,
+                        onClick = {
+                            onBloodGroupSelected(if (selectedBloodGroup == bloodGroup) null else bloodGroup)
+                        },
+                        label = { Text(bloodGroup) },
+                        leadingIcon = if (selectedBloodGroup == bloodGroup) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        } else null,
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
+        }
+
+        // Availability Filter
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccessTime,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = "উপলব্ধতা",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = selectedAvailability == null,
+                    onClick = { onAvailabilitySelected(null) },
+                    label = { Text("সকল") },
+                    leadingIcon = if (selectedAvailability == null) {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else null,
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+
+                FilterChip(
+                    selected = selectedAvailability == "সময় হয়েছে",
+                    onClick = {
+                        onAvailabilitySelected(if (selectedAvailability == "সময় হয়েছে") null else "সময় হয়েছে")
+                    },
+                    label = { Text("সময় হয়েছে") },
+                    leadingIcon = if (selectedAvailability == "সময় হয়েছে") {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = Color(0xFF4CAF50),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        selectedLabelColor = Color.White
+                    )
+                )
+
+                FilterChip(
+                    selected = selectedAvailability == "সময় হয়নি",
+                    onClick = {
+                        onAvailabilitySelected(if (selectedAvailability == "সময় হয়নি") null else "সময় হয়নি")
+                    },
+                    label = { Text("সময় হ��়নি") },
+                    leadingIcon = if (selectedAvailability == "সময় হয়নি") {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Cancel,
+                                contentDescription = null,
+                                tint = Color(0xFFFF9800),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0xFFFF9800),
+                        selectedLabelColor = Color.White
+                    )
+                )
+            }
+        }
+    }
+}
