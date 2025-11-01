@@ -182,99 +182,125 @@ fun DonorCard(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Blood Group - Prominent Display
-                    Surface(
-                        color = Color(0xFFE53935).copy(alpha = 0.08f),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        // Blood Group - Prominent Display
+                        Surface(
+                            color = Color(0xFFE53935).copy(alpha = 0.08f),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(0.5f)
                         ) {
-                            Text(
-                                text = "🩸",
-                                fontSize = 28.sp
-                            )
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "রক্তের গ্রুপ",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Medium
+                                    text = "🩸",
+                                    fontSize = 28.sp
                                 )
-                                Text(
-                                    text = donor.bloodGroup,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    color = Color(0xFFE53935),
-                                    fontWeight = FontWeight.ExtraBold
-                                )
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = "রক্তের গ্রুপ",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = donor.bloodGroup,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        color = Color(0xFFE53935),
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
+                        }
+
+                        Column(modifier = Modifier.weight(0.5f)) {
+                            // Social Links (if available)
+                            if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
+                                if (!donor.facebookLink.isNullOrEmpty()) {
+                                    SocialChip(
+                                        icon = Lucide.Facebook,
+                                        label = ".",
+                                        color = Color(0xFF1877F2),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                if (!donor.whatsappNumber.isNullOrEmpty()) {
+                                    SocialChip(
+                                        icon = Lucide.MessageCircle,
+                                        label = ".",
+                                        color = Color(0xFF25D366),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                // Add spacer if only one social link to maintain grid layout
+                                if (donor.facebookLink.isNullOrEmpty() || donor.whatsappNumber.isNullOrEmpty()) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+
                             }
                         }
                     }
 
-                    // Contact Info
-                    InfoRow(
-                        icon = Lucide.Phone,
-                        label = "যোগাযোগ",
-                        value = donor.phone,
-                        iconTint = Color(0xFF4CAF50)
-                    )
 
-                    // Location Info
-                    InfoRow(
-                        icon = Lucide.MapPin,
-                        label = "ঠিকানা",
-                        value = donor.location,
-                        iconTint = Color(0xFF2196F3)
-                    )
-
-                    // Last Donation Info
-                    InfoRow(
-                        icon = Lucide.Clock,
-                        label = "সর্বশেষ রক্তদান",
-                        value = "${donor.lastDonation} আগে",
-                        iconTint = Color(0xFFFF9800)
-                    )
-
-                    // Last Donation Date
-                    InfoRow(
-                        icon = Lucide.Calendar,
-                        label = "রক্তদান তারিখ",
-                        value = donor.lastDonationDate,
-                        iconTint = Color(0xFF9C27B0)
-                    )
-
-                    // Social Links (if available)
-                    if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
+                    // Info Grid - 2 columns
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // First Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            if (!donor.facebookLink.isNullOrEmpty()) {
-                                SocialChip(
-                                    icon = Lucide.Facebook,
-                                    label = "Facebook",
-                                    color = Color(0xFF1877F2),
-                                    modifier = Modifier.weight(1f)
+                            // Contact Info
+                            Box(modifier = Modifier.weight(1f)) {
+                                InfoRow(
+                                    icon = Lucide.Phone,
+                                    label = "যোগাযোগ",
+                                    value = donor.phone,
+                                    iconTint = Color(0xFF4CAF50)
                                 )
                             }
-                            if (!donor.whatsappNumber.isNullOrEmpty()) {
-                                SocialChip(
-                                    icon = Lucide.MessageCircle,
-                                    label = "WhatsApp",
-                                    color = Color(0xFF25D366),
-                                    modifier = Modifier.weight(1f)
+
+                            // Location Info
+                            Box(modifier = Modifier.weight(1f)) {
+                                InfoRow(
+                                    icon = Lucide.MapPin,
+                                    label = "ঠিকানা",
+                                    value = donor.location,
+                                    iconTint = Color(0xFF2196F3)
                                 )
                             }
-                            // Add spacer if only one social link to maintain grid layout
-                            if (donor.facebookLink.isNullOrEmpty() || donor.whatsappNumber.isNullOrEmpty()) {
-                                Spacer(modifier = Modifier.weight(1f))
+                        }
+
+                        // Second Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Last Donation Info
+                            Box(modifier = Modifier.weight(1f)) {
+                                InfoRow(
+                                    icon = Lucide.Clock,
+                                    label = "সর্বশেষ রক্তদান",
+                                    value = "${donor.lastDonation} আগে",
+                                    iconTint = Color(0xFFFF9800)
+                                )
+                            }
+
+                            // Last Donation Date
+                            Box(modifier = Modifier.weight(1f)) {
+                                InfoRow(
+                                    icon = Lucide.Calendar,
+                                    label = "রক্তদান তারিখ",
+                                    value = donor.lastDonationDate,
+                                    iconTint = Color(0xFF9C27B0)
+                                )
                             }
                         }
                     }
