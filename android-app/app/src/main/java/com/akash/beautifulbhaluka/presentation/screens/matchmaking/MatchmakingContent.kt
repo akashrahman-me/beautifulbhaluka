@@ -576,90 +576,47 @@ fun TabSelector(
     onTabSelected: (MatchmakingTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    val tabs = listOf(
+        MatchmakingTab.PROFILES to "Bride & Groom",
+        MatchmakingTab.MATCHMAKERS to "Matchmakers"
+    )
+    val selectedTabIndex = tabs.indexOfFirst { it.first == selectedTab }
+
+    TabRow(
+        selectedTabIndex = selectedTabIndex,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+        divider = {}
     ) {
-        TabButton(
-            text = "Bride & Groom",
-            icon = Lucide.Heart,
-            isSelected = selectedTab == MatchmakingTab.PROFILES,
-            onClick = { onTabSelected(MatchmakingTab.PROFILES) },
-            modifier = Modifier.weight(1f)
-        )
-        TabButton(
-            text = "Matchmakers (ঘটক)",
-            icon = Lucide.Users,
-            isSelected = selectedTab == MatchmakingTab.MATCHMAKERS,
-            onClick = { onTabSelected(MatchmakingTab.MATCHMAKERS) },
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-fun TabButton(
-    text: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor = if (isSelected) {
-        Brush.horizontalGradient(
-            listOf(
-                MaterialTheme.colorScheme.primary,
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+        tabs.forEachIndexed { index, (tab, title) ->
+            Tab(
+                selected = selectedTab == tab,
+                onClick = { onTabSelected(tab) },
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (tab == MatchmakingTab.PROFILES) Lucide.Heart else Lucide.Users,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Medium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        )
-    } else {
-        Brush.horizontalGradient(
-            listOf(
-                MaterialTheme.colorScheme.surfaceVariant,
-                MaterialTheme.colorScheme.surfaceVariant
-            )
-        )
-    }
-
-    Card(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 4.dp else 1.dp
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(backgroundColor)
-                .padding(vertical = 14.dp, horizontal = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
         }
     }
 }
