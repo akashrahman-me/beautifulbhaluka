@@ -13,9 +13,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.Matchmaker
 import com.composables.icons.lucide.*
 import java.util.Locale
@@ -69,16 +71,28 @@ fun MatchmakerCard(
                     Box(
                         modifier = Modifier
                             .size(56.dp)
+                            .aspectRatio(1f)
                             .clip(CircleShape)
                             .background(Color.White.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Lucide.UserRound,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = Color.White
-                        )
+                        if (matchmaker.profileImageUrl != null) {
+                            AsyncImage(
+                                model = matchmaker.profileImageUrl,
+                                contentDescription = "${matchmaker.name}'s profile photo",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Lucide.UserRound,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = Color.White
+                            )
+                        }
                     }
 
                     Column(

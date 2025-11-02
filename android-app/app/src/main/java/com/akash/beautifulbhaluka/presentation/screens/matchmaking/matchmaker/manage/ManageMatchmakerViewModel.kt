@@ -108,6 +108,7 @@ class ManageMatchmakerViewModel @Inject constructor() : ViewModel() {
                 contactNumber = "01711-123456",
                 whatsapp = "01711-123456",
                 email = "you@email.com",
+                profileImageUrl = "https://picsum.photos/seed/matchmaker-my1/400/400",
                 bio = "Professional matchmaker with over 15 years of experience helping families find perfect matches. I specialize in elite families and professionals.",
                 specialization = listOf("Elite Families", "Doctors", "Business"),
                 successfulMatches = 150,
