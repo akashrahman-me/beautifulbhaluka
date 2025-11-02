@@ -1,28 +1,20 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.akash.beautifulbhaluka.domain.model.ProfileCategory
-import com.akash.beautifulbhaluka.presentation.components.common.MatchmakerCard
-import com.akash.beautifulbhaluka.presentation.components.common.MatchmakingProfileCard
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.BridegroomContent
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.MatchmakerContent
 import com.composables.icons.lucide.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,15 +31,9 @@ fun MatchmakingContent(
     scrollState: LazyListState,
     showHeader: Boolean
 ) {
-    val gradientColors = listOf(
-        Color(0xFFFF6B9D),
-        Color(0xFFC06C84),
-        Color(0xFF6C5B7B)
-    )
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Sticky Top Bar (always visible at top)
+            // Sticky Top Bar (always visible at top - NOT scrollable)
             MatchmakingTopBar(
                 onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
                 showFilters = uiState.showFilters,
@@ -61,176 +47,62 @@ fun MatchmakingContent(
                 selectedTab = uiState.selectedTab
             )
 
-            // Scrollable Content
-            LazyColumn(
-                state = scrollState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.dp)
+            // Scrollable Content (everything else scrolls together)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
             ) {
-                // Search Bar (scrolls with content)
-                item {
-                    SearchBar(
-                        searchQuery = uiState.searchQuery,
-                        onSearchChange = { onAction(MatchmakingAction.Search(it)) }
-                    )
-                }
-
-                // Tab Selector
-                item {
-                    TabSelector(
-                        selectedTab = uiState.selectedTab,
-                        onTabSelected = { onAction(MatchmakingAction.SelectTab(it)) }
-                    )
-                }
-
-                // Hero Section with Gradient
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                            .background(
-                                Brush.horizontalGradient(
-                                    if (uiState.selectedTab == MatchmakingTab.PROFILES)
-                                        gradientColors
-                                    else
-                                        listOf(Color(0xFF667EEA), Color(0xFF764BA2))
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (uiState.selectedTab == MatchmakingTab.PROFILES)
-                                    Lucide.Heart
-                                else
-                                    Lucide.Users,
-                                contentDescription = null,
-                                modifier = Modifier.size(40.dp),
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = if (uiState.selectedTab == MatchmakingTab.PROFILES)
-                                    "Find Your Perfect Match"
-                                else
-                                    "Connect with Matchmakers",
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = if (uiState.selectedTab == MatchmakingTab.PROFILES)
-                                    "${uiState.filteredProfiles.size} Profiles Available"
-                                else
-                                    "${uiState.filteredMatchmakers.size} Matchmakers Available",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.9f)
-                            )
-                        }
-                    }
-                }
-
-                // Category Chips (Only for Profiles)
-                if (uiState.selectedTab == MatchmakingTab.PROFILES) {
-                    item {
-                        LazyRow(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp)
-                        ) {
-                            items(ProfileCategory.entries) { category ->
-                                CategoryChip(
-                                    category = category,
-                                    isSelected = uiState.selectedCategory == category,
-                                    onClick = { onAction(MatchmakingAction.SelectCategory(category)) }
-                                )
+                when (uiState.selectedTab) {
+                    MatchmakingTab.PROFILES -> {
+                        BridegroomContent(
+                            filteredProfiles = uiState.filteredProfiles,
+                            selectedCategory = uiState.selectedCategory,
+                            isLoading = uiState.isLoading,
+                            showFilters = uiState.showFilters,
+                            selectedGender = uiState.selectedGenderFilter,
+                            selectedAgeRange = uiState.selectedAgeRange,
+                            searchQuery = uiState.searchQuery,
+                            onSearchChange = { onAction(MatchmakingAction.Search(it)) },
+                            onTabSelected = { onAction(MatchmakingAction.SelectTab(it)) },
+                            onCategorySelected = { category ->
+                                onAction(MatchmakingAction.SelectCategory(category))
+                            },
+                            onGenderChange = { gender ->
+                                onAction(MatchmakingAction.FilterByGender(gender))
+                            },
+                            onAgeRangeChange = { range ->
+                                onAction(MatchmakingAction.FilterByAgeRange(range))
+                            },
+                            onClearFilters = {
+                                onAction(MatchmakingAction.ClearFilters)
+                            },
+                            onNavigateToDetails = { profileId ->
+                                onNavigateToDetails?.invoke(profileId)
                             }
-                        }
+                        )
                     }
-                }
 
-                // Filters Section
-                item {
-                    AnimatedVisibility(
-                        visible = uiState.showFilters,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        if (uiState.selectedTab == MatchmakingTab.PROFILES) {
-                            FiltersSection(
-                                selectedGender = uiState.selectedGenderFilter,
-                                selectedAgeRange = uiState.selectedAgeRange,
-                                onGenderChange = { onAction(MatchmakingAction.FilterByGender(it)) },
-                                onAgeRangeChange = { onAction(MatchmakingAction.FilterByAgeRange(it)) },
-                                onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
-                            )
-                        } else {
-                            MatchmakerFiltersSection(
-                                selectedSpecialization = uiState.selectedSpecialization,
-                                onSpecializationChange = {
-                                    onAction(
-                                        MatchmakingAction.FilterBySpecialization(
-                                            it
-                                        )
-                                    )
-                                },
-                                onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
-                            )
-                        }
-                    }
-                }
-
-                // Content based on selected tab
-                if (uiState.selectedTab == MatchmakingTab.PROFILES) {
-                    // Profiles List
-                    if (uiState.isLoading) {
-                        items(3) {
-                            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                                ProfileCardShimmer()
+                    MatchmakingTab.MATCHMAKERS -> {
+                        MatchmakerContent(
+                            filteredMatchmakers = uiState.filteredMatchmakers,
+                            isLoading = uiState.isLoading,
+                            showFilters = uiState.showFilters,
+                            selectedSpecialization = uiState.selectedSpecialization,
+                            searchQuery = uiState.searchQuery,
+                            onSearchChange = { onAction(MatchmakingAction.Search(it)) },
+                            onTabSelected = { onAction(MatchmakingAction.SelectTab(it)) },
+                            onSpecializationChange = { specialization ->
+                                onAction(MatchmakingAction.FilterBySpecialization(specialization))
+                            },
+                            onClearFilters = {
+                                onAction(MatchmakingAction.ClearFilters)
+                            },
+                            onNavigateToDetails = { matchmakerId ->
+                                onNavigateToMatchmakerDetails?.invoke(matchmakerId)
                             }
-                        }
-                    } else if (uiState.filteredProfiles.isEmpty()) {
-                        item {
-                            EmptyState()
-                        }
-                    } else {
-                        items(uiState.filteredProfiles) { profile ->
-                            MatchmakingProfileCard(
-                                profile = profile,
-                                onClick = { onNavigateToDetails?.invoke(profile.id) },
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-                            )
-                        }
+                        )
                     }
-                } else {
-                    // Matchmakers List
-                    if (uiState.isLoading) {
-                        items(3) {
-                            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                                ProfileCardShimmer()
-                            }
-                        }
-                    } else if (uiState.filteredMatchmakers.isEmpty()) {
-                        item {
-                            EmptyState()
-                        }
-                    } else {
-                        items(uiState.filteredMatchmakers) { matchmaker ->
-                            MatchmakerCard(
-                                matchmaker = matchmaker,
-                                onClick = { onNavigateToMatchmakerDetails?.invoke(matchmaker.id) },
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
@@ -370,207 +242,6 @@ fun SearchBar(
 }
 
 @Composable
-fun CategoryChip(
-    category: ProfileCategory,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val icon = when (category) {
-        ProfileCategory.ALL -> Lucide.Users
-        ProfileCategory.RECENT -> Lucide.Clock
-        ProfileCategory.VERIFIED -> Lucide.BadgeCheck
-        ProfileCategory.PREMIUM -> Lucide.Star
-    }
-
-    val label = when (category) {
-        ProfileCategory.ALL -> "All"
-        ProfileCategory.RECENT -> "Recent"
-        ProfileCategory.VERIFIED -> "Verified"
-        ProfileCategory.PREMIUM -> "Premium"
-    }
-
-    FilterChip(
-        selected = isSelected,
-        onClick = onClick,
-        label = { Text(label) },
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-        },
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = MaterialTheme.colorScheme.primary,
-            selectedLabelColor = Color.White,
-            selectedLeadingIconColor = Color.White
-        ),
-        border = FilterChipDefaults.filterChipBorder(
-            enabled = true,
-            selected = isSelected,
-            borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-            selectedBorderColor = MaterialTheme.colorScheme.primary
-        )
-    )
-}
-
-@Composable
-fun FiltersSection(
-    selectedGender: String,
-    selectedAgeRange: IntRange,
-    onGenderChange: (String) -> Unit,
-    onAgeRangeChange: (IntRange) -> Unit,
-    onClearFilters: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Filters",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                TextButton(onClick = onClearFilters) {
-                    Text("Clear All")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Gender Filter
-            Text(
-                text = "Gender",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                listOf("All", "Male", "Female").forEach { gender ->
-                    FilterChip(
-                        selected = selectedGender == gender,
-                        onClick = { onGenderChange(gender) },
-                        label = { Text(gender) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Age Range Filter
-            Text(
-                text = "Age Range: ${selectedAgeRange.first} - ${selectedAgeRange.last}",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            var sliderPosition by remember(selectedAgeRange) {
-                mutableStateOf(selectedAgeRange.first.toFloat()..selectedAgeRange.last.toFloat())
-            }
-            RangeSlider(
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it },
-                onValueChangeFinished = {
-                    onAgeRangeChange(sliderPosition.start.toInt()..sliderPosition.endInclusive.toInt())
-                },
-                valueRange = 18f..60f,
-                steps = 41
-            )
-        }
-    }
-}
-
-
-@Composable
-fun ProfileCardShimmer() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .height(24.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun EmptyState() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = Lucide.SearchX,
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-            )
-            Text(
-                text = "No profiles found",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Try adjusting your filters",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        }
-    }
-}
-
-@Composable
 fun TabSelector(
     selectedTab: MatchmakingTab,
     onTabSelected: (MatchmakingTab) -> Unit,
@@ -583,7 +254,6 @@ fun TabSelector(
     val selectedTabIndex = tabs.indexOfFirst { it.first == selectedTab }
 
     TabRow(
-        
         selectedTabIndex = selectedTabIndex,
         modifier = modifier
             .fillMaxWidth()
@@ -622,89 +292,3 @@ fun TabSelector(
     }
 }
 
-@Composable
-fun MatchmakerFiltersSection(
-    selectedSpecialization: String,
-    onSpecializationChange: (String) -> Unit,
-    onClearFilters: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Filters",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                TextButton(onClick = onClearFilters) {
-                    Text("Clear All")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Specialization Filter
-            Text(
-                text = "Specialization",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    listOf("All", "Elite Families", "Doctors", "Engineers").forEach { spec ->
-                        FilterChip(
-                            selected = selectedSpecialization == spec,
-                            onClick = { onSpecializationChange(spec) },
-                            label = {
-                                Text(
-                                    text = spec,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            },
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-                    }
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    listOf("Business", "Overseas", "General").forEach { spec ->
-                        FilterChip(
-                            selected = selectedSpecialization == spec,
-                            onClick = { onSpecializationChange(spec) },
-                            label = {
-                                Text(
-                                    text = spec,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            },
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
