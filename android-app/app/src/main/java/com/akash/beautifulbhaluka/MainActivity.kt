@@ -56,6 +56,7 @@ fun BeautifulBhalukaApp() {
         NavigationRoutes.MATCHMAKING_PUBLISH,
         NavigationRoutes.MANAGE_MATCHMAKING_PROFILES,
         NavigationRoutes.MANAGE_MATCHMAKER_PROFILES,
+        NavigationRoutes.MATCHMAKER_DETAILS,
         NavigationRoutes.MATCHMAKER_PUBLISH,
         NavigationRoutes.BLOOD_BANK,
         NavigationRoutes.BLOOD_BANK_PUBLISH,
