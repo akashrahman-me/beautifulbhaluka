@@ -47,7 +47,7 @@ fun MatchmakingProfileCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .shadow(4.dp, RoundedCornerShape(20.dp)),
+            .shadow(1.dp, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent

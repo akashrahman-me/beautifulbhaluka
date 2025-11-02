@@ -61,6 +61,9 @@ import com.akash.beautifulbhaluka.presentation.screens.maps.MapsScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.MatchmakingScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.details.MatchmakingDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish.PublishMatchmakingScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.details.MatchmakerDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.publish.PublishMatchmakerScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.manage.ManageMatchmakerScreen
 import com.akash.beautifulbhaluka.presentation.screens.museums.MuseumsScreen
 import com.akash.beautifulbhaluka.presentation.screens.news.NewsScreen
 import com.akash.beautifulbhaluka.presentation.screens.notifications.NotificationsScreen
@@ -92,7 +95,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.BLOOD_BANK
+    startDestination: String = NavigationRoutes.MATCHMAKING
 ) {
     NavHost(
         navController = navController,
@@ -504,6 +507,15 @@ fun AppNavigation(
                 },
                 onNavigateToManageProfiles = {
                     navController.navigate(NavigationRoutes.MANAGE_MATCHMAKING_PROFILES)
+                },
+                onNavigateToMatchmakerDetails = { matchmakerId ->
+                    navController.navigate(NavigationRoutes.matchmakerDetails(matchmakerId))
+                },
+                onNavigateToPublishMatchmaker = {
+                    navController.navigate(NavigationRoutes.MATCHMAKER_PUBLISH)
+                },
+                onNavigateToManageMatchmakers = {
+                    navController.navigate(NavigationRoutes.MANAGE_MATCHMAKER_PROFILES)
                 }
             )
         }
@@ -543,6 +555,44 @@ fun AppNavigation(
                 },
                 onNavigateToPublish = {
                     navController.navigate(NavigationRoutes.MATCHMAKING_PUBLISH)
+                }
+            )
+        }
+
+        // Matchmaker Details Screen
+        composable(
+            route = NavigationRoutes.MATCHMAKER_DETAILS,
+            arguments = listOf(navArgument("matchmakerId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val matchmakerId = backStackEntry.arguments?.getString("matchmakerId") ?: ""
+            MatchmakerDetailsScreen(
+                matchmakerId = matchmakerId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Matchmaker Publish Screen
+        composable(NavigationRoutes.MATCHMAKER_PUBLISH) {
+            PublishMatchmakerScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Manage Matchmaker Profiles Screen
+        composable(NavigationRoutes.MANAGE_MATCHMAKER_PROFILES) {
+            ManageMatchmakerScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToEdit = { matchmakerId ->
+                    navController.navigate(NavigationRoutes.matchmakerDetails(matchmakerId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.MATCHMAKER_PUBLISH)
                 }
             )
         }

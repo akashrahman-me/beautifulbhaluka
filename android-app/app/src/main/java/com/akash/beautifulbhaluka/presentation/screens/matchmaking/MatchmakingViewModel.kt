@@ -2,10 +2,7 @@ package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.akash.beautifulbhaluka.domain.model.FamilyDetails
-import com.akash.beautifulbhaluka.domain.model.MatchPreferences
-import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
-import com.akash.beautifulbhaluka.domain.model.ProfileCategory
+import com.akash.beautifulbhaluka.domain.model.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,18 +17,31 @@ class MatchmakingViewModel : ViewModel() {
 
     init {
         loadProfiles()
+        loadMatchmakers()
     }
 
     fun onAction(action: MatchmakingAction) {
         when (action) {
             is MatchmakingAction.LoadProfiles -> loadProfiles()
+            is MatchmakingAction.LoadMatchmakers -> loadMatchmakers()
             is MatchmakingAction.Refresh -> refresh()
+            is MatchmakingAction.SelectTab -> selectTab(action.tab)
             is MatchmakingAction.SelectCategory -> selectCategory(action.category)
             is MatchmakingAction.Search -> search(action.query)
             is MatchmakingAction.FilterByGender -> filterByGender(action.gender)
             is MatchmakingAction.FilterByAgeRange -> filterByAgeRange(action.range)
+            is MatchmakingAction.FilterBySpecialization -> filterBySpecialization(action.specialization)
             is MatchmakingAction.ToggleFilters -> toggleFilters()
             is MatchmakingAction.ClearFilters -> clearFilters()
+        }
+    }
+
+    private fun selectTab(tab: MatchmakingTab) {
+        _uiState.update { it.copy(selectedTab = tab, searchQuery = "", showFilters = false) }
+        if (tab == MatchmakingTab.MATCHMAKERS) {
+            applyMatchmakerFilters()
+        } else {
+            applyFilters()
         }
     }
 
@@ -51,11 +61,29 @@ class MatchmakingViewModel : ViewModel() {
         }
     }
 
+    private fun loadMatchmakers() {
+        viewModelScope.launch {
+            delay(800) // Simulate network delay
+
+            val mockMatchmakers = generateMockMatchmakers()
+            _uiState.update {
+                it.copy(
+                    matchmakers = mockMatchmakers,
+                    filteredMatchmakers = mockMatchmakers
+                )
+            }
+        }
+    }
+
     private fun refresh() {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
             delay(1000)
-            loadProfiles()
+            if (_uiState.value.selectedTab == MatchmakingTab.PROFILES) {
+                loadProfiles()
+            } else {
+                loadMatchmakers()
+            }
             _uiState.update { it.copy(isRefreshing = false) }
         }
     }
@@ -67,7 +95,11 @@ class MatchmakingViewModel : ViewModel() {
 
     private fun search(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        applyFilters()
+        if (_uiState.value.selectedTab == MatchmakingTab.PROFILES) {
+            applyFilters()
+        } else {
+            applyMatchmakerFilters()
+        }
     }
 
     private fun filterByGender(gender: String) {
@@ -80,6 +112,11 @@ class MatchmakingViewModel : ViewModel() {
         applyFilters()
     }
 
+    private fun filterBySpecialization(specialization: String) {
+        _uiState.update { it.copy(selectedSpecialization = specialization) }
+        applyMatchmakerFilters()
+    }
+
     private fun toggleFilters() {
         _uiState.update { it.copy(showFilters = !it.showFilters) }
     }
@@ -90,10 +127,15 @@ class MatchmakingViewModel : ViewModel() {
                 selectedGenderFilter = "All",
                 selectedAgeRange = 18..50,
                 searchQuery = "",
-                selectedCategory = ProfileCategory.ALL
+                selectedCategory = ProfileCategory.ALL,
+                selectedSpecialization = "All"
             )
         }
-        applyFilters()
+        if (_uiState.value.selectedTab == MatchmakingTab.PROFILES) {
+            applyFilters()
+        } else {
+            applyMatchmakerFilters()
+        }
     }
 
     private fun applyFilters() {
@@ -120,12 +162,200 @@ class MatchmakingViewModel : ViewModel() {
         if (state.searchQuery.isNotBlank()) {
             filtered = filtered.filter { profile ->
                 profile.name.contains(state.searchQuery, ignoreCase = true) ||
-                profile.occupation.contains(state.searchQuery, ignoreCase = true) ||
-                profile.location.contains(state.searchQuery, ignoreCase = true)
+                        profile.occupation.contains(state.searchQuery, ignoreCase = true) ||
+                        profile.location.contains(state.searchQuery, ignoreCase = true)
             }
         }
 
         _uiState.update { it.copy(filteredProfiles = filtered) }
+    }
+
+    private fun applyMatchmakerFilters() {
+        val state = _uiState.value
+        var filtered = state.matchmakers
+
+        // Specialization filter
+        if (state.selectedSpecialization != "All") {
+            filtered = filtered.filter { matchmaker ->
+                matchmaker.specialization.contains(state.selectedSpecialization)
+            }
+        }
+
+        // Search filter
+        if (state.searchQuery.isNotBlank()) {
+            filtered = filtered.filter { matchmaker ->
+                matchmaker.name.contains(state.searchQuery, ignoreCase = true) ||
+                        matchmaker.location.contains(state.searchQuery, ignoreCase = true) ||
+                        matchmaker.specialization.any {
+                            it.contains(
+                                state.searchQuery,
+                                ignoreCase = true
+                            )
+                        }
+            }
+        }
+
+        _uiState.update { it.copy(filteredMatchmakers = filtered) }
+    }
+
+    private fun generateMockMatchmakers(): List<Matchmaker> {
+        return listOf(
+            Matchmaker(
+                id = "m1",
+                name = "Abdul Karim",
+                age = 55,
+                experience = "20+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01711-123456",
+                whatsapp = "01711-123456",
+                bio = "Experienced matchmaker specializing in elite families. Successfully arranged 300+ marriages with high satisfaction rate.",
+                specialization = listOf("Elite Families", "Doctors", "Engineers"),
+                successfulMatches = 320,
+                rating = 4.8,
+                verified = true,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Background Verification",
+                    "Meeting Arrangement",
+                    "Family Counseling"
+                ),
+                languages = listOf("Bengali", "English", "Urdu"),
+                workingHours = "9 AM - 8 PM",
+                consultationFee = "Free Consultation",
+                testimonials = listOf(
+                    Testimonial(
+                        "Rashid Ahmed",
+                        "Excellent service! Found perfect match for my daughter.",
+                        5.0
+                    ),
+                    Testimonial("Fatima Begum", "Very professional and respectful.", 4.5)
+                )
+            ),
+            Matchmaker(
+                id = "m2",
+                name = "Rahima Khatun",
+                age = 48,
+                experience = "15+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01812-234567",
+                whatsapp = "01812-234567",
+                email = "rahima.matchmaker@email.com",
+                bio = "Female matchmaker with expertise in professional matches. Understanding and compassionate approach.",
+                specialization = listOf("Business", "Government Service", "Doctors"),
+                successfulMatches = 180,
+                rating = 4.6,
+                verified = true,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Background Verification",
+                    "Meeting Arrangement",
+                    "Biodata Writing"
+                ),
+                languages = listOf("Bengali", "English"),
+                workingHours = "10 AM - 6 PM",
+                consultationFee = "৳2000"
+            ),
+            Matchmaker(
+                id = "m3",
+                name = "Maulana Sayed Ali",
+                age = 62,
+                experience = "25+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01913-345678",
+                bio = "Traditional matchmaker with deep community roots. Specializes in religious families and overseas matches.",
+                specialization = listOf("General", "Overseas", "Religious Families"),
+                successfulMatches = 450,
+                rating = 4.9,
+                verified = true,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Meeting Arrangement",
+                    "Marriage Negotiation",
+                    "Post-Marriage Support"
+                ),
+                languages = listOf("Bengali", "English", "Arabic"),
+                workingHours = "After Asr - 9 PM",
+                consultationFee = "Free Consultation"
+            ),
+            Matchmaker(
+                id = "m4",
+                name = "Nasrin Akter",
+                age = 42,
+                experience = "12+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01715-456789",
+                whatsapp = "01715-456789",
+                email = "nasrin.ghotak@email.com",
+                bio = "Modern approach to traditional matchmaking. Specializes in educated professionals and second marriages.",
+                specialization = listOf("Engineers", "Divorced/Widowed", "Overseas"),
+                successfulMatches = 150,
+                rating = 4.7,
+                verified = true,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Background Verification",
+                    "Photography",
+                    "Biodata Writing"
+                ),
+                languages = listOf("Bengali", "English"),
+                workingHours = "2 PM - 8 PM",
+                consultationFee = "৳3000",
+                socialMedia = MatchmakerSocialMedia(
+                    facebook = "fb.com/nasrin.matchmaker",
+                    instagram = "@nasrin_matchmaker"
+                )
+            ),
+            Matchmaker(
+                id = "m5",
+                name = "Hafez Abdur Rahman",
+                age = 58,
+                experience = "18+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01816-567890",
+                bio = "Islamic scholar and matchmaker. Focus on compatibility and religious values.",
+                specialization = listOf("General", "Religious Families", "Government Service"),
+                successfulMatches = 280,
+                rating = 4.8,
+                verified = true,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Meeting Arrangement",
+                    "Family Counseling",
+                    "Marriage Negotiation"
+                ),
+                languages = listOf("Bengali", "Arabic"),
+                workingHours = "4 PM - 9 PM",
+                consultationFee = "Free Consultation"
+            ),
+            Matchmaker(
+                id = "m6",
+                name = "Shahida Begum",
+                age = 50,
+                experience = "16+ years",
+                location = "Bhaluka, Mymensingh",
+                contactNumber = "01917-678901",
+                whatsapp = "01917-678901",
+                bio = "Dedicated to helping families find suitable matches. Patient and understanding approach.",
+                specialization = listOf("Business", "Doctors", "General"),
+                successfulMatches = 200,
+                rating = 4.5,
+                verified = false,
+                available = true,
+                servicesOffered = listOf(
+                    "Profile Creation",
+                    "Meeting Arrangement",
+                    "Biodata Writing"
+                ),
+                languages = listOf("Bengali"),
+                workingHours = "9 AM - 5 PM",
+                consultationFee = "৳1500"
+            )
+        )
     }
 
     private fun generateMockProfiles(): List<MatchmakingProfile> {
@@ -145,7 +375,12 @@ class MatchmakingViewModel : ViewModel() {
                 interests = listOf("Reading", "Traveling", "Cooking"),
                 verified = true,
                 familyDetails = FamilyDetails("Teacher", "Homemaker", 2, "Nuclear"),
-                preferences = MatchPreferences(25..32, "Graduate", listOf("Mymensingh", "Dhaka"), "5'6\" - 6'0\"")
+                preferences = MatchPreferences(
+                    25..32,
+                    "Graduate",
+                    listOf("Mymensingh", "Dhaka"),
+                    "5'6\" - 6'0\""
+                )
             ),
             MatchmakingProfile(
                 id = "2",
@@ -162,7 +397,12 @@ class MatchmakingViewModel : ViewModel() {
                 interests = listOf("Sports", "Music", "Social Work"),
                 verified = true,
                 familyDetails = FamilyDetails("Business", "Teacher", 1, "Joint"),
-                preferences = MatchPreferences(23..28, "Graduate", listOf("Mymensingh"), "5'2\" - 5'6\"")
+                preferences = MatchPreferences(
+                    23..28,
+                    "Graduate",
+                    listOf("Mymensingh"),
+                    "5'2\" - 5'6\""
+                )
             ),
             MatchmakingProfile(
                 id = "3",

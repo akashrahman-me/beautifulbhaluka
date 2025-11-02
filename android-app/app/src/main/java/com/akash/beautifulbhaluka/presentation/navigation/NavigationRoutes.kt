@@ -55,6 +55,11 @@ object NavigationRoutes {
     const val MATCHMAKING_PUBLISH = "matchmaking_publish"
     const val MANAGE_MATCHMAKING_PROFILES = "manage_matchmaking_profiles"
 
+    // Matchmaker (ঘটক) Routes
+    const val MATCHMAKER_DETAILS = "matchmaker_details/{matchmakerId}"
+    const val MATCHMAKER_PUBLISH = "matchmaker_publish"
+    const val MANAGE_MATCHMAKER_PROFILES = "manage_matchmaker_profiles"
+
     // Existing screens
     const val JOBS = "jobs"
     const val PUBLISH_JOB = "publish_job"
@@ -142,4 +147,5 @@ object NavigationRoutes {
     fun productDetails(productId: String) = "product_details/$productId"
     fun buySellDetails(itemId: String) = "buy_sell_details/$itemId"
     fun matchmakingDetails(profileId: String) = "matchmaking_details/$profileId"
+    fun matchmakerDetails(matchmakerId: String) = "matchmaker_details/$matchmakerId"
 }

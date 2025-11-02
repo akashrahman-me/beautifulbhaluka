@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.akash.beautifulbhaluka.domain.model.ProfileCategory
+import com.akash.beautifulbhaluka.presentation.components.common.MatchmakerCard
 import com.akash.beautifulbhaluka.presentation.components.common.MatchmakingProfileCard
 import com.composables.icons.lucide.*
 
@@ -32,6 +33,9 @@ fun MatchmakingContent(
     onNavigateToDetails: ((String) -> Unit)?,
     onNavigateToPublish: (() -> Unit)?,
     onNavigateToManageProfiles: (() -> Unit)?,
+    onNavigateToMatchmakerDetails: ((String) -> Unit)? = null,
+    onNavigateToPublishMatchmaker: (() -> Unit)? = null,
+    onNavigateToManageMatchmakers: (() -> Unit)? = null,
     scrollState: LazyListState,
     showHeader: Boolean
 ) {
@@ -47,19 +51,35 @@ fun MatchmakingContent(
             MatchmakingTopBar(
                 onFilterClick = { onAction(MatchmakingAction.ToggleFilters) },
                 showFilters = uiState.showFilters,
-                onManageProfilesClick = { onNavigateToManageProfiles?.invoke() }
+                onManageProfilesClick = {
+                    if (uiState.selectedTab == MatchmakingTab.PROFILES) {
+                        onNavigateToManageProfiles?.invoke()
+                    } else {
+                        onNavigateToManageMatchmakers?.invoke()
+                    }
+                },
+                selectedTab = uiState.selectedTab
             )
 
             // Scrollable Content
             LazyColumn(
                 state = scrollState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 // Search Bar (scrolls with content)
                 item {
                     SearchBar(
                         searchQuery = uiState.searchQuery,
                         onSearchChange = { onAction(MatchmakingAction.Search(it)) }
+                    )
+                }
+
+                // Tab Selector
+                item {
+                    TabSelector(
+                        selectedTab = uiState.selectedTab,
+                        onTabSelected = { onAction(MatchmakingAction.SelectTab(it)) }
                     )
                 }
 
@@ -70,7 +90,12 @@ fun MatchmakingContent(
                             .fillMaxWidth()
                             .height(120.dp)
                             .background(
-                                Brush.horizontalGradient(gradientColors)
+                                Brush.horizontalGradient(
+                                    if (uiState.selectedTab == MatchmakingTab.PROFILES)
+                                        gradientColors
+                                    else
+                                        listOf(Color(0xFF667EEA), Color(0xFF764BA2))
+                                )
                             ),
                         contentAlignment = Alignment.Center
                     ) {
@@ -79,20 +104,29 @@ fun MatchmakingContent(
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Icon(
-                                imageVector = Lucide.Heart,
+                                imageVector = if (uiState.selectedTab == MatchmakingTab.PROFILES)
+                                    Lucide.Heart
+                                else
+                                    Lucide.Users,
                                 contentDescription = null,
                                 modifier = Modifier.size(40.dp),
                                 tint = Color.White
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Find Your Perfect Match",
+                                text = if (uiState.selectedTab == MatchmakingTab.PROFILES)
+                                    "Find Your Perfect Match"
+                                else
+                                    "Connect with Matchmakers",
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Text(
-                                text = "${uiState.filteredProfiles.size} Profiles Available",
+                                text = if (uiState.selectedTab == MatchmakingTab.PROFILES)
+                                    "${uiState.filteredProfiles.size} Profiles Available"
+                                else
+                                    "${uiState.filteredMatchmakers.size} Matchmakers Available",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.9f)
                             )
@@ -100,19 +134,21 @@ fun MatchmakingContent(
                     }
                 }
 
-                // Category Chips
-                item {
-                    LazyRow(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                        items(ProfileCategory.entries) { category ->
-                            CategoryChip(
-                                category = category,
-                                isSelected = uiState.selectedCategory == category,
-                                onClick = { onAction(MatchmakingAction.SelectCategory(category)) }
-                            )
+                // Category Chips (Only for Profiles)
+                if (uiState.selectedTab == MatchmakingTab.PROFILES) {
+                    item {
+                        LazyRow(
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp)
+                        ) {
+                            items(ProfileCategory.entries) { category ->
+                                CategoryChip(
+                                    category = category,
+                                    isSelected = uiState.selectedCategory == category,
+                                    onClick = { onAction(MatchmakingAction.SelectCategory(category)) }
+                                )
+                            }
                         }
                     }
                 }
@@ -124,33 +160,70 @@ fun MatchmakingContent(
                         enter = expandVertically() + fadeIn(),
                         exit = shrinkVertically() + fadeOut()
                     ) {
-                        FiltersSection(
-                            selectedGender = uiState.selectedGenderFilter,
-                            selectedAgeRange = uiState.selectedAgeRange,
-                            onGenderChange = { onAction(MatchmakingAction.FilterByGender(it)) },
-                            onAgeRangeChange = { onAction(MatchmakingAction.FilterByAgeRange(it)) },
-                            onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
-                        )
+                        if (uiState.selectedTab == MatchmakingTab.PROFILES) {
+                            FiltersSection(
+                                selectedGender = uiState.selectedGenderFilter,
+                                selectedAgeRange = uiState.selectedAgeRange,
+                                onGenderChange = { onAction(MatchmakingAction.FilterByGender(it)) },
+                                onAgeRangeChange = { onAction(MatchmakingAction.FilterByAgeRange(it)) },
+                                onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
+                            )
+                        } else {
+                            MatchmakerFiltersSection(
+                                selectedSpecialization = uiState.selectedSpecialization,
+                                onSpecializationChange = {
+                                    onAction(
+                                        MatchmakingAction.FilterBySpecialization(
+                                            it
+                                        )
+                                    )
+                                },
+                                onClearFilters = { onAction(MatchmakingAction.ClearFilters) }
+                            )
+                        }
                     }
                 }
 
-                // Profiles List
-                if (uiState.isLoading) {
-                    items(3) {
-                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            ProfileCardShimmer()
+                // Content based on selected tab
+                if (uiState.selectedTab == MatchmakingTab.PROFILES) {
+                    // Profiles List
+                    if (uiState.isLoading) {
+                        items(3) {
+                            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                ProfileCardShimmer()
+                            }
                         }
-                    }
-                } else if (uiState.filteredProfiles.isEmpty()) {
-                    item {
-                        EmptyState()
-                    }
-                } else {
-                    items(uiState.filteredProfiles) { profile ->
-                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    } else if (uiState.filteredProfiles.isEmpty()) {
+                        item {
+                            EmptyState()
+                        }
+                    } else {
+                        items(uiState.filteredProfiles) { profile ->
                             MatchmakingProfileCard(
                                 profile = profile,
-                                onClick = { onNavigateToDetails?.invoke(profile.id) }
+                                onClick = { onNavigateToDetails?.invoke(profile.id) },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                            )
+                        }
+                    }
+                } else {
+                    // Matchmakers List
+                    if (uiState.isLoading) {
+                        items(3) {
+                            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                ProfileCardShimmer()
+                            }
+                        }
+                    } else if (uiState.filteredMatchmakers.isEmpty()) {
+                        item {
+                            EmptyState()
+                        }
+                    } else {
+                        items(uiState.filteredMatchmakers) { matchmaker ->
+                            MatchmakerCard(
+                                matchmaker = matchmaker,
+                                onClick = { onNavigateToMatchmakerDetails?.invoke(matchmaker.id) },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                             )
                         }
                     }
@@ -169,13 +242,22 @@ fun MatchmakingContent(
                 .padding(16.dp)
         ) {
             FloatingActionButton(
-                onClick = { onNavigateToPublish?.invoke() },
+                onClick = {
+                    if (uiState.selectedTab == MatchmakingTab.PROFILES) {
+                        onNavigateToPublish?.invoke()
+                    } else {
+                        onNavigateToPublishMatchmaker?.invoke()
+                    }
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.shadow(8.dp, CircleShape)
             ) {
                 Icon(
                     imageVector = Lucide.Plus,
-                    contentDescription = "Create Profile"
+                    contentDescription = if (uiState.selectedTab == MatchmakingTab.PROFILES)
+                        "Create Profile"
+                    else
+                        "Create Matchmaker Profile"
                 )
             }
         }
@@ -187,7 +269,8 @@ fun MatchmakingContent(
 fun MatchmakingTopBar(
     onFilterClick: () -> Unit,
     showFilters: Boolean,
-    onManageProfilesClick: () -> Unit
+    onManageProfilesClick: () -> Unit,
+    selectedTab: MatchmakingTab
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -487,3 +570,183 @@ fun EmptyState() {
     }
 }
 
+@Composable
+fun TabSelector(
+    selectedTab: MatchmakingTab,
+    onTabSelected: (MatchmakingTab) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        TabButton(
+            text = "Bride & Groom",
+            icon = Lucide.Heart,
+            isSelected = selectedTab == MatchmakingTab.PROFILES,
+            onClick = { onTabSelected(MatchmakingTab.PROFILES) },
+            modifier = Modifier.weight(1f)
+        )
+        TabButton(
+            text = "Matchmakers (ঘটক)",
+            icon = Lucide.Users,
+            isSelected = selectedTab == MatchmakingTab.MATCHMAKERS,
+            onClick = { onTabSelected(MatchmakingTab.MATCHMAKERS) },
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+fun TabButton(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (isSelected) {
+        Brush.horizontalGradient(
+            listOf(
+                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
+        )
+    } else {
+        Brush.horizontalGradient(
+            listOf(
+                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.surfaceVariant
+            )
+        )
+    }
+
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isSelected) 4.dp else 1.dp
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(backgroundColor)
+                .padding(vertical = 14.dp, horizontal = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MatchmakerFiltersSection(
+    selectedSpecialization: String,
+    onSpecializationChange: (String) -> Unit,
+    onClearFilters: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Filters",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                TextButton(onClick = onClearFilters) {
+                    Text("Clear All")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Specialization Filter
+            Text(
+                text = "Specialization",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    listOf("All", "Elite Families", "Doctors", "Engineers").forEach { spec ->
+                        FilterChip(
+                            selected = selectedSpecialization == spec,
+                            onClick = { onSpecializationChange(spec) },
+                            label = {
+                                Text(
+                                    text = spec,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            },
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    listOf("Business", "Overseas", "General").forEach { spec ->
+                        FilterChip(
+                            selected = selectedSpecialization == spec,
+                            onClick = { onSpecializationChange(spec) },
+                            label = {
+                                Text(
+                                    text = spec,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            },
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

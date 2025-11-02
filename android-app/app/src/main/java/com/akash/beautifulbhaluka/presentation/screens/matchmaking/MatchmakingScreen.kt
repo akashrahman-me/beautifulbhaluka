@@ -11,7 +11,10 @@ fun MatchmakingScreen(
     viewModel: MatchmakingViewModel = viewModel(),
     onNavigateToDetails: ((String) -> Unit)? = null,
     onNavigateToPublish: (() -> Unit)? = null,
-    onNavigateToManageProfiles: (() -> Unit)? = null
+    onNavigateToManageProfiles: (() -> Unit)? = null,
+    onNavigateToMatchmakerDetails: ((String) -> Unit)? = null,
+    onNavigateToPublishMatchmaker: (() -> Unit)? = null,
+    onNavigateToManageMatchmakers: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -24,6 +27,9 @@ fun MatchmakingScreen(
         onNavigateToDetails = onNavigateToDetails,
         onNavigateToPublish = onNavigateToPublish,
         onNavigateToManageProfiles = onNavigateToManageProfiles,
+        onNavigateToMatchmakerDetails = onNavigateToMatchmakerDetails,
+        onNavigateToPublishMatchmaker = onNavigateToPublishMatchmaker,
+        onNavigateToManageMatchmakers = onNavigateToManageMatchmakers,
         scrollState = scrollState,
         showHeader = true
     )
