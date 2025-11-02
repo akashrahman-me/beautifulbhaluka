@@ -1,9 +1,16 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.publish
 
+import android.net.Uri
+
 data class PublishMatchmakerUiState(
     val isPublishing: Boolean = false,
     val publishSuccess: Boolean = false,
     val error: String? = null,
+
+    // Profile Photo
+    val selectedImageUri: Uri? = null,
+    val savedImagePath: String? = null,
+    val isUploadingImage: Boolean = false,
 
     // Basic Information
     val name: String = "",
@@ -40,6 +47,7 @@ data class PublishMatchmakerUiState(
 )
 
 sealed class PublishMatchmakerAction {
+    data class SelectImage(val uri: Uri?) : PublishMatchmakerAction()
     data class UpdateName(val name: String) : PublishMatchmakerAction()
     data class UpdateAge(val age: String) : PublishMatchmakerAction()
     data class UpdateExperience(val experience: String) : PublishMatchmakerAction()

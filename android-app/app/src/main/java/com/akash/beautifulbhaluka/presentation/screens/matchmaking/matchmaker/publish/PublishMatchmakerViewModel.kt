@@ -19,6 +19,7 @@ class PublishMatchmakerViewModel @Inject constructor() : ViewModel() {
 
     fun onAction(action: PublishMatchmakerAction) {
         when (action) {
+            is PublishMatchmakerAction.SelectImage -> selectImage(action.uri)
             is PublishMatchmakerAction.UpdateName -> updateName(action.name)
             is PublishMatchmakerAction.UpdateAge -> updateAge(action.age)
             is PublishMatchmakerAction.UpdateExperience -> updateExperience(action.experience)
@@ -43,6 +44,41 @@ class PublishMatchmakerViewModel @Inject constructor() : ViewModel() {
 
     private fun updateName(name: String) {
         _uiState.update { it.copy(name = name, nameError = null) }
+    }
+
+    private fun selectImage(uri: android.net.Uri?) {
+        if (uri == null) {
+            _uiState.update { it.copy(selectedImageUri = null, savedImagePath = null) }
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isUploadingImage = true) }
+
+            try {
+                delay(1000) // Simulate image processing/upload
+
+                // Here you would typically:
+                // 1. Save the image to local storage or upload to server
+                // 2. Get the saved path or URL
+                val savedPath = "path/to/saved/image_${System.currentTimeMillis()}.jpg"
+
+                _uiState.update {
+                    it.copy(
+                        selectedImageUri = uri,
+                        savedImagePath = savedPath,
+                        isUploadingImage = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isUploadingImage = false,
+                        error = "Failed to upload image: ${e.message}"
+                    )
+                }
+            }
+        }
     }
 
     private fun updateAge(age: String) {
@@ -203,4 +239,3 @@ class PublishMatchmakerViewModel @Inject constructor() : ViewModel() {
         return isValid
     }
 }
-

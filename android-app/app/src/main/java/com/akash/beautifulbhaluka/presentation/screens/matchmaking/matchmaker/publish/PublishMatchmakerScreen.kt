@@ -1,7 +1,12 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.publish
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -15,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.composables.icons.lucide.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,6 +35,13 @@ fun PublishMatchmakerScreen(
     viewModel: PublishMatchmakerViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        viewModel.onAction(PublishMatchmakerAction.SelectImage(uri))
+    }
 
     LaunchedEffect(uiState.publishSuccess) {
         if (uiState.publishSuccess) {
@@ -93,8 +107,8 @@ fun PublishMatchmakerScreen(
                     )
                     LinearProgressIndicator(
                         progress = {
-                            val totalFields = 6
-                            val filledFields = listOf(
+                            val totalFields = 7  // Updated to include photo
+                            var filledFields = listOf(
                                 uiState.name,
                                 uiState.age,
                                 uiState.experience,
@@ -102,6 +116,12 @@ fun PublishMatchmakerScreen(
                                 uiState.contactNumber,
                                 uiState.bio
                             ).count { it.isNotBlank() }
+
+                            // Add 1 if photo is uploaded
+                            if (uiState.selectedImageUri != null) {
+                                filledFields++
+                            }
+
                             filledFields.toFloat() / totalFields
                         },
                         modifier = Modifier
@@ -122,6 +142,118 @@ fun PublishMatchmakerScreen(
                     .padding(bottom = 80.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Profile Photo Section
+                SectionCard(
+                    title = "Profile Photo",
+                    subtitle = "Add a professional photo",
+                    icon = Lucide.Camera,
+                    iconColor = Color(0xFF8B5CF6)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(140.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (uiState.selectedImageUri != null)
+                                        Color.Transparent
+                                    else
+                                        Color(0xFF8B5CF6).copy(alpha = 0.1f)
+                                )
+                                .border(
+                                    width = 3.dp,
+                                    color = Color(0xFF8B5CF6).copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                                .clickable { imagePickerLauncher.launch("image/*") },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (uiState.isUploadingImage) {
+                                CircularProgressIndicator(
+                                    color = Color(0xFF8B5CF6),
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            } else if (uiState.selectedImageUri != null) {
+                                AsyncImage(
+                                    model = uiState.selectedImageUri,
+                                    contentDescription = "Profile Photo",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                                // Edit overlay
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black.copy(alpha = 0.3f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Lucide.Camera,
+                                        contentDescription = "Change photo",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                            } else {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Lucide.Camera,
+                                        contentDescription = null,
+                                        tint = Color(0xFF8B5CF6),
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                    Text(
+                                        text = "Add Photo",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color(0xFF8B5CF6),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = if (uiState.selectedImageUri != null) "Tap to change photo" else "Tap to upload photo",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        if (uiState.selectedImageUri != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    viewModel.onAction(
+                                        PublishMatchmakerAction.SelectImage(
+                                            null
+                                        )
+                                    )
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Lucide.Trash2,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Remove Photo")
+                            }
+                        }
+                    }
+                }
+
                 // Basic Information
                 SectionCard(
                     title = "Basic Information",
