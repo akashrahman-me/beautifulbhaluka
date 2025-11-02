@@ -1,7 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.matchmaking
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -27,9 +26,7 @@ fun MatchmakingContent(
     onNavigateToManageProfiles: (() -> Unit)?,
     onNavigateToMatchmakerDetails: ((String) -> Unit)? = null,
     onNavigateToPublishMatchmaker: (() -> Unit)? = null,
-    onNavigateToManageMatchmakers: (() -> Unit)? = null,
-    scrollState: LazyListState,
-    showHeader: Boolean
+    onNavigateToManageMatchmakers: (() -> Unit)? = null
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -43,8 +40,7 @@ fun MatchmakingContent(
                     } else {
                         onNavigateToManageMatchmakers?.invoke()
                     }
-                },
-                selectedTab = uiState.selectedTab
+                }
             )
 
             // Scrollable Content (everything else scrolls together)
@@ -141,8 +137,7 @@ fun MatchmakingContent(
 fun MatchmakingTopBar(
     onFilterClick: () -> Unit,
     showFilters: Boolean,
-    onManageProfilesClick: () -> Unit,
-    selectedTab: MatchmakingTab
+    onManageProfilesClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
