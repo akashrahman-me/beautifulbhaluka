@@ -583,6 +583,7 @@ fun TabSelector(
     val selectedTabIndex = tabs.indexOfFirst { it.first == selectedTab }
 
     TabRow(
+        
         selectedTabIndex = selectedTabIndex,
         modifier = modifier
             .fillMaxWidth()

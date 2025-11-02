@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.presentation.screens.matchmaking.details
+package com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.details
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish
+package com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.publish
 
 import android.net.Uri
 

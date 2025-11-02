@@ -59,8 +59,8 @@ import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.LadiesParlo
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.LawyerScreen
 import com.akash.beautifulbhaluka.presentation.screens.maps.MapsScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.MatchmakingScreen
-import com.akash.beautifulbhaluka.presentation.screens.matchmaking.details.MatchmakingDetailsScreen
-import com.akash.beautifulbhaluka.presentation.screens.matchmaking.publish.PublishMatchmakingScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.details.MatchmakingDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.publish.PublishMatchmakingScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.details.MatchmakerDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.publish.PublishMatchmakerScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.matchmaker.manage.ManageMatchmakerScreen
@@ -545,7 +545,7 @@ fun AppNavigation(
 
         // Manage Matchmaking Profiles Screen
         composable(NavigationRoutes.MANAGE_MATCHMAKING_PROFILES) {
-            com.akash.beautifulbhaluka.presentation.screens.matchmaking.manage.ManageProfilesScreen(
+            com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.manage.ManageProfilesScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },

@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.presentation.screens.matchmaking.details
+package com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

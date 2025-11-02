@@ -1,4 +1,4 @@
-package com.akash.beautifulbhaluka.presentation.screens.matchmaking.manage
+package com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.manage
 
 import com.akash.beautifulbhaluka.domain.model.MatchmakingProfile
 
