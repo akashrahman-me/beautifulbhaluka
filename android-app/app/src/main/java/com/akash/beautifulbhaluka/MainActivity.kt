@@ -51,6 +51,7 @@ fun BeautifulBhalukaApp() {
     val hiddenRoutes = listOf(
         NavigationRoutes.SOCIAL,
         NavigationRoutes.BUY_SELL,
+
         NavigationRoutes.MATCHMAKING,
         NavigationRoutes.MATCHMAKING_DETAILS,
         NavigationRoutes.MATCHMAKING_PUBLISH,
@@ -58,10 +59,15 @@ fun BeautifulBhalukaApp() {
         NavigationRoutes.MANAGE_MATCHMAKER_PROFILES,
         NavigationRoutes.MATCHMAKER_DETAILS,
         NavigationRoutes.MATCHMAKER_PUBLISH,
+
         NavigationRoutes.BLOOD_BANK,
         NavigationRoutes.BLOOD_BANK_PUBLISH,
         NavigationRoutes.BLOOD_BANK_MANAGE,
         NavigationRoutes.BLOOD_DONATION_GUIDELINES,
+
+        NavigationRoutes.HOUSE_RENT,
+        NavigationRoutes.HOUSE_RENT_DETAILS,
+        NavigationRoutes.HOUSE_RENT_PUBLISH,
     )
 
     val shouldShowBars = currentRoute !in hiddenRoutes

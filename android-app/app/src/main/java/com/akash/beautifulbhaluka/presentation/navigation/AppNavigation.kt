@@ -50,8 +50,12 @@ import com.akash.beautifulbhaluka.presentation.screens.help.HelpScreen
 import com.akash.beautifulbhaluka.presentation.screens.heritage.HeritageScreen
 import com.akash.beautifulbhaluka.presentation.screens.history.HistoryScreen
 import com.akash.beautifulbhaluka.presentation.screens.home.HomeScreen
+import com.akash.beautifulbhaluka.presentation.screens.houserent.HouseRentScreen
+import com.akash.beautifulbhaluka.presentation.screens.houserent.details.HouseRentDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.houserent.publish.PublishHouseRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.hospital.HospitalScreen
 import com.akash.beautifulbhaluka.presentation.screens.hotels.HotelsScreen
+import com.akash.beautifulbhaluka.presentation.screens.houserent.HouseRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.jobs.JobsScreen
 import com.akash.beautifulbhaluka.presentation.screens.jobs.details.JobDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.kazioffice.KaziOfficeScreen
@@ -95,7 +99,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.MATCHMAKING
+    startDestination: String = NavigationRoutes.HOME
 ) {
     NavHost(
         navController = navController,
@@ -136,6 +140,31 @@ fun AppNavigation(
         }
         composable(NavigationRoutes.ACCOMMODATION) {
             AccommodationScreen()
+        }
+        composable(NavigationRoutes.HOUSE_RENT) {
+            HouseRentScreen(
+                onNavigateToDetails = { propertyId ->
+                    navController.navigate("house_rent_details/$propertyId")
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.HOUSE_RENT_PUBLISH)
+                }
+            )
+        }
+        composable(
+            route = NavigationRoutes.HOUSE_RENT_DETAILS,
+            arguments = listOf(navArgument("propertyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: ""
+            HouseRentDetailsScreen(
+                propertyId = propertyId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(NavigationRoutes.HOUSE_RENT_PUBLISH) {
+            PublishHouseRentScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.RESTAURANTS) {
             RestaurantsScreen()

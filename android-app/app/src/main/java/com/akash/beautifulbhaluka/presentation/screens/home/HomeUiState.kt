@@ -389,7 +389,7 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     id = "house_rent",
                     title = "বাসা ভাড়া",
                     icon = R.drawable.i9934823984,
-                    route = NavigationRoutes.ACCOMMODATION,
+                    route = NavigationRoutes.HOUSE_RENT,
                     description = "ভাড়া বাসা"
                 ),
                 LinkItem(
