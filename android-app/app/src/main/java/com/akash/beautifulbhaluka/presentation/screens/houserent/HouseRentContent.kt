@@ -27,6 +27,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.*
+import com.composables.icons.lucide.House
+import com.composables.icons.lucide.LayoutGrid
+import com.composables.icons.lucide.CircleCheck
+import com.composables.icons.lucide.Lucide
 import java.text.NumberFormat
 import java.util.*
 
@@ -326,7 +330,7 @@ fun HouseRentStatsCard(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             StatItem(
-                icon = Icons.Outlined.Home,
+                icon = Lucide.House,
                 value = totalProperties.toString(),
                 label = "বাসা",
                 color = Color(0xFFEF4444)
@@ -339,7 +343,7 @@ fun HouseRentStatsCard(
             )
 
             StatItem(
-                icon = Icons.Outlined.Category,
+                icon = Lucide.LayoutGrid,
                 value = categories.toString(),
                 label = "ক্যাটাগরি",
                 color = Color(0xFF8B5CF6)
@@ -352,7 +356,7 @@ fun HouseRentStatsCard(
             )
 
             StatItem(
-                icon = Icons.Outlined.CheckCircle,
+                icon = Lucide.CircleCheck,
                 value = availableCount.toString(),
                 label = "উপলব্ধ",
                 color = Color(0xFF10B981)

@@ -154,7 +154,9 @@ fun PropertyDetailsContent(
     paddingValues: PaddingValues,
     onAction: (HouseRentDetailsAction) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 24.dp)) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
