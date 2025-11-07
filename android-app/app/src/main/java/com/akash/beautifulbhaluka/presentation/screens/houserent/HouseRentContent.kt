@@ -58,8 +58,6 @@ fun HouseRentContent(
         Column(modifier = Modifier.fillMaxSize()) {
             // Modern Top Bar
             HouseRentTopBar(
-                onAction = onAction,
-                uiState = uiState,
                 onSortClick = { showSortSheet = true },
                 onFilterClick = { showFilterSheet = true }
             )
@@ -84,6 +82,50 @@ fun HouseRentContent(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        // Search Bar
+                        item {
+                            OutlinedTextField(
+                                value = uiState.searchQuery,
+                                onValueChange = { onAction(HouseRentAction.SearchProperties(it)) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .shadow(4.dp, RoundedCornerShape(28.dp)),
+                                placeholder = {
+                                    Text(
+                                        "বাসা খুঁজুন...",
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Search,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                trailingIcon = {
+                                    if (uiState.searchQuery.isNotEmpty()) {
+                                        IconButton(
+                                            onClick = { onAction(HouseRentAction.SearchProperties("")) }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Close,
+                                                contentDescription = "মুছুন"
+                                            )
+                                        }
+                                    }
+                                },
+                                shape = RoundedCornerShape(28.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent
+                                ),
+                                singleLine = true
+                            )
+                        }
+
                         // Stats Card
                         item {
                             HouseRentStatsCard(
@@ -201,12 +243,10 @@ fun HouseRentContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HouseRentTopBar(
-    onAction: (HouseRentAction) -> Unit,
-    uiState: HouseRentUiState,
     onSortClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
@@ -218,100 +258,51 @@ fun HouseRentTopBar(
                 )
             )
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Title Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "বাসা ভাড়া",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = "House Rent",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.9f)
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                IconButton(
-                    onClick = onFilterClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.FilterList,
-                        contentDescription = "ফিল্টার",
-                        tint = Color.White
-                    )
-                }
-
-                IconButton(
-                    onClick = onSortClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Sort,
-                        contentDescription = "সাজান",
-                        tint = Color.White
-                    )
-                }
-            }
+        Column {
+            Text(
+                text = "বাসা ভাড়া",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "House Rent",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.9f)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Modern Search Bar
-        OutlinedTextField(
-            value = uiState.searchQuery,
-            onValueChange = { onAction(HouseRentAction.SearchProperties(it)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(28.dp)),
-            placeholder = {
-                Text(
-                    "বাসা খুঁজুন...",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            },
-            leadingIcon = {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            IconButton(
+                onClick = onFilterClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
+            ) {
                 Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    imageVector = Icons.Outlined.FilterList,
+                    contentDescription = "ফিল্টার",
+                    tint = Color.White
                 )
-            },
-            trailingIcon = {
-                if (uiState.searchQuery.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onAction(HouseRentAction.SearchProperties("")) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = "মুছুন"
-                        )
-                    }
-                }
-            },
-            shape = RoundedCornerShape(28.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            singleLine = true
-        )
+            }
+
+            IconButton(
+                onClick = onSortClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                    contentDescription = "সাজান",
+                    tint = Color.White
+                )
+            }
+        }
     }
 }
 
@@ -469,8 +460,8 @@ fun CategoryChip(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         color = Color.Transparent,
-        modifier = Modifier.shadow(if (isSelected) 4.dp else 2.dp, RoundedCornerShape(20.dp))
-    ) {
+
+        ) {
         Box(
             modifier = Modifier.background(backgroundColor)
         ) {
