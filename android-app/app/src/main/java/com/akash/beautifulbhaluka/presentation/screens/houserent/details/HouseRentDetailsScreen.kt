@@ -86,7 +86,7 @@ fun HouseRentDetailsContent(
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White,
                     actionIconContentColor = Color.White
-                )
+                ),
             )
         }
     ) { paddingValues ->

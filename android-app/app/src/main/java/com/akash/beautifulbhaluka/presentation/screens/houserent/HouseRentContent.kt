@@ -27,8 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.*
-import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
-import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 import java.text.NumberFormat
 import java.util.*
 
@@ -43,7 +41,6 @@ fun HouseRentContent(
     var showFilterSheet by remember { mutableStateOf(false) }
     var showSortSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-    val showHeader = rememberScrollHeaderState(scrollState = listState)
 
     // Modern gradient background
     val gradientBrush = Brush.verticalGradient(
@@ -59,15 +56,13 @@ fun HouseRentContent(
             .background(gradientBrush)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Modern Top Bar with scroll animation
-            ScrollAnimatedHeader(visible = showHeader) {
-                HouseRentTopBar(
-                    onAction = onAction,
-                    uiState = uiState,
-                    onSortClick = { showSortSheet = true },
-                    onFilterClick = { showFilterSheet = true }
-                )
-            }
+            // Modern Top Bar
+            HouseRentTopBar(
+                onAction = onAction,
+                uiState = uiState,
+                onSortClick = { showSortSheet = true },
+                onFilterClick = { showFilterSheet = true }
+            )
 
             // Main content
             when {
@@ -222,6 +217,7 @@ fun HouseRentTopBar(
                     )
                 )
             )
+            .windowInsetsPadding(WindowInsets.statusBars)
             .padding(16.dp)
     ) {
         // Title Row
@@ -244,7 +240,7 @@ fun HouseRentTopBar(
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 IconButton(
                     onClick = onFilterClick,
                     modifier = Modifier
@@ -710,7 +706,7 @@ fun ModernPropertyCard(
                                 tint = Color(0xFFFFD700)
                             )
                             Text(
-                                text = String.format("%.1f", property.rating),
+                                text = String.format(Locale.getDefault(), "%.1f", property.rating),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
