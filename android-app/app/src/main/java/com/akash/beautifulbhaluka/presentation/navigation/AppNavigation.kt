@@ -50,7 +50,6 @@ import com.akash.beautifulbhaluka.presentation.screens.help.HelpScreen
 import com.akash.beautifulbhaluka.presentation.screens.heritage.HeritageScreen
 import com.akash.beautifulbhaluka.presentation.screens.history.HistoryScreen
 import com.akash.beautifulbhaluka.presentation.screens.home.HomeScreen
-import com.akash.beautifulbhaluka.presentation.screens.houserent.HouseRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.houserent.details.HouseRentDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.houserent.publish.PublishHouseRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.hospital.HospitalScreen
@@ -90,6 +89,8 @@ import com.akash.beautifulbhaluka.presentation.screens.tourism.TourismScreen
 import com.akash.beautifulbhaluka.presentation.screens.tours.ToursScreen
 import com.akash.beautifulbhaluka.presentation.screens.transport.TransportScreen
 import com.akash.beautifulbhaluka.presentation.screens.tuition.TuitionScreen
+import com.akash.beautifulbhaluka.presentation.screens.tuition.details.TuitionDetailsScreen
+import com.akash.beautifulbhaluka.presentation.screens.tuition.publish.PublishTutorScreen
 import com.akash.beautifulbhaluka.presentation.screens.union.UnionScreen
 import com.akash.beautifulbhaluka.presentation.screens.upazila.UpazilaScreen
 import com.akash.beautifulbhaluka.presentation.screens.upazila_admin.UpazilaAdminScreen
@@ -368,7 +369,35 @@ fun AppNavigation(
             SchoolCollegeScreen()
         }
         composable(NavigationRoutes.TUITION) {
-            TuitionScreen()
+            TuitionScreen(
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.TUITION_PUBLISH)
+                },
+                onNavigateToDetails = { tutorId ->
+                    navController.navigate(NavigationRoutes.getTuitionDetailsRoute(tutorId))
+                }
+            )
+        }
+
+        composable(NavigationRoutes.TUITION_PUBLISH) {
+            PublishTutorScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.TUITION_DETAILS,
+            arguments = listOf(navArgument("tutorId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val tutorId = backStackEntry.arguments?.getString("tutorId") ?: ""
+            TuitionDetailsScreen(
+                tutorId = tutorId,
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         // Financial Services
