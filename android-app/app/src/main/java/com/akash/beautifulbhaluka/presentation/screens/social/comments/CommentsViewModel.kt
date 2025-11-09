@@ -130,14 +130,16 @@ class CommentsViewModel @Inject constructor(
                     parentCommentId = currentState.replyingTo.id,
                     content = currentState.commentText,
                     images = currentState.selectedImages,
-                    voiceUrl = currentState.voiceRecordingUrl
+                    voiceUrl = currentState.voiceRecordingUrl,
+                    voiceDuration = currentState.recordingDuration
                 )
             } else {
                 repository.addComment(
                     postId = currentState.postId,
                     content = currentState.commentText,
                     images = currentState.selectedImages,
-                    voiceUrl = currentState.voiceRecordingUrl
+                    voiceUrl = currentState.voiceRecordingUrl,
+                    voiceDuration = currentState.recordingDuration
                 )
             }
 
@@ -375,13 +377,15 @@ class CommentsViewModel @Inject constructor(
 
     private fun stopVoiceRecording() {
         viewModelScope.launch {
+            val recordedDuration = _uiState.value.recordingDuration
+
             voiceRecorder.stopRecording()
                 .onSuccess { filePath ->
                     _uiState.update {
                         it.copy(
                             isRecordingVoice = false,
                             voiceRecordingUrl = filePath,
-                            recordingDuration = 0L
+                            recordingDuration = recordedDuration // Keep the actual recorded duration
                         )
                     }
 

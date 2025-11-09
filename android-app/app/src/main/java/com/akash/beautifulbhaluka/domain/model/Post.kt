@@ -39,5 +39,8 @@ data class Comment(
     val customReactionEmoji: String? = null, // Custom emoji if user picked one
     val customReactionLabel: String? = null, // Custom emoji label
     val replies: List<Comment> = emptyList(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val images: List<String> = emptyList(), // Comment images
+    val voiceUrl: String? = null, // Voice comment URL
+    val voiceDuration: Long = 0L // Voice duration in milliseconds
 )

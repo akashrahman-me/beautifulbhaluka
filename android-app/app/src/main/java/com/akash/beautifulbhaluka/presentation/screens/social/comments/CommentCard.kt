@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -75,6 +73,7 @@ fun CommentCard(
                 Reaction.ANGRY -> Color(0xFFF05545)
                 else -> if (comment.isLiked) Color(0xFFED4956) else MaterialTheme.colorScheme.onSurfaceVariant
             }
+
             comment.isLiked -> Color(0xFFED4956)
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
@@ -147,7 +146,8 @@ fun CommentCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         // User Name
                         Text(
@@ -159,17 +159,44 @@ fun CommentCard(
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        // Comment Text (if present)
+                        if (comment.content.isNotBlank()) {
+                            Text(
+                                text = comment.content,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    lineHeight = 20.sp,
+                                    fontSize = 14.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                        // Comment Text
-                        Text(
-                            text = comment.content,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                lineHeight = 20.sp,
-                                fontSize = 14.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        // Voice Player (if voice comment)
+                        if (comment.voiceUrl != null) {
+                            VoiceCommentPlayer(
+                                voiceUrl = comment.voiceUrl,
+                                duration = comment.voiceDuration
+                            )
+                        }
+
+                        // Images (if present)
+                        if (comment.images.isNotEmpty()) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                comment.images.take(3).forEach { imageUrl ->
+                                    AsyncImage(
+                                        model = imageUrl,
+                                        contentDescription = "Comment image",
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .clip(RoundedCornerShape(8.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -213,6 +240,7 @@ fun CommentCard(
                                         modifier = Modifier.scale(reactionScale)
                                     )
                                 }
+
                                 comment.userReaction != null -> {
                                     Text(
                                         text = comment.userReaction.emoji,
@@ -220,6 +248,7 @@ fun CommentCard(
                                         modifier = Modifier.scale(reactionScale)
                                     )
                                 }
+
                                 comment.isLiked -> {
                                     // Show thumbs up emoji when liked
                                     Text(
@@ -228,6 +257,7 @@ fun CommentCard(
                                         modifier = Modifier.scale(reactionScale)
                                     )
                                 }
+
                                 else -> {
                                     // Show thumbs up icon when not liked
                                     Icon(

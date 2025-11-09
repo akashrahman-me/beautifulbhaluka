@@ -33,7 +33,8 @@ interface SocialRepository {
         postId: String,
         content: String,
         images: List<String> = emptyList(),
-        voiceUrl: String? = null
+        voiceUrl: String? = null,
+        voiceDuration: Long = 0L
     ): Result<Comment>
 
     suspend fun addReply(
@@ -41,7 +42,8 @@ interface SocialRepository {
         parentCommentId: String,
         content: String,
         images: List<String> = emptyList(),
-        voiceUrl: String? = null
+        voiceUrl: String? = null,
+        voiceDuration: Long = 0L
     ): Result<Comment>
 
     suspend fun getReplies(commentId: String): Result<List<Comment>>

@@ -122,7 +122,8 @@ class SocialRepositoryImpl : SocialRepository {
         postId: String,
         content: String,
         images: List<String>,
-        voiceUrl: String?
+        voiceUrl: String?,
+        voiceDuration: Long
     ): Result<Comment> {
         delay(500)
         val comment = Comment(
@@ -132,6 +133,9 @@ class SocialRepositoryImpl : SocialRepository {
             userName = currentUserName,
             userProfileImage = currentUserImage,
             content = content,
+            images = images,
+            voiceUrl = voiceUrl,
+            voiceDuration = voiceDuration,
             createdAt = System.currentTimeMillis()
         )
 
@@ -151,7 +155,8 @@ class SocialRepositoryImpl : SocialRepository {
         parentCommentId: String,
         content: String,
         images: List<String>,
-        voiceUrl: String?
+        voiceUrl: String?,
+        voiceDuration: Long
     ): Result<Comment> {
         delay(500)
         val reply = Comment(
@@ -161,6 +166,9 @@ class SocialRepositoryImpl : SocialRepository {
             userName = currentUserName,
             userProfileImage = currentUserImage,
             content = content,
+            images = images,
+            voiceUrl = voiceUrl,
+            voiceDuration = voiceDuration,
             createdAt = System.currentTimeMillis()
         )
 
