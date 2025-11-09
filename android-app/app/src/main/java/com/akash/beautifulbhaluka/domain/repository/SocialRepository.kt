@@ -21,6 +21,7 @@ interface SocialRepository {
         privacy: PostPrivacy,
         location: String?
     ): Result<Post>
+
     suspend fun deletePost(postId: String): Result<Unit>
     suspend fun likePost(postId: String): Result<Unit>
     suspend fun unlikePost(postId: String): Result<Unit>
@@ -28,8 +29,21 @@ interface SocialRepository {
 
     // Comments
     suspend fun getComments(postId: String): Result<List<Comment>>
-    suspend fun addComment(postId: String, content: String): Result<Comment>
-    suspend fun addReply(postId: String, parentCommentId: String, content: String): Result<Comment>
+    suspend fun addComment(
+        postId: String,
+        content: String,
+        images: List<String> = emptyList(),
+        voiceUrl: String? = null
+    ): Result<Comment>
+
+    suspend fun addReply(
+        postId: String,
+        parentCommentId: String,
+        content: String,
+        images: List<String> = emptyList(),
+        voiceUrl: String? = null
+    ): Result<Comment>
+
     suspend fun getReplies(commentId: String): Result<List<Comment>>
     suspend fun deleteComment(commentId: String): Result<Unit>
     suspend fun likeComment(commentId: String): Result<Unit>
@@ -42,6 +56,7 @@ interface SocialRepository {
         location: String,
         website: String
     ): Result<SocialProfile>
+
     suspend fun updateProfileImage(imageUrl: String): Result<Unit>
     suspend fun updateCoverImage(imageUrl: String): Result<Unit>
     suspend fun followUser(userId: String): Result<Unit>

@@ -118,7 +118,12 @@ class SocialRepositoryImpl : SocialRepository {
         return Result.success(generateMockComments(postId))
     }
 
-    override suspend fun addComment(postId: String, content: String): Result<Comment> {
+    override suspend fun addComment(
+        postId: String,
+        content: String,
+        images: List<String>,
+        voiceUrl: String?
+    ): Result<Comment> {
         delay(500)
         val comment = Comment(
             id = "comment_${System.currentTimeMillis()}",
@@ -144,7 +149,9 @@ class SocialRepositoryImpl : SocialRepository {
     override suspend fun addReply(
         postId: String,
         parentCommentId: String,
-        content: String
+        content: String,
+        images: List<String>,
+        voiceUrl: String?
     ): Result<Comment> {
         delay(500)
         val reply = Comment(
@@ -192,7 +199,11 @@ class SocialRepositoryImpl : SocialRepository {
         delay(500)
         val profile = SocialProfile(
             userId = userId,
-            userName = if (userId == currentUserId) currentUserName else "ব্যবহারকারী ${userId.take(5)}",
+            userName = if (userId == currentUserId) currentUserName else "ব্যবহারকারী ${
+                userId.take(
+                    5
+                )
+            }",
             userProfileImage = currentUserImage,
             coverImage = "https://picsum.photos/seed/cover/800/400",
             bio = "আমি ভালুকা থেকে একজন সক্রিয় সদস্য। আমি এই অ্যাপ্লিকেশনটি ব্যবহার করে আমার এলাকার সাথে যুক্ত থাকি।",

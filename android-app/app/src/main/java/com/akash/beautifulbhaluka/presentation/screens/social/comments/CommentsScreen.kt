@@ -1,5 +1,8 @@
 package com.akash.beautifulbhaluka.presentation.screens.social.comments
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,10 +13,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.domain.model.Reaction
 
@@ -30,10 +36,34 @@ import com.akash.beautifulbhaluka.domain.model.Reaction
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
-    viewModel: CommentsViewModel = viewModel(),
+    viewModel: CommentsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // Microphone permission launcher
+    val microphonePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.onAction(CommentsAction.OnMicrophonePermissionResult(isGranted))
+    }
+
+    // Handle permission request
+    LaunchedEffect(uiState.needsMicrophonePermission) {
+        if (uiState.needsMicrophonePermission) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+            if (hasPermission) {
+                viewModel.onAction(CommentsAction.OnMicrophonePermissionResult(true))
+            } else {
+                microphonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -47,9 +77,17 @@ fun CommentsScreen(
                 commentText = uiState.commentText,
                 isSubmitting = uiState.isSubmitting,
                 replyingTo = uiState.replyingTo,
+                selectedImages = uiState.selectedImages,
+                isRecordingVoice = uiState.isRecordingVoice,
+                recordingDuration = uiState.recordingDuration,
                 onTextChange = { viewModel.onAction(CommentsAction.UpdateCommentText(it)) },
                 onSubmit = { viewModel.onAction(CommentsAction.SubmitComment) },
-                onCancelReply = { viewModel.onAction(CommentsAction.CancelReply) }
+                onCancelReply = { viewModel.onAction(CommentsAction.CancelReply) },
+                onImagePick = { viewModel.onAction(CommentsAction.PickImage) },
+                onRemoveImage = { viewModel.onAction(CommentsAction.RemoveImage(it)) },
+                onStartVoiceRecording = { viewModel.onAction(CommentsAction.StartVoiceRecording) },
+                onStopVoiceRecording = { viewModel.onAction(CommentsAction.StopVoiceRecording) },
+                onCancelVoiceRecording = { viewModel.onAction(CommentsAction.CancelVoiceRecording) }
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -63,15 +101,18 @@ fun CommentsScreen(
                 uiState.isLoading && uiState.comments.isEmpty() -> {
                     LoadingState()
                 }
+
                 uiState.error != null && uiState.comments.isEmpty() -> {
                     ErrorState(
                         errorMessage = uiState.error ?: "An error occurred",
                         onRetry = { viewModel.onAction(CommentsAction.LoadComments) }
                     )
                 }
+
                 uiState.comments.isEmpty() -> {
                     EmptyCommentsState()
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -88,10 +129,21 @@ fun CommentsScreen(
                                     }
                                 },
                                 onReactionSelected = { reaction ->
-                                    viewModel.onAction(CommentsAction.ReactToComment(comment.id, reaction))
+                                    viewModel.onAction(
+                                        CommentsAction.ReactToComment(
+                                            comment.id,
+                                            reaction
+                                        )
+                                    )
                                 },
                                 onCustomEmojiSelected = { emoji, label ->
-                                    viewModel.onAction(CommentsAction.CustomReactToComment(comment.id, emoji, label))
+                                    viewModel.onAction(
+                                        CommentsAction.CustomReactToComment(
+                                            comment.id,
+                                            emoji,
+                                            label
+                                        )
+                                    )
                                 },
                                 onReplyClick = {
                                     viewModel.onAction(CommentsAction.StartReply(comment))
@@ -107,10 +159,21 @@ fun CommentsScreen(
                                     }
                                 },
                                 onReplyReactionSelected = { replyId, reaction ->
-                                    viewModel.onAction(CommentsAction.ReactToComment(replyId, reaction))
+                                    viewModel.onAction(
+                                        CommentsAction.ReactToComment(
+                                            replyId,
+                                            reaction
+                                        )
+                                    )
                                 },
                                 onReplyCustomEmojiSelected = { replyId, emoji, label ->
-                                    viewModel.onAction(CommentsAction.CustomReactToComment(replyId, emoji, label))
+                                    viewModel.onAction(
+                                        CommentsAction.CustomReactToComment(
+                                            replyId,
+                                            emoji,
+                                            label
+                                        )
+                                    )
                                 }
                             )
                         }
