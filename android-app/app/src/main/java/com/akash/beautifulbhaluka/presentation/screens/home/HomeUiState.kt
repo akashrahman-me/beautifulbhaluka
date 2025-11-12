@@ -119,11 +119,11 @@ private fun getDefaultLinkSections(): List<LinkSection> {
             name = "জনসেবা",
             values = listOf(
                 LinkItem(
-                    id = "journalist",
-                    title = "সাংবাদিক",
+                    id = "news",
+                    title = "সংবাদ",
                     icon = R.drawable.y1735022072408,
                     route = NavigationRoutes.NEWS,
-                    description = "সংবাদকর্মী"
+                    description = "খবর ও সংবাদ"
                 ),
                 LinkItem(
                     id = "lawyer",

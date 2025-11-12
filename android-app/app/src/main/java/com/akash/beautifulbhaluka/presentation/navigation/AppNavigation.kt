@@ -232,9 +232,6 @@ fun AppNavigation(
         composable(NavigationRoutes.BOOKINGS) {
             BookingsScreen()
         }
-        composable(NavigationRoutes.NEWS) {
-            NewsScreen()
-        }
 
         // Buy-Sell Marketplace
         composable(NavigationRoutes.BUY_SELL) {
@@ -651,6 +648,15 @@ fun AppNavigation(
                 },
                 onNavigateToPublish = {
                     navController.navigate(NavigationRoutes.MATCHMAKER_PUBLISH)
+                }
+            )
+        }
+
+        // News Screen
+        composable(NavigationRoutes.NEWS) {
+            NewsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
