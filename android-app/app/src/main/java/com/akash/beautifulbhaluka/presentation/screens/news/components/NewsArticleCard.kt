@@ -27,10 +27,8 @@ import java.util.*
 fun NewsArticleCard(
     article: NewsArticle,
     onArticleClick: (url: String, title: String) -> Unit,
-    onDeleteClick: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    var showMenu by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -129,50 +127,6 @@ fun NewsArticleCard(
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium
                         )
-                    }
-                }
-
-                // Menu button
-                if (onDeleteClick != null) {
-                    Box(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.TopEnd)
-                    ) {
-                        IconButton(
-                            onClick = { showMenu = true },
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                        ) {
-                            Icon(
-                                imageVector = Lucide.EllipsisVertical,
-                                contentDescription = "Menu",
-                                modifier = Modifier.size(18.dp),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Delete") },
-                                onClick = {
-                                    onDeleteClick(article.id)
-                                    showMenu = false
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Lucide.Trash2,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -285,7 +239,7 @@ private fun extractDomain(url: String): String {
             .split(".")
             .firstOrNull()
             ?.replaceFirstChar { it.uppercase() } ?: "Website"
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "Website"
     }
 }

@@ -197,9 +197,6 @@ fun NewsContent(
                                 article = article,
                                 onArticleClick = { url, title ->
                                     onNavigateToWebView(url, title)
-                                },
-                                onDeleteClick = { id ->
-                                    onAction(NewsAction.DeleteArticle(id))
                                 }
                             )
                         }
