@@ -313,8 +313,9 @@ class SocialRepositoryImpl : SocialRepository {
                 userProfileImage = "https://ui-avatars.com/api/?name=Salma&background=FF9800",
                 content = "আজ আমাদের এলাকায় একটি সামাজিক কর্মসূচি হয়েছে। অনেক ভালো লাগলো সবার সাথে মিলিত হয়ে। ধন্যবাদ সবাইকে!",
                 images = listOf(
-                    "https://picsum.photos/seed/community/800/600",
-                    "https://picsum.photos/seed/people/800/600"
+                    "https://picsum.photos/seed/community1/800/600",
+                    "https://picsum.photos/seed/community2/800/600",
+                    "https://picsum.photos/seed/community3/800/600"
                 ),
                 likes = 89,
                 comments = 23,
@@ -339,7 +340,10 @@ class SocialRepositoryImpl : SocialRepository {
                 userName = "ফাতেমা বেগম",
                 userProfileImage = "https://ui-avatars.com/api/?name=Fatema&background=E91E63",
                 content = "আজকের সূর্যাস্ত দেখে মন ভরে গেল। আল্লাহর সৃষ্টি কতই না সুন্দর! 🌅",
-                images = listOf("https://picsum.photos/seed/sunset/800/600"),
+                images = listOf(
+                    "https://picsum.photos/seed/sunset1/800/600",
+                    "https://picsum.photos/seed/sunset2/800/600"
+                ),
                 likes = 234,
                 comments = 34,
                 shares = 15,
@@ -358,6 +362,63 @@ class SocialRepositoryImpl : SocialRepository {
                 shares = 5,
                 isLiked = true,
                 createdAt = System.currentTimeMillis() - 28800000
+            ),
+            Post(
+                id = "6",
+                userId = "user_5",
+                userName = "আব্দুল হামিদ",
+                userProfileImage = "https://ui-avatars.com/api/?name=Abdul&background=3F51B5",
+                content = "আমাদের গ্রামের নতুন সড়ক নির্মাণ কাজ শুরু হয়েছে! উন্নয়নের ছোঁয়া লাগছে চারিদিকে। এখানে কিছু ছবি শেয়ার করলাম।",
+                images = listOf(
+                    "https://picsum.photos/seed/road1/800/600",
+                    "https://picsum.photos/seed/road2/800/600",
+                    "https://picsum.photos/seed/road3/800/600",
+                    "https://picsum.photos/seed/road4/800/600"
+                ),
+                likes = 178,
+                comments = 42,
+                shares = 19,
+                location = "ভালুকা, ময়মনসিংহ",
+                privacy = PostPrivacy.PUBLIC,
+                createdAt = System.currentTimeMillis() - 36000000
+            ),
+            Post(
+                id = "7",
+                userId = "user_6",
+                userName = "নাজমা সুলতানা",
+                userProfileImage = "https://ui-avatars.com/api/?name=Nazma&background=9C27B0",
+                content = "আজকে আমার বেকারির নতুন পণ্যের ছবি তুলেছি। দেখুন কেমন হয়েছে! অর্ডার করতে চাইলে জানাবেন। 🍰🧁",
+                images = listOf(
+                    "https://picsum.photos/seed/bakery1/800/600",
+                    "https://picsum.photos/seed/bakery2/800/600",
+                    "https://picsum.photos/seed/bakery3/800/600",
+                    "https://picsum.photos/seed/bakery4/800/600",
+                    "https://picsum.photos/seed/bakery5/800/600"
+                ),
+                likes = 312,
+                comments = 89,
+                shares = 34,
+                location = "ভালুকা বাজার",
+                privacy = PostPrivacy.PUBLIC,
+                createdAt = System.currentTimeMillis() - 43200000
+            ),
+            Post(
+                id = "8",
+                userId = "user_7",
+                userName = "মোহাম্মদ আলী",
+                userProfileImage = "https://ui-avatars.com/api/?name=Mohammad&background=00BCD4",
+                content = "আজ ভালুকার ঐতিহাসিক কিছু স্থান ঘুরে এলাম। আমাদের এলাকার ইতিহাস সত্যিই সমৃদ্ধ! 🏛️",
+                images = listOf(
+                    "https://picsum.photos/seed/heritage1/800/600",
+                    "https://picsum.photos/seed/heritage2/800/600",
+                    "https://picsum.photos/seed/heritage3/800/600"
+                ),
+                likes = 203,
+                comments = 56,
+                shares = 28,
+                location = "ভালুকা",
+                privacy = PostPrivacy.PUBLIC,
+                createdAt = System.currentTimeMillis() - 50400000
             )
         )
     }

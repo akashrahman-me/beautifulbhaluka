@@ -441,6 +441,7 @@ fun PostActionButtonWithReaction(
                 Reaction.ANGRY -> Color(0xFFF05545)
                 else -> if (post.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             }
+
             post.isLiked -> MaterialTheme.colorScheme.primary
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
@@ -475,6 +476,7 @@ fun PostActionButtonWithReaction(
                     modifier = Modifier.scale(scale)
                 )
             }
+
             post.userReaction != null -> {
                 Text(
                     text = post.userReaction.emoji,
@@ -482,6 +484,7 @@ fun PostActionButtonWithReaction(
                     modifier = Modifier.scale(scale)
                 )
             }
+
             post.isLiked -> {
                 // Show thumbs up emoji when liked
                 Text(
@@ -490,12 +493,15 @@ fun PostActionButtonWithReaction(
                     modifier = Modifier.scale(scale)
                 )
             }
+
             else -> {
                 // Show thumbs up icon when not liked
                 Icon(
                     imageVector = Icons.Outlined.ThumbUpOffAlt,
                     contentDescription = "Like",
-                    modifier = Modifier.size(20.dp).scale(scale),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .scale(scale),
                     tint = iconColor
                 )
             }
@@ -570,121 +576,83 @@ fun PostActionButton(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostImagesGrid(images: List<String>) {
-    when (images.size) {
-        1 -> {
+    if (images.isEmpty()) return
+
+    // Use HorizontalPager for swipeable image carousel
+    val pagerState = androidx.compose.foundation.pager.rememberPagerState(
+        pageCount = { images.size }
+    )
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Image Pager
+        androidx.compose.foundation.pager.HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
             AsyncImage(
-                model = images[0],
-                contentDescription = null,
+                model = images[page],
+                contentDescription = "Image ${page + 1} of ${images.size}",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 400.dp)
-                    .clip(RoundedCornerShape(0.dp)),
+                    .heightIn(max = 400.dp),
                 contentScale = ContentScale.Crop
             )
         }
-        2 -> {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                images.forEach { image ->
-                    AsyncImage(
-                        model = image,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(220.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        }
-        3 -> {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                AsyncImage(
-                    model = images[0],
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(250.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    AsyncImage(
-                        model = images[1],
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(124.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                    AsyncImage(
-                        model = images[2],
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(124.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        }
-        else -> {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                AsyncImage(
-                    model = images[0],
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    images.drop(1).take(2).forEachIndexed { index, image ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(150.dp)
-                        ) {
-                            AsyncImage(
-                                model = image,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
 
-                            if (index == 1 && images.size > 3) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(Color.Black.copy(alpha = 0.6f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "+${images.size - 3}",
-                                        style = MaterialTheme.typography.headlineMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
-                    }
+        // Dot Pagination Indicator at bottom
+        if (images.size > 1) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(images.size) { index ->
+                    val isSelected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .size(
+                                width = if (isSelected) 8.dp else 6.dp,
+                                height = if (isSelected) 8.dp else 6.dp
+                            )
+                            .background(
+                                color = if (isSelected)
+                                    Color.White
+                                else
+                                    Color.White.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            )
+                    )
                 }
+            }
+
+            // Page counter badge at top right
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(12.dp),
+                color = Color.Black.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "${pagerState.currentPage + 1}/${images.size}",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
             }
         }
     }
