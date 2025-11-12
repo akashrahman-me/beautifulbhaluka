@@ -1,9 +1,13 @@
 package com.akash.beautifulbhaluka.presentation.screens.tuition.publish
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -13,10 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.composables.icons.lucide.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -24,6 +30,7 @@ import com.composables.icons.lucide.*
 fun PublishTutorScreen(
     onNavigateBack: () -> Unit
 ) {
+    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     var name by remember { mutableStateOf("") }
     var qualification by remember { mutableStateOf("") }
     var experience by remember { mutableStateOf("") }
@@ -37,6 +44,15 @@ fun PublishTutorScreen(
     var description by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            profileImageUri = it
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -63,6 +79,16 @@ fun PublishTutorScreen(
                     .padding(paddingValues),
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
+                // Profile Picture
+                item {
+                    ProfilePictureSection(
+                        imageUri = profileImageUri,
+                        onImagePickerClick = {
+                            imagePickerLauncher.launch("image/*")
+                        }
+                    )
+                }
+
                 // Header
                 item {
                     PublishHeader()
@@ -357,6 +383,85 @@ fun PublishTutorScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ProfilePictureSection(
+    imageUri: Uri?,
+    onImagePickerClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            // Profile Image
+            Surface(
+                modifier = Modifier.size(120.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                border = BorderStroke(
+                    2.dp,
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                )
+            ) {
+                if (imageUri != null) {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Lucide.User,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        )
+                    }
+                }
+            }
+
+            // Camera Button
+            Surface(
+                onClick = onImagePickerClick,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-8).dp, y = (-8).dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary,
+                shadowElevation = 4.dp
+            ) {
+                Icon(
+                    imageVector = Lucide.Camera,
+                    contentDescription = "Upload Photo",
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(20.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = if (imageUri == null) "Add Profile Picture" else "Change Photo",
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontSize = 13.sp
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
