@@ -6,7 +6,7 @@ import com.akash.beautifulbhaluka.R
 data class HomeUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val carouselItems: List<CarouselItem> = emptyList(),
+    val carouselItems: List<CarouselItem> = getDefaultCarouselItems(),
     val linkSections: List<LinkSection> = getDefaultLinkSections()
 )
 
@@ -455,3 +455,39 @@ private fun getDefaultLinkSections(): List<LinkSection> {
         )
     )
 }
+
+private fun getDefaultCarouselItems(): List<CarouselItem> {
+    return listOf(
+        CarouselItem(
+            id = "carousel_1",
+            title = "ভালুকায় স্বাগতম",
+            description = "ময়মনসিংহের ঐতিহ্যবাহী উপজেলা",
+            imageUrl = "https://picsum.photos/seed/bhaluka1/800/400"
+        ),
+        CarouselItem(
+            id = "carousel_2",
+            title = "পর্যটন ও দর্শনীয় স্থান",
+            description = "প্রাকৃতিক সৌন্দর্যে ভরপুর",
+            imageUrl = "https://picsum.photos/seed/bhaluka2/800/400"
+        ),
+        CarouselItem(
+            id = "carousel_3",
+            title = "শিক্ষা ও সংস্কৃতি",
+            description = "জ্ঞান ও ঐতিহ্যের কেন্দ্র",
+            imageUrl = "https://picsum.photos/seed/bhaluka3/800/400"
+        ),
+        CarouselItem(
+            id = "carousel_4",
+            title = "ব্যবসা ও বাণিজ্য",
+            description = "স্থানীয় অর্থনীতির হৃদয়",
+            imageUrl = "https://picsum.photos/seed/bhaluka4/800/400"
+        ),
+        CarouselItem(
+            id = "carousel_5",
+            title = "সামাজিক সেবা",
+            description = "সকলের জন্য উন্নত সেবা",
+            imageUrl = "https://picsum.photos/seed/bhaluka5/800/400"
+        )
+    )
+}
+
