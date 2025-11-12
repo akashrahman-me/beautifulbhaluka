@@ -1,7 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.news
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +25,8 @@ import com.composables.icons.lucide.*
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
@@ -41,7 +41,8 @@ fun NewsScreen(
         onAction = viewModel::onAction,
         listState = listState,
         showFab = showFab,
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        onNavigateToWebView = onNavigateToWebView
     )
 }
 
@@ -52,7 +53,8 @@ fun NewsContent(
     onAction: (NewsAction) -> Unit,
     listState: androidx.compose.foundation.lazy.LazyListState,
     showFab: Boolean,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToWebView: (url: String, title: String) -> Unit
 ) {
 
     Scaffold(
@@ -193,8 +195,8 @@ fun NewsContent(
                         ) { article ->
                             NewsArticleCard(
                                 article = article,
-                                onArticleClick = { url ->
-                                    onAction(NewsAction.OpenArticle(url))
+                                onArticleClick = { url, title ->
+                                    onNavigateToWebView(url, title)
                                 },
                                 onDeleteClick = { id ->
                                     onAction(NewsAction.DeleteArticle(id))

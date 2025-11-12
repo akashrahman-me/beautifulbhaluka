@@ -46,6 +46,17 @@ object NavigationRoutes {
     const val REVIEWS = "reviews"
     const val BOOKINGS = "bookings"
     const val NEWS = "news"
+    const val WEBVIEW = "webview?url={url}&title={title}"
+
+    // Helper function for WebView navigation
+    fun webview(url: String, title: String = "Article"): String {
+        return "webview?url=${
+            java.net.URLEncoder.encode(
+                url,
+                "UTF-8"
+            )
+        }&title=${java.net.URLEncoder.encode(title, "UTF-8")}"
+    }
 
     // Buy-Sell Marketplace
     const val BUY_SELL = "buy_sell"

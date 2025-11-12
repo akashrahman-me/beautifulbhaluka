@@ -1,7 +1,5 @@
 package com.akash.beautifulbhaluka.presentation.screens.news.components
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,11 +26,10 @@ import java.util.*
 @Composable
 fun NewsArticleCard(
     article: NewsArticle,
-    onArticleClick: (String) -> Unit,
+    onArticleClick: (url: String, title: String) -> Unit,
     onDeleteClick: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
@@ -45,8 +41,7 @@ fun NewsArticleCard(
                 spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
             .clickable {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                context.startActivity(intent)
+                onArticleClick(article.url, article.title)
             },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
@@ -254,8 +249,7 @@ fun NewsArticleCard(
                     // Read more button
                     Button(
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                            context.startActivity(intent)
+                            onArticleClick(article.url, article.title)
                         },
                         modifier = Modifier.height(36.dp),
                         shape = RoundedCornerShape(12.dp),

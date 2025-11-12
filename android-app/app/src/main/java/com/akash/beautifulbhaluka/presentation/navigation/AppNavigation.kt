@@ -657,6 +657,39 @@ fun AppNavigation(
             NewsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToWebView = { url, title ->
+                    navController.navigate(NavigationRoutes.webview(url, title))
+                }
+            )
+        }
+
+        // WebView Screen
+        composable(
+            route = NavigationRoutes.WEBVIEW,
+            arguments = listOf(
+                navArgument("url") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+                navArgument("title") {
+                    type = NavType.StringType
+                    defaultValue = "Article"
+                }
+            )
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url")?.let {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } ?: ""
+            val title = backStackEntry.arguments?.getString("title")?.let {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } ?: "Article"
+
+            com.akash.beautifulbhaluka.presentation.screens.webview.WebViewScreen(
+                url = url,
+                title = title,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

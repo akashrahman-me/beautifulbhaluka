@@ -68,7 +68,12 @@ fun BeautifulBhalukaApp() {
         NavigationRoutes.HOUSE_RENT,
         NavigationRoutes.HOUSE_RENT_DETAILS,
         NavigationRoutes.HOUSE_RENT_PUBLISH,
-    )
+
+
+        NavigationRoutes.NEWS,
+        NavigationRoutes.WEBVIEW,
+
+        )
 
     val shouldShowBars = currentRoute !in hiddenRoutes
 
