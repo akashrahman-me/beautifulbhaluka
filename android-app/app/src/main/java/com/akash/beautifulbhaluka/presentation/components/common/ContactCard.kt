@@ -1,5 +1,7 @@
 package com.akash.beautifulbhaluka.presentation.components.common
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Phone as PhoneLucide
 
 /**
  * A modern contact card component displaying official contact information
@@ -34,6 +38,8 @@ fun ContactCard(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -60,7 +66,7 @@ fun ContactCard(
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
+                    model = ImageRequest.Builder(context)
                         .data(imageUrl)
                         .crossfade(true)
                         .build(),
@@ -148,6 +154,27 @@ fun ContactCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+            }
+
+            // Call Button
+            FilledIconButton(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:$phone")
+                    }
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.size(48.dp),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(0.3f),
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Icon(
+                    imageVector = Lucide.PhoneLucide,
+                    contentDescription = "Call",
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }

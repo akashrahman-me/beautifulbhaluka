@@ -6,6 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -16,29 +21,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.presentation.screens.home.CarouselItem
+import kotlinx.coroutines.delay
 
 /**
- * Modern Carousel using Material 3 built-in carousel component
+ * Modern Carousel with banner-sized cards and auto-slide
  *
- * This uses the official androidx.compose.material3.carousel APIs
- * which provide automatic multi-browse layout with adaptive sizing
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Carousel(
     items: List<CarouselItem>,
     onItemClick: (CarouselItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    autoSlideInterval: Long = 3000L
 ) {
     if (items.isEmpty()) return
 
+    val carouselState = rememberCarouselState { items.count() }
+    var currentPage by remember { mutableIntStateOf(0) }
+
+    // Auto-slide effect
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(autoSlideInterval)
+            currentPage = (currentPage + 1) % items.size
+            carouselState.animateScrollToItem(currentPage)
+        }
+    }
+
     HorizontalMultiBrowseCarousel(
-        state = rememberCarouselState { items.count() },
+        state = carouselState,
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp),
-        preferredItemWidth = 300.dp,
-        itemSpacing = 16.dp
+            .aspectRatio(16f / 9f), // Banner aspect ratio
+        preferredItemWidth = 350.dp,
+        itemSpacing = 12.dp
     ) { index ->
         val item = items[index]
         CarouselCard(
