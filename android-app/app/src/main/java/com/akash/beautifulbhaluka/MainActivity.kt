@@ -47,35 +47,8 @@ fun BeautifulBhalukaApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Hide bars when in Social screen or Buy-Sell screen
-    val hiddenRoutes = listOf(
-        NavigationRoutes.SOCIAL,
-        NavigationRoutes.BUY_SELL,
-
-        NavigationRoutes.MATCHMAKING,
-        NavigationRoutes.MATCHMAKING_DETAILS,
-        NavigationRoutes.MATCHMAKING_PUBLISH,
-        NavigationRoutes.MANAGE_MATCHMAKING_PROFILES,
-        NavigationRoutes.MANAGE_MATCHMAKER_PROFILES,
-        NavigationRoutes.MATCHMAKER_DETAILS,
-        NavigationRoutes.MATCHMAKER_PUBLISH,
-
-        NavigationRoutes.BLOOD_BANK,
-        NavigationRoutes.BLOOD_BANK_PUBLISH,
-        NavigationRoutes.BLOOD_BANK_MANAGE,
-        NavigationRoutes.BLOOD_DONATION_GUIDELINES,
-
-        NavigationRoutes.HOUSE_RENT,
-        NavigationRoutes.HOUSE_RENT_DETAILS,
-        NavigationRoutes.HOUSE_RENT_PUBLISH,
-
-
-        NavigationRoutes.NEWS,
-        NavigationRoutes.WEBVIEW,
-
-        )
-
-    val shouldShowBars = currentRoute !in hiddenRoutes
+    // Show bars only on Home screen
+    val shouldShowBars = currentRoute == NavigationRoutes.HOME
 
     BeautifulBhalukaTheme(dynamicColor = false) {
         MainScaffold(

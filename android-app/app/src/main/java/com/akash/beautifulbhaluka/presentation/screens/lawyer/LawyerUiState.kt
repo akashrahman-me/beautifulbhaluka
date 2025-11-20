@@ -7,3 +7,5 @@ data class LawyerUiState(
     val lawyers: List<LawyerInfo> = emptyList(),
     val error: String? = null
 )
+
+

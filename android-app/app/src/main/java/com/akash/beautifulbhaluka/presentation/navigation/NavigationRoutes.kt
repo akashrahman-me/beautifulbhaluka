@@ -107,6 +107,7 @@ object NavigationRoutes {
 
     // Legal & Administrative Services
     const val LAWYER = "lawyer"
+    const val LAWYER_PUBLISH = "lawyer/publish"
     const val UPAZILA_ADMIN = "upazila_admin"
     const val VOTER_LIST = "voter_list"
     const val KAZI_OFFICE = "kazi_office"

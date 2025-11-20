@@ -60,6 +60,7 @@ import com.akash.beautifulbhaluka.presentation.screens.jobs.details.JobDetailsSc
 import com.akash.beautifulbhaluka.presentation.screens.kazioffice.KaziOfficeScreen
 import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.LadiesParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.LawyerScreen
+import com.akash.beautifulbhaluka.presentation.screens.lawyer.publish.PublishLawyerScreen
 import com.akash.beautifulbhaluka.presentation.screens.maps.MapsScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.MatchmakingScreen
 import com.akash.beautifulbhaluka.presentation.screens.matchmaking.bridegroom.details.MatchmakingDetailsScreen
@@ -349,7 +350,27 @@ fun AppNavigation(
 
         // Legal & Administrative Services
         composable(NavigationRoutes.LAWYER) {
-            LawyerScreen()
+            LawyerScreen(
+                navigateToPublish = {
+                    navController.navigate(NavigationRoutes.LAWYER_PUBLISH)
+                },
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.LAWYER_PUBLISH) {
+            PublishLawyerScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable(NavigationRoutes.UPAZILA_ADMIN) {
             UpazilaAdminScreen()

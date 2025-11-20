@@ -4,3 +4,5 @@ sealed class LawyerAction {
     object LoadData : LawyerAction()
     data class CallNumber(val phoneNumber: String) : LawyerAction()
 }
+
+
