@@ -12,13 +12,18 @@ class FamousPersonViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(FamousPersonUiState())
     val uiState: StateFlow<FamousPersonUiState> = _uiState.asStateFlow()
 
+    private var onNavigateToDetails: ((String) -> Unit)? = null
+
     init {
         loadFamousPeopleData()
     }
 
+    fun setNavigationCallback(onNavigateToDetails: (String) -> Unit) {
+        this.onNavigateToDetails = onNavigateToDetails
+    }
+
     fun onViewPerson(person: FamousPerson) {
-        // Handle person view logic here
-        // For now, this is a placeholder for future implementation
+        onNavigateToDetails?.invoke(person.title)
     }
 
     fun loadFamousPeopleData() {

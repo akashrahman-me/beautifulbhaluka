@@ -42,6 +42,7 @@ import com.akash.beautifulbhaluka.presentation.screens.emergency.EmergencyScreen
 import com.akash.beautifulbhaluka.presentation.screens.entertainment.EntertainmentScreen
 import com.akash.beautifulbhaluka.presentation.screens.events.EventsScreen
 import com.akash.beautifulbhaluka.presentation.screens.famouspeople.FamousPersonScreen
+import com.akash.beautifulbhaluka.presentation.screens.famouspeople.details.FamousPersonDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.festivals.FestivalsScreen
 import com.akash.beautifulbhaluka.presentation.screens.fireservice.FireServiceScreen
 import com.akash.beautifulbhaluka.presentation.screens.food.FoodScreen
@@ -498,7 +499,36 @@ fun AppNavigation(
 
         // Information Services
         composable(NavigationRoutes.FAMOUS_PERSON) {
-            FamousPersonScreen()
+            FamousPersonScreen(
+                navigateBack = { navController.navigateUp() },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(
+                            NavigationRoutes.HOME
+                        ) { inclusive = true }
+                    }
+                },
+                navigateToDetails = { personTitle ->
+                    navController.navigate(NavigationRoutes.famousPersonDetails(personTitle))
+                }
+            )
+        }
+        composable(
+            route = NavigationRoutes.FAMOUS_PERSON_DETAILS,
+            arguments = listOf(navArgument("personTitle") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val personTitle = backStackEntry.arguments?.getString("personTitle") ?: ""
+            FamousPersonDetailsScreen(
+                personTitle = personTitle,
+                navigateBack = { navController.navigateUp() },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(
+                            NavigationRoutes.HOME
+                        ) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(NavigationRoutes.FREEDOM_FIGHTER) {
             FreedomFighterScreen()

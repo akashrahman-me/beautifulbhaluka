@@ -19,9 +19,14 @@ import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 fun FamousPersonScreen(
     viewModel: FamousPersonViewModel = viewModel(),
     navigateBack: () -> Unit = {},
-    navigateToHome: () -> Unit = {}
+    navigateToHome: () -> Unit = {},
+    navigateToDetails: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.setNavigationCallback(navigateToDetails)
+    }
 
     FamousPersonContent(
         uiState = uiState,

@@ -264,6 +264,25 @@ fun MarkdownText(
                     }
                 }
 
+                // Handle horizontal divider (---)
+                line == "---" || line.startsWith("---") -> {
+                    if (enableStyling) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            HorizontalDivider(
+                                modifier = Modifier.fillMaxWidth(),
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
                 // Handle empty lines (spacing)
                 line.isEmpty() -> {
                     Spacer(modifier = Modifier.height(8.dp))

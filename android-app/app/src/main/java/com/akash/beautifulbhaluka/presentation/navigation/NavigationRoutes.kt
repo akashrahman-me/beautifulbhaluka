@@ -144,6 +144,7 @@ object NavigationRoutes {
 
     // Information Services
     const val FAMOUS_PERSON = "famous_person"
+    const val FAMOUS_PERSON_DETAILS = "famous_person_details/{personTitle}"
     const val FREEDOM_FIGHTER = "freedom_fighter"
     const val ACHIEVER = "achiever"
     const val CALCULATOR = "calculator"
@@ -166,5 +167,8 @@ object NavigationRoutes {
     fun productDetails(productId: String) = "product_details/$productId"
     fun buySellDetails(itemId: String) = "buy_sell_details/$itemId"
     fun matchmakingDetails(profileId: String) = "matchmaking_details/$profileId"
+    fun famousPersonDetails(personTitle: String) =
+        "famous_person_details/${java.net.URLEncoder.encode(personTitle, "UTF-8")}"
+
     fun matchmakerDetails(matchmakerId: String) = "matchmaker_details/$matchmakerId"
 }
