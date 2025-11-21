@@ -170,12 +170,182 @@ class SchoolCollegeViewModel @Inject constructor() : ViewModel() {
                     HighSchoolInstitution("30", "বান্দিয়া আদর্শ উচ্চ বিদ্যালয়", "111303")
                 )
 
+                val allInstitutions = listOf(
+                    Institution(
+                        "1",
+                        "ভালুকা সরকারি কলেজ",
+                        InstitutionCategory.COLLEGE,
+                        null,
+                        "১৯৭২",
+                        "111354",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "2",
+                        "ভালুকা পাইলট উচ্চ বিদ্যালয়",
+                        InstitutionCategory.SCHOOL,
+                        null,
+                        "১৯৪৮",
+                        "111280",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "3",
+                        "ভালুকা সরকারি বালিকা উচ্চ বিদ্যালয়",
+                        InstitutionCategory.SCHOOL,
+                        null,
+                        "১৯৮৬",
+                        "111278",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "4",
+                        "বাটাজোর সোনার বাংলা ডিগ্রী কলেজ",
+                        InstitutionCategory.COLLEGE,
+                        null,
+                        "২০০০",
+                        "111353",
+                        "বাটাজোর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "5",
+                        "ভালুকা ইসলামিয়া মাদ্রাসা",
+                        InstitutionCategory.MADRASA,
+                        null,
+                        "১৯৫০",
+                        "111400",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "6",
+                        "আল-আমিন মাদ্রাসা",
+                        InstitutionCategory.MADRASA,
+                        null,
+                        "১৯৮৫",
+                        "111401",
+                        "কাচিনা",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "7",
+                        "ভালুকা কোচিং সেন্টার",
+                        InstitutionCategory.COACHING_CENTER,
+                        null,
+                        "২০১০",
+                        "111500",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "8",
+                        "মেধাবী কোচিং সেন্টার",
+                        InstitutionCategory.COACHING_CENTER,
+                        null,
+                        "২০১৫",
+                        "111501",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "9",
+                        "লিটল স্টার কিন্ডারগার্টেন",
+                        InstitutionCategory.KINDERGARTEN,
+                        null,
+                        "২০০৮",
+                        "111600",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "10",
+                        "শিশু নিকেতন কিন্ডারগার্টেন",
+                        InstitutionCategory.KINDERGARTEN,
+                        null,
+                        "২০১২",
+                        "111601",
+                        "মেদুয়ারী",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "11",
+                        "ভালুকা সরকারি প্রাথমিক বিদ্যালয়",
+                        InstitutionCategory.PRIMARY_SCHOOL,
+                        null,
+                        "১৯৫৫",
+                        "111700",
+                        "ভালুকা সদর",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "12",
+                        "কাচিনা সরকারি প্রাথমিক বিদ্যালয়",
+                        InstitutionCategory.PRIMARY_SCHOOL,
+                        null,
+                        "১৯৬০",
+                        "111701",
+                        "কাচিনা",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "13",
+                        "উথুরা হাই স্কুল এন্ড কলেজ",
+                        InstitutionCategory.COLLEGE,
+                        null,
+                        "১৯৯৫",
+                        "111358",
+                        "উথুরা",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "14",
+                        "রাজৈ উচ্চ বিদ্যালয়",
+                        InstitutionCategory.SCHOOL,
+                        null,
+                        "১৯৭০",
+                        "111263",
+                        "রাজৈ",
+                        null,
+                        null
+                    ),
+                    Institution(
+                        "15",
+                        "হামিদিয়া মাদ্রাসা",
+                        InstitutionCategory.MADRASA,
+                        null,
+                        "১৯৭৫",
+                        "111402",
+                        "ডাকাতিয়া",
+                        null,
+                        null
+                    )
+                )
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         featuredInstitutions = featuredInstitutions,
                         colleges = colleges,
                         highSchools = highSchools,
+                        allInstitutions = allInstitutions,
+                        filteredInstitutions = allInstitutions,
                         error = null
                     )
                 }

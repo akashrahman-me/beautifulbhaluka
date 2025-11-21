@@ -1,13 +1,16 @@
 package com.akash.beautifulbhaluka.presentation.screens.schoolcollege
 
-enum class InstitutionCategory(val label: String) {
-    ALL("সব"),
-    SCHOOL("স্কুল"),
-    COLLEGE("কলেজ"),
-    MADRASA("মাদ্রসা"),
-    COACHING_CENTER("কোচিং সেন্টার"),
-    KINDERGARTEN("কিন্ডারগার্টেন"),
-    PRIMARY_SCHOOL("প্রাইমারি স্কুল")
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.composables.icons.lucide.*
+
+enum class InstitutionCategory(val label: String, val icon: ImageVector) {
+    ALL("সব", Lucide.LayoutGrid),
+    SCHOOL("স্কুল", Lucide.GraduationCap),
+    COLLEGE("কলেজ", Lucide.Building2),
+    MADRASA("মাদ্রসা", Lucide.BookOpen),
+    COACHING_CENTER("কোচিং সেন্টার", Lucide.BookMarked),
+    KINDERGARTEN("কিন্ডারগার্টেন", Lucide.Baby),
+    PRIMARY_SCHOOL("প্রাইমারি স্কুল", Lucide.School)
 }
 
 data class SchoolCollegeUiState(

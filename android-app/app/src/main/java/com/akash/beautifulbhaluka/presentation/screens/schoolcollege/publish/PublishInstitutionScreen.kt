@@ -11,9 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.InstitutionCategory
+import com.composables.icons.lucide.*
 
 @Composable
 fun PublishInstitutionScreen(
@@ -110,7 +108,7 @@ fun PublishInstitutionContent(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Warning,
+                                imageVector = Lucide.TriangleAlert,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(24.dp)
@@ -138,7 +136,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateName(it)) },
                     label = "প্রতিষ্ঠানের নাম",
                     placeholder = "উদাহরণঃ ভালুকা সরকারি কলেজ",
-                    icon = Icons.Outlined.School,
+                    icon = Lucide.GraduationCap,
                     isRequired = true
                 )
             }
@@ -156,7 +154,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateScope(it)) },
                     label = "পরিধি",
                     placeholder = "প্রাথমিক, মাধ্যমিক, উচ্চ মাধ্যমিক",
-                    icon = Icons.Outlined.Category
+                    icon = Lucide.Layers
                 )
             }
 
@@ -166,7 +164,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateEstablishedYear(it)) },
                     label = "প্রতিষ্ঠার সাল",
                     placeholder = "১৯৮৫",
-                    icon = Icons.Outlined.DateRange,
+                    icon = Lucide.Calendar,
                     isRequired = true,
                     keyboardType = KeyboardType.Number
                 )
@@ -178,7 +176,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateEiin(it)) },
                     label = "ইআইআইএন নাম্বার",
                     placeholder = "১২৩৪৫৬",
-                    icon = Icons.Outlined.Numbers,
+                    icon = Lucide.Hash,
                     keyboardType = KeyboardType.Number
                 )
             }
@@ -189,7 +187,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateLocation(it)) },
                     label = "লোকেশন",
                     placeholder = "ভালুকা সদর, ময়মনসিংহ",
-                    icon = Icons.Outlined.LocationOn
+                    icon = Lucide.MapPin
                 )
             }
 
@@ -199,7 +197,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateMobile(it)) },
                     label = "মোবাইল নাম্বার",
                     placeholder = "০১৭xxxxxxxx",
-                    icon = Icons.Outlined.Phone,
+                    icon = Lucide.Phone,
                     isRequired = true,
                     keyboardType = KeyboardType.Phone
                 )
@@ -211,7 +209,7 @@ fun PublishInstitutionContent(
                     onValueChange = { onAction(PublishInstitutionAction.UpdateDescription(it)) },
                     label = "প্রতিষ্ঠান সম্পর্কে অতিরিক্ত তথ্য",
                     placeholder = "প্রতিষ্ঠানের বিশেষত্ব, সুবিধা, ইত্যাদি লিখুন",
-                    icon = Icons.Outlined.Description,
+                    icon = Lucide.FileText,
                     maxLines = 6
                 )
             }
@@ -255,7 +253,7 @@ private fun ModernImagePicker(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Image,
+                    imageVector = Lucide.Image,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -313,7 +311,7 @@ private fun ModernImagePicker(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.AddAPhoto,
+                            imageVector = Lucide.Camera,
                             contentDescription = null,
                             modifier = Modifier.size(56.dp),
                             tint = MaterialTheme.colorScheme.primary
@@ -425,7 +423,7 @@ private fun ModernCategorySelector(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Category,
+                    imageVector = Lucide.Layers3,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -546,7 +544,7 @@ private fun ModernSubmitButton(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = Lucide.Check,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
