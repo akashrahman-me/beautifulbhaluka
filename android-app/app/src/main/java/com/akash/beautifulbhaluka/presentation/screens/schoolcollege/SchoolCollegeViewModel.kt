@@ -2,13 +2,16 @@ package com.akash.beautifulbhaluka.presentation.screens.schoolcollege
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SchoolCollegeViewModel : ViewModel() {
+@HiltViewModel
+class SchoolCollegeViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(SchoolCollegeUiState())
     val uiState: StateFlow<SchoolCollegeUiState> = _uiState.asStateFlow()
@@ -23,6 +26,25 @@ class SchoolCollegeViewModel : ViewModel() {
             is SchoolCollegeAction.OnInstitutionClick -> {
                 // Handle institution click (could navigate to detail screen or show more info)
             }
+
+            is SchoolCollegeAction.OnCategorySelected -> filterByCategory(action.category)
+            is SchoolCollegeAction.OnPublishClick -> {
+                // Navigation handled in screen
+            }
+        }
+    }
+
+    private fun filterByCategory(category: InstitutionCategory) {
+        _uiState.update { currentState ->
+            val filtered = if (category == InstitutionCategory.ALL) {
+                currentState.allInstitutions
+            } else {
+                currentState.allInstitutions.filter { it.category == category }
+            }
+            currentState.copy(
+                selectedCategory = category,
+                filteredInstitutions = filtered
+            )
         }
     }
 

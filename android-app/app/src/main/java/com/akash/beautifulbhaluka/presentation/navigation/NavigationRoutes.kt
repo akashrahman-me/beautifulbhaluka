@@ -114,6 +114,7 @@ object NavigationRoutes {
 
     // Educational Services
     const val SCHOOL_COLLEGE = "school_college"
+    const val SCHOOL_COLLEGE_PUBLISH = "school_college_publish"
     const val TUITION = "tuition"
     const val TUITION_PUBLISH = "tuition_publish"
     const val TUITION_DETAILS = "tuition_details/{tutorId}"

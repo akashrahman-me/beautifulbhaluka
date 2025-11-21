@@ -3,92 +3,105 @@ package com.akash.beautifulbhaluka.presentation.screens.schoolcollege
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.presentation.components.common.ModernTable
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.components.FeaturedInstitutionCard
 
 @Composable
 fun SchoolCollegeScreen(
-    viewModel: SchoolCollegeViewModel = viewModel()
+    viewModel: SchoolCollegeViewModel = hiltViewModel(),
+    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit,
+    onNavigateToPublish: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     SchoolCollegeContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        navigateBack = navigateBack,
+        navigateToHome = navigateToHome,
+        onNavigateToPublish = onNavigateToPublish
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchoolCollegeContent(
     uiState: SchoolCollegeUiState,
-    onAction: (SchoolCollegeAction) -> Unit
+    onAction: (SchoolCollegeAction) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit,
+    onNavigateToPublish: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = "শিক্ষাপ্রতিষ্ঠান",
+                onNavigateBack = navigateBack,
+                onNavigateHome = navigateToHome
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToPublish,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "শিক্ষাপ্রতিষ্ঠান যোগ করুন"
+                )
+            }
+        }
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            contentPadding = PaddingValues(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            // Modern Header Section
+            // Category Filter Chips
             item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Minimalist Title
+                Column {
                     Text(
-                        text = "শিক্ষাপ্রতিষ্ঠান",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 36.sp
-                        ),
+                        text = "ক্যাটাগরি সিলেক্ট",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Clean underline accent
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(2.dp)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(1.dp)
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(InstitutionCategory.entries) { category ->
+                            FilterChip(
+                                selected = uiState.selectedCategory == category,
+                                onClick = { onAction(SchoolCollegeAction.OnCategorySelected(category)) },
+                                label = { Text(category.label) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
                             )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Subtitle with refined typography
-                    Text(
-                        text = "ভালুকার শিক্ষাপ্রতিষ্ঠানসমূহের বিস্তারিত তথ্য",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
+                        }
+                    }
                 }
             }
 

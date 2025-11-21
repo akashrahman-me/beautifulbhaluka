@@ -5,93 +5,59 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.presentation.components.common.ModernTable
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 
 @Composable
 fun VoterListScreen(
-    viewModel: VoterListViewModel = viewModel()
+    viewModel: VoterListViewModel = hiltViewModel(),
+    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     VoterListContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        navigateBack = navigateBack,
+        navigateToHome = navigateToHome
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoterListContent(
     uiState: VoterListUiState,
-    onAction: (VoterListAction) -> Unit
+    onAction: (VoterListAction) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = "ভোটার তালিকা",
+                onNavigateBack = navigateBack,
+                onNavigateHome = navigateToHome
+            )
+        }
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            contentPadding = PaddingValues(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            // Modern Header Section
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Minimalist Title
-                    Text(
-                        text = "ভোটার তালিকা",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 36.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Clean underline accent
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(2.dp)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(1.dp)
-                            )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Subtitle with refined typography
-                    Text(
-                        text = "ইউনিয়ন ভিত্তিক ভোটার তালিকা ডাউনলোড করুন",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            // Clean Information Notice
+            // Information Notice
             item {
                 Row(
                     modifier = Modifier

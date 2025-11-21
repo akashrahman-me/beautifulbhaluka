@@ -84,6 +84,7 @@ import com.akash.beautifulbhaluka.presentation.screens.profile.ProfileScreen
 import com.akash.beautifulbhaluka.presentation.screens.restaurants.RestaurantsScreen
 import com.akash.beautifulbhaluka.presentation.screens.reviews.ReviewsScreen
 import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.SchoolCollegeScreen
+import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.publish.PublishInstitutionScreen
 import com.akash.beautifulbhaluka.presentation.screens.services.ServicesScreen
 import com.akash.beautifulbhaluka.presentation.screens.settings.SettingsScreen
 import com.akash.beautifulbhaluka.presentation.screens.shopping.ShoppingScreen
@@ -415,7 +416,17 @@ fun AppNavigation(
             UpazilaAdminScreen()
         }
         composable(NavigationRoutes.VOTER_LIST) {
-            VoterListScreen()
+            VoterListScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
         composable(NavigationRoutes.KAZI_OFFICE) {
             KaziOfficeScreen()
@@ -423,7 +434,33 @@ fun AppNavigation(
 
         // Educational Services
         composable(NavigationRoutes.SCHOOL_COLLEGE) {
-            SchoolCollegeScreen()
+            SchoolCollegeScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.SCHOOL_COLLEGE_PUBLISH)
+                }
+            )
+        }
+        composable(NavigationRoutes.SCHOOL_COLLEGE_PUBLISH) {
+            PublishInstitutionScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
         composable(NavigationRoutes.TUITION) {
             TuitionScreen(
