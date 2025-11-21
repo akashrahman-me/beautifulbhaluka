@@ -16,17 +16,12 @@ class FamousPersonViewModel : ViewModel() {
         loadFamousPeopleData()
     }
 
-    fun onAction(action: FamousPersonAction) {
-        when (action) {
-            is FamousPersonAction.LoadData -> loadFamousPeopleData()
-            is FamousPersonAction.ViewPerson -> {
-                // Handle person view logic here
-                // For now, this is a placeholder for future implementation
-            }
-        }
+    fun onViewPerson(person: FamousPerson) {
+        // Handle person view logic here
+        // For now, this is a placeholder for future implementation
     }
 
-    private fun loadFamousPeopleData() {
+    fun loadFamousPeopleData() {
         _uiState.update { it.copy(isLoading = true) }
 
         // Static data as per requirement

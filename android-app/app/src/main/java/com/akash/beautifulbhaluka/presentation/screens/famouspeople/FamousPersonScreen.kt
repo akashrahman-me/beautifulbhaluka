@@ -1,6 +1,5 @@
 package com.akash.beautifulbhaluka.presentation.screens.famouspeople
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,47 +9,53 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.components.common.FamousPersonCard
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 
 @Composable
 fun FamousPersonScreen(
-    viewModel: FamousPersonViewModel = viewModel()
+    viewModel: FamousPersonViewModel = viewModel(),
+    navigateBack: () -> Unit = {},
+    navigateToHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     FamousPersonContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onViewPerson = viewModel::onViewPerson,
+        onRetry = viewModel::loadFamousPeopleData,
+        onNavigateBack = navigateBack,
+        onNavigateHome = navigateToHome
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FamousPersonContent(
     uiState: FamousPersonUiState,
-    onAction: (FamousPersonAction) -> Unit
+    onViewPerson: (com.akash.beautifulbhaluka.domain.model.FamousPerson) -> Unit,
+    onRetry: () -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateHome: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                    )
-                )
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = "প্রসিদ্ধ ব্যক্তিত্ব",
+                onNavigateBack = onNavigateBack,
+                onNavigateHome = onNavigateHome
             )
-    ) {
+        }
+    ) { paddingValues ->
         when {
             uiState.isLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
@@ -62,7 +67,9 @@ fun FamousPersonContent(
 
             uiState.error != null -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -82,7 +89,7 @@ fun FamousPersonContent(
                             textAlign = TextAlign.Center
                         )
                         Button(
-                            onClick = { onAction(FamousPersonAction.LoadData) }
+                            onClick = onRetry
                         ) {
                             Text("পুনরায় চেষ্টা করুন")
                         }
@@ -93,59 +100,14 @@ fun FamousPersonContent(
             else -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(24.dp),
+                    contentPadding = PaddingValues(
+                        top = paddingValues.calculateTopPadding() + 24.dp,
+                        bottom = paddingValues.calculateBottomPadding() + 24.dp,
+                        start = 24.dp,
+                        end = 24.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    // Header Section
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            // Icon
-                            Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                        shape = androidx.compose.foundation.shape.CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Stars,
-                                    contentDescription = "Famous People",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(40.dp)
-                                )
-                            }
-
-                            // Title
-                            Text(
-                                text = "প্রসিদ্ধ ব্যক্তিত্ব",
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 28.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-                            )
-
-                            // Subtitle
-                            Text(
-                                text = "ভালুকার বিশিষ্ট ব্যক্তিত্ব ও কৃতী সন্তান",
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 16.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-                    }
-
-                    // Famous People List
                     items(
                         items = uiState.famousPeople,
                         key = { it.title }
@@ -157,13 +119,10 @@ fun FamousPersonContent(
                             date = person.date,
                             excerpt = person.excerpt,
                             category = person.category,
-                            onClick = {
-                                onAction(FamousPersonAction.ViewPerson(person))
-                            }
+                            onClick = { onViewPerson(person) }
                         )
                     }
 
-                    // Bottom spacing
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                     }
