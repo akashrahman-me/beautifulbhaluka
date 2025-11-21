@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,34 +79,46 @@ private fun MainScaffold(
             )
         }
     ) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            bottomBar = {
-                if (shouldShowBars) {
-                    Bottombar(
-                        navController = navController,
-                        drawerState = drawerState
-                    )
+        if (shouldShowBars) {
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                bottomBar = {
+                    AnimatedVisibility(
+                        visible = shouldShowBars,
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                        exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
+                    ) {
+                        Bottombar(
+                            navController = navController,
+                            drawerState = drawerState
+                        )
+                    }
+                },
+                topBar = {
+                    AnimatedVisibility(
+                        visible = shouldShowBars,
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
+                        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it })
+                    ) {
+                        Topbar()
+                    }
+                },
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    AppNavigation(navController = navController)
                 }
-            },
-            topBar = {
-                if (shouldShowBars) {
-                    Topbar()
-                }
-            },
-        ) { innerPadding ->
+            }
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(
-                        if (shouldShowBars) {
-                            Modifier.padding(innerPadding)
-                        } else {
-                            Modifier
-                        }
-                    )
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 AppNavigation(navController = navController)
             }
