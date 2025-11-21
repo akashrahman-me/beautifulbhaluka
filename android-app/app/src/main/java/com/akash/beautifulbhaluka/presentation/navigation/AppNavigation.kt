@@ -326,7 +326,17 @@ fun AppNavigation(
             PoliceScreen()
         }
         composable(NavigationRoutes.AMBULANCE) {
-            AmbulanceScreen()
+            AmbulanceScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
         composable(NavigationRoutes.BLOOD_BANK) {
             BloodBankScreen(

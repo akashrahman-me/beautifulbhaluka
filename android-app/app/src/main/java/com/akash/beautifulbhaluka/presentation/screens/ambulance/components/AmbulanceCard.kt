@@ -2,9 +2,6 @@ package com.akash.beautifulbhaluka.presentation.screens.ambulance.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.akash.beautifulbhaluka.domain.model.AmbulanceInfo
+import com.composables.icons.lucide.Ambulance
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Phone
 
 @Composable
 fun AmbulanceCard(
@@ -50,7 +50,7 @@ fun AmbulanceCard(
                     .build(),
                 contentDescription = ambulanceInfo.title,
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(64.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
@@ -69,7 +69,7 @@ fun AmbulanceCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.LocalHospital,
+                        imageVector = Lucide.Ambulance,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
@@ -112,7 +112,7 @@ fun AmbulanceCard(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Call,
+                                    imageVector = Lucide.Phone,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(16.dp)
@@ -129,16 +129,17 @@ fun AmbulanceCard(
                             }
 
                             // Call button
-                            TextButton(
+                            FilledIconButton(
                                 onClick = { onPhoneClick(phone) },
-                                modifier = Modifier.height(40.dp)
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Text(
-                                    text = "কল করুন",
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Medium
-                                    ),
-                                    color = MaterialTheme.colorScheme.primary
+                                Icon(
+                                    imageVector = Lucide.Phone,
+                                    contentDescription = "কল করুন",
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
