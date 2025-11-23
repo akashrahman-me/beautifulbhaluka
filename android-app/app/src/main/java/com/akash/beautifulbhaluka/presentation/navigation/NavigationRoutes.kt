@@ -127,6 +127,7 @@ object NavigationRoutes {
     // Financial Services
     const val BANK = "bank"
     const val COURIER = "courier"
+    const val PUBLISH_COURIER = "publish_courier"
 
     // Utility Services
     const val BROADBAND = "broadband"

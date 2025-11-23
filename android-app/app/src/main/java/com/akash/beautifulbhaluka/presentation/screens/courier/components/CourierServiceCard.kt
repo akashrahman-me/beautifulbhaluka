@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.akash.beautifulbhaluka.presentation.components.common.RatingSection
 import com.akash.beautifulbhaluka.presentation.screens.courier.CourierService
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +30,7 @@ fun CourierServiceCard(
     courierService: CourierService,
     onClick: () -> Unit,
     onPhoneClick: (String) -> Unit,
+    onRatingChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -137,6 +139,26 @@ fun CourierServiceCard(
                     }
                 }
 
+                // Rating Section
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Divider
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                RatingSection(
+                    averageRating = courierService.averageRating,
+                    ratingCount = courierService.ratingCount,
+                    userRating = courierService.userRating,
+                    onRatingChange = onRatingChange
+                )
+
                 // Phone Number
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -178,9 +200,6 @@ fun CourierServiceCard(
                             onClick = { onPhoneClick(courierService.phone) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
-                            border = ButtonDefaults.outlinedButtonBorder.copy(
-                                width = 1.dp
-                            ),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary
                             ),

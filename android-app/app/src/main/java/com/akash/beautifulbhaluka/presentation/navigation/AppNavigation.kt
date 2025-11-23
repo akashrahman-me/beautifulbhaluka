@@ -33,6 +33,7 @@ import com.akash.beautifulbhaluka.presentation.screens.calculator.CalculatorScre
 import com.akash.beautifulbhaluka.presentation.screens.carrent.CarRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.cleaner.CleanerScreen
 import com.akash.beautifulbhaluka.presentation.screens.courier.CourierScreen
+import com.akash.beautifulbhaluka.presentation.screens.courier.publish.PublishCourierScreen
 import com.akash.beautifulbhaluka.presentation.screens.craftsman.CraftsmanScreen
 import com.akash.beautifulbhaluka.presentation.screens.culture.CultureScreen
 import com.akash.beautifulbhaluka.presentation.screens.cyberexpert.CyberExpertScreen
@@ -563,7 +564,27 @@ fun AppNavigation(
             BankScreen()
         }
         composable(NavigationRoutes.COURIER) {
-            CourierScreen()
+            CourierScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToPublish = {
+                    navController.navigate(NavigationRoutes.PUBLISH_COURIER)
+                },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_COURIER) {
+            PublishCourierScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // Utility Services
