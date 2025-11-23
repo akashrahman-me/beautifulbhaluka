@@ -145,7 +145,13 @@ object NavigationRoutes {
     const val PRESS_GRAPHICS = "press_graphics"
     const val CYBER_EXPERT = "cyber_expert"
     const val CAR_RENT = "car_rent"
+    const val PUBLISH_CAR = "publish_car"
+    const val CAR_RENT_CATEGORY = "car_rent_category/{category}"
     const val AIR_TRAVEL = "air_travel"
+
+    fun carRentCategory(category: String): String {
+        return "car_rent_category/${java.net.URLEncoder.encode(category, "UTF-8")}"
+    }
 
     // Information Services
     const val FAMOUS_PERSON = "famous_person"
