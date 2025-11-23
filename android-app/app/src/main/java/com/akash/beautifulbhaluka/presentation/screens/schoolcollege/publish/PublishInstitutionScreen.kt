@@ -80,8 +80,6 @@ fun PublishInstitutionContent(
             ScreenTopBar(
                 title = "শিক্ষাপ্রতিষ্ঠান যোগ করুন",
                 onNavigateBack = navigateBack,
-                onNavigateHome = navigateToHome,
-                showHomeAction = false
             )
         }
     ) { innerPadding ->

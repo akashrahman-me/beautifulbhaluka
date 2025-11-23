@@ -23,6 +23,14 @@ class PlacesViewModel : ViewModel() {
             is PlacesAction.OnPlaceClick -> {
                 // Handle place click (could navigate to detail screen)
             }
+
+            PlacesAction.NavigateBack -> {
+//                TODO()
+            }
+
+            PlacesAction.NavigateHome -> {
+//
+            }
         }
     }
 

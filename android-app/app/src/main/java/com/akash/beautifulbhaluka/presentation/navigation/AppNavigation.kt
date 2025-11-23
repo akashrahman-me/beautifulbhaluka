@@ -10,6 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import java.net.URLEncoder
 import com.akash.beautifulbhaluka.presentation.screens.about.AboutScreen
 import com.akash.beautifulbhaluka.presentation.screens.accommodation.AccommodationScreen
 import com.akash.beautifulbhaluka.presentation.screens.achiever.AchieverScreen
@@ -77,6 +78,7 @@ import com.akash.beautifulbhaluka.presentation.screens.museums.MuseumsScreen
 import com.akash.beautifulbhaluka.presentation.screens.news.NewsScreen
 import com.akash.beautifulbhaluka.presentation.screens.notifications.NotificationsScreen
 import com.akash.beautifulbhaluka.presentation.screens.places.PlacesScreen
+import com.akash.beautifulbhaluka.presentation.screens.places.details.PlaceDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.police.PoliceScreen
 import com.akash.beautifulbhaluka.presentation.screens.pourashava.PourashavaScreen
 import com.akash.beautifulbhaluka.presentation.screens.pressgraphics.PressGraphicsScreen
@@ -148,7 +150,39 @@ fun AppNavigation(
 
         // Tourism screens
         composable(NavigationRoutes.PLACES) {
-            PlacesScreen()
+            PlacesScreen(
+                onNavigateToDetails = { placeTitle ->
+                    navController.navigate(
+                        "place_details/${
+                            URLEncoder.encode(
+                                placeTitle,
+                                "UTF-8"
+                            )
+                        }"
+                    )
+                },
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                    }
+                }
+            )
+        }
+        composable(
+            route = NavigationRoutes.PLACE_DETAILS,
+            arguments = listOf(navArgument("placeTitle") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val placeTitle = backStackEntry.arguments?.getString("placeTitle") ?: ""
+            PlaceDetailsScreen(
+                placeTitle = placeTitle,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                    }
+                }
+            )
         }
         composable(NavigationRoutes.ATTRACTIONS) {
             AttractionsScreen()

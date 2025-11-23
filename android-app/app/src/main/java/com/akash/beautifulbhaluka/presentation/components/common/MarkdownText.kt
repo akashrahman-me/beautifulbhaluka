@@ -6,10 +6,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 
 /**
  * A modern markdown text renderer component that converts markdown-formatted text into styled Compose UI.
@@ -44,7 +47,7 @@ import androidx.compose.ui.unit.sp
  * Supported Markdown Features:
  * - **Headers**: ## Main Header, ### Sub Header
  * - **Bold Text**: **bold content** (renders in colored containers)
- * - **Bullet Points**: - List item (renders with modern bullet dots)
+ * - **Bullet Points**: - List item (renders with modern bullet dots instead of traditional bullets)
  * - **Regular Text**: Plain text with justified alignment
  * - **Line Breaks**: Empty lines create proper spacing
  *
@@ -77,6 +80,26 @@ fun MarkdownText(
             val line = lines[i].trim()
 
             when {
+                // Handle markdown images ![alt](url)
+                line.startsWith("![") && line.contains("](") && line.endsWith(")") -> {
+                    val imagePattern = "!\\[(.*)\\]\\((.+)\\)".toRegex()
+                    val matchResult = imagePattern.find(line)
+
+                    if (matchResult != null) {
+                        val (altText, imageUrl) = matchResult.destructured
+
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = altText.ifEmpty { "Image" },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.FillWidth
+                        )
+                    }
+                }
+
                 // Handle markdown tables
                 line.startsWith("|") && line.endsWith("|") -> {
                     val tableLines = mutableListOf<String>()
@@ -121,7 +144,39 @@ fun MarkdownText(
                     i = j - 1 // Skip processed table lines
                 }
 
-                // Handle main headers (##)
+                // Handle h1 headers (#) - Must check before h2 (##)
+                line.startsWith("# ") && !line.startsWith("## ") -> {
+                    val headerText = line.removePrefix("# ")
+                    if (enableStyling) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+                        ) {
+                            Text(
+                                text = headerText,
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = (-0.5).sp
+                                ),
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = headerText,
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                    }
+                }
+
+                // Handle h2 headers (##)
                 line.startsWith("## ") -> {
                     val headerText = line.removePrefix("## ")
                     if (enableStyling) {
@@ -153,7 +208,7 @@ fun MarkdownText(
                     }
                 }
 
-                // Handle sub headers (###)
+                // Handle h3 headers (###)
                 line.startsWith("### ") -> {
                     val subHeaderText = line.removePrefix("### ")
                     if (enableStyling) {

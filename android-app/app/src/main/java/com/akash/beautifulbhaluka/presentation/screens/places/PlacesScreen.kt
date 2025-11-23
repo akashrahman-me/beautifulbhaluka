@@ -11,86 +11,60 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.places.components.PlaceCard
 
 @Composable
 fun PlacesScreen(
-    viewModel: PlacesViewModel = viewModel()
+    viewModel: PlacesViewModel = viewModel(),
+    onNavigateToDetails: (String) -> Unit = {},
+    onNavigateBack: () -> Unit = {},
+    onNavigateHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     PlacesContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is PlacesAction.LoadData -> viewModel.onAction(action)
+                is PlacesAction.OnPlaceClick -> {
+                    viewModel.onAction(action)
+                    onNavigateToDetails(action.place.title)
+                }
+
+                PlacesAction.NavigateBack -> onNavigateBack()
+                PlacesAction.NavigateHome -> onNavigateHome()
+            }
+        }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlacesContent(
     uiState: PlacesUiState,
     onAction: (PlacesAction) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = "দর্শনীয় স্থান",
+                onNavigateBack = { onAction(PlacesAction.NavigateBack) },
+                onNavigateHome = { onAction(PlacesAction.NavigateHome) }
+            )
+        }
+    ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = PaddingValues(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            // Modern Header Section
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Minimalist Title
-                    Text(
-                        text = "ভালুকার দর্শনীয় স্থান",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 36.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Clean underline accent
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(2.dp)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(1.dp)
-                            )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Subtitle with refined typography
-                    Text(
-                        text = "ভালুকার প্রাকৃতিক সৌন্দর্য ও বিনোদন কেন্দ্রসমূহ",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            // Loading/Error States
             when {
                 uiState.isLoading -> {
                     item {

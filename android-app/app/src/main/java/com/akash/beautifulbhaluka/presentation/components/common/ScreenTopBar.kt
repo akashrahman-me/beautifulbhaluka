@@ -12,8 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 fun ScreenTopBar(
     title: String,
     onNavigateBack: () -> Unit,
-    onNavigateHome: () -> Unit,
-    showHomeAction: Boolean = true
+    onNavigateHome: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = {
@@ -31,8 +30,8 @@ fun ScreenTopBar(
             }
         },
         actions = {
-            if (showHomeAction) {
-                IconButton(onClick = onNavigateHome) {
+            onNavigateHome?.let { navigateHome ->
+                IconButton(onClick = navigateHome) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "হোম পেজে যান"

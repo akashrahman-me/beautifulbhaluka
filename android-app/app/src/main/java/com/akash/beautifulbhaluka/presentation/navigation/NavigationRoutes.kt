@@ -6,6 +6,7 @@ object NavigationRoutes {
 
     // Tourism screens - with title parameter support
     const val PLACES = "places"
+    const val PLACE_DETAILS = "place_details/{placeTitle}"
     const val ATTRACTIONS = "attractions"
     const val TOURS = "tours"
     const val TOURISM = "tourism"

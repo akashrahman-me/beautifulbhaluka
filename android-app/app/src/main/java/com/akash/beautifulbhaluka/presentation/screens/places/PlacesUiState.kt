@@ -18,4 +18,6 @@ data class Place(
 sealed interface PlacesAction {
     object LoadData : PlacesAction
     data class OnPlaceClick(val place: Place) : PlacesAction
+    object NavigateBack : PlacesAction
+    object NavigateHome : PlacesAction
 }

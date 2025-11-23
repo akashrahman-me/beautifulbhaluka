@@ -63,8 +63,6 @@ fun PublishLawyerContent(
             ScreenTopBar(
                 title = "নতুন আইনজীবী যোগ করুন",
                 onNavigateBack = navigateBack,
-                onNavigateHome = navigateBack,
-                showHomeAction = false
             )
         }
     ) { paddingValues ->
