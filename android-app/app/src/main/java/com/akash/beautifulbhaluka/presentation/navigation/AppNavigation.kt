@@ -203,7 +203,22 @@ fun AppNavigation(
 
         // Accommodation & Services
         composable(NavigationRoutes.HOTELS) {
-            HotelsScreen()
+            HotelsScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = true }
+                    }
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.PUBLISH_HOTEL)
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_HOTEL) {
+            com.akash.beautifulbhaluka.presentation.screens.hotels.publish.PublishHotelScreen(
+                navigateBack = { navController.navigateUp() }
+            )
         }
         composable(NavigationRoutes.ACCOMMODATION) {
             AccommodationScreen()

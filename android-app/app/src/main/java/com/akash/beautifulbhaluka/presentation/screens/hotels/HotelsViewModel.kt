@@ -27,6 +27,23 @@ class HotelsViewModel : ViewModel() {
             is HotelsAction.OnPhoneClick -> {
                 // Handle phone click (could open dialer)
             }
+
+            is HotelsAction.OnRatingChange -> {
+                _uiState.update { currentState ->
+                    val updatedHotels = currentState.hotels.map { hotel ->
+                        if (hotel == action.hotel) {
+                            hotel.copy(userRating = action.rating)
+                        } else {
+                            hotel
+                        }
+                    }
+                    currentState.copy(hotels = updatedHotels)
+                }
+            }
+
+            is HotelsAction.OnPublishClick -> {
+                // Handle navigate to publish screen
+            }
         }
     }
 
@@ -40,31 +57,46 @@ class HotelsViewModel : ViewModel() {
                         name = "হোটেল নদী বাংলা",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/235889.png",
                         address = "ভালুকা পাচ রাস্তার মোড় ব্রীজ সংলগ্ন",
-                        phone = listOf("01716-772146")
+                        phone = listOf("01716-772146"),
+                        averageRating = 4.5f,
+                        ratingCount = 28,
+                        userRating = 0
                     ),
                     Hotel(
                         name = "হোটেল উত্তরা",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/235889.png",
                         address = "ভালুকা বাসস্ট্যান্ডেের পশ্চিম পাশে",
-                        phone = listOf("01711-189909", "+8801552-437912")
+                        phone = listOf("01711-189909", "+8801552-437912"),
+                        averageRating = 4.2f,
+                        ratingCount = 35,
+                        userRating = 0
                     ),
                     Hotel(
                         name = "হোটেল নিরব",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/235889.png",
                         address = "সারাবেলা হক মার্কেট",
-                        phone = emptyList()
+                        phone = emptyList(),
+                        averageRating = 3.8f,
+                        ratingCount = 15,
+                        userRating = 0
                     ),
                     Hotel(
                         name = "সারাবেলা আবাসিক হোটেল",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/235889.png",
                         address = "নতুন বাসস্ট্যান্ড, ভালুকা",
-                        phone = listOf("018550240095")
+                        phone = listOf("018550240095"),
+                        averageRating = 4.6f,
+                        ratingCount = 42,
+                        userRating = 0
                     ),
                     Hotel(
                         name = "তানভীর গেস্ট হাউস",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/235889.png",
                         address = "সেভেন স্টারের সাথে",
-                        phone = emptyList()
+                        phone = emptyList(),
+                        averageRating = 4.1f,
+                        ratingCount = 19,
+                        userRating = 0
                     )
                 )
 

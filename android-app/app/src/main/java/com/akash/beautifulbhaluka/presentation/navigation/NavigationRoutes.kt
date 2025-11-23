@@ -15,6 +15,7 @@ object NavigationRoutes {
 
     // Accommodation & Services
     const val HOTELS = "hotels"
+    const val PUBLISH_HOTEL = "publish_hotel"
     const val ACCOMMODATION = "accommodation"
     const val HOUSE_RENT = "house_rent"
     const val HOUSE_RENT_DETAILS = "house_rent_details/{propertyId}"
