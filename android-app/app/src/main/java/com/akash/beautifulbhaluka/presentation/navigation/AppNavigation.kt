@@ -84,6 +84,7 @@ import com.akash.beautifulbhaluka.presentation.screens.pourashava.PourashavaScre
 import com.akash.beautifulbhaluka.presentation.screens.pressgraphics.PressGraphicsScreen
 import com.akash.beautifulbhaluka.presentation.screens.profile.ProfileScreen
 import com.akash.beautifulbhaluka.presentation.screens.restaurants.RestaurantsScreen
+import com.akash.beautifulbhaluka.presentation.screens.restaurants.publish.PublishRestaurantScreen
 import com.akash.beautifulbhaluka.presentation.screens.reviews.ReviewsScreen
 import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.SchoolCollegeScreen
 import com.akash.beautifulbhaluka.presentation.screens.schoolcollege.publish.PublishInstitutionScreen
@@ -233,7 +234,21 @@ fun AppNavigation(
             )
         }
         composable(NavigationRoutes.RESTAURANTS) {
-            RestaurantsScreen()
+            RestaurantsScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_RESTAURANT) },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_RESTAURANT) {
+            PublishRestaurantScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.FOOD) {
             FoodScreen()

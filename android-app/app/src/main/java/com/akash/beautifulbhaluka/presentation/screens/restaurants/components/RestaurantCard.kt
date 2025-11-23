@@ -1,12 +1,13 @@
 package com.akash.beautifulbhaluka.presentation.screens.restaurants.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,8 +27,9 @@ import com.akash.beautifulbhaluka.presentation.screens.restaurants.Restaurant
 @Composable
 fun RestaurantCard(
     restaurant: Restaurant,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onRatingChange: (Int) -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -115,26 +117,86 @@ fun RestaurantCard(
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Column(
+                    Text(
+                        text = "ঠিকানা: ${restaurant.address}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Rating Section
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "ঠিকানা:",
+                            text = "রেটিং দিন:",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.Medium
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = restaurant.address,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            lineHeight = 20.sp
-                        )
+                        if (restaurant.ratingCount > 0) {
+                            Text(
+                                text = "(${restaurant.ratingCount} জন রেটিং দিয়েছেন)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    RatingBar(
+                        rating = restaurant.rating,
+                        onRatingChange = onRatingChange
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RatingBar(
+    rating: Int,
+    onRatingChange: (Int) -> Unit,
+    maxStars: Int = 5
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (i in 1..maxStars) {
+            IconButton(
+                onClick = { onRatingChange(i) },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                    contentDescription = "রেটিং $i",
+                    tint = if (i <= rating) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    },
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        if (rating > 0) {
+            Text(
+                text = "$rating/৫",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
