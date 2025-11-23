@@ -15,12 +15,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.carrent.components.CarCard
@@ -197,53 +194,6 @@ fun CarRentContent(
                         contentPadding = PaddingValues(vertical = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        item {
-                            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(140.dp)
-                                        .background(
-                                            brush = Brush.linearGradient(
-                                                colors = listOf(
-                                                    Color(0xFF6366F1),
-                                                    Color(0xFF8B5CF6),
-                                                    Color(0xFFEC4899)
-                                                )
-                                            ),
-                                            shape = RoundedCornerShape(24.dp)
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.DirectionsCar,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(56.dp),
-                                            tint = Color.White
-                                        )
-                                        Spacer(modifier = Modifier.height(12.dp))
-                                        Text(
-                                            text = "ভালুকায় গাড়ি ভাড়া",
-                                            style = MaterialTheme.typography.headlineMedium.copy(
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 26.sp
-                                            ),
-                                            color = Color.White
-                                        )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = "সেরা গাড়ি ভাড়া সেবা",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = Color.White.copy(alpha = 0.9f)
-                                        )
-                                    }
-                                }
-                            }
-                        }
 
                         item {
                             Column(

@@ -71,40 +71,6 @@ fun PublishCarContent(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFF6366F1),
-                                    Color(0xFF8B5CF6)
-                                )
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DirectionsCar,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "আপনার গাড়ির তথ্য দিন",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            color = Color.White
-                        )
-                    }
-                }
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
