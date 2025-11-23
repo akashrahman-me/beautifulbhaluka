@@ -127,76 +127,167 @@ fun RestaurantCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Rating Section
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "রেটিং দিন:",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        if (restaurant.ratingCount > 0) {
-                            Text(
-                                text = "(${restaurant.ratingCount} জন রেটিং দিয়েছেন)",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    RatingBar(
-                        rating = restaurant.rating,
-                        onRatingChange = onRatingChange
-                    )
-                }
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    thickness = 1.dp
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Rating Section - Professional Design
+                RatingSection(
+                    averageRating = restaurant.averageRating,
+                    ratingCount = restaurant.ratingCount,
+                    userRating = restaurant.userRating,
+                    onRatingChange = onRatingChange
+                )
             }
         }
     }
 }
 
 @Composable
-private fun RatingBar(
+private fun RatingSection(
+    averageRating: Float,
+    ratingCount: Int,
+    userRating: Int,
+    onRatingChange: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Average Rating Display
+        if (ratingCount > 0) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left side - Star rating visual
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = String.format(java.util.Locale.US, "%.1f", averageRating),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "/ ৫.০",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // Right side - Rating count
+                Text(
+                    text = "($ratingCount জন রেটিং)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Rating bar visualization
+            RatingStarsVisualization(averageRating)
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // User Rating Input Section
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (userRating > 0) "আপনার রেটিং" else "রেটিং দিন",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            InteractiveRatingBar(
+                rating = userRating,
+                onRatingChange = onRatingChange
+            )
+        }
+    }
+}
+
+@Composable
+private fun RatingStarsVisualization(rating: Float) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(5) { index ->
+            val starRating = (rating - index).coerceIn(0f, 1f)
+            Icon(
+                imageVector = when {
+                    starRating >= 1f -> Icons.Filled.Star
+                    starRating > 0f -> Icons.Filled.Star // Could use half-star if available
+                    else -> Icons.Outlined.StarOutline
+                },
+                contentDescription = null,
+                tint = when {
+                    starRating >= 1f -> MaterialTheme.colorScheme.primary
+                    starRating > 0f -> MaterialTheme.colorScheme.primary.copy(alpha = starRating)
+                    else -> MaterialTheme.colorScheme.outlineVariant
+                },
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun InteractiveRatingBar(
     rating: Int,
     onRatingChange: (Int) -> Unit,
     maxStars: Int = 5
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (i in 1..maxStars) {
-            IconButton(
+            Surface(
                 onClick = { onRatingChange(i) },
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(40.dp),
+                shape = RoundedCornerShape(8.dp),
+                color = if (i <= rating) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                }
             ) {
-                Icon(
-                    imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                    contentDescription = "রেটিং $i",
-                    tint = if (i <= rating) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    },
-                    modifier = Modifier.size(24.dp)
-                )
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                        contentDescription = "রেটিং $i",
+                        tint = if (i <= rating) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                        },
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
-        }
-        if (rating > 0) {
-            Text(
-                text = "$rating/৫",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.Medium
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

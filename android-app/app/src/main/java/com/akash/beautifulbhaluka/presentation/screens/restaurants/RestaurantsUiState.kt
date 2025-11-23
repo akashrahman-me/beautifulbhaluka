@@ -10,8 +10,9 @@ data class Restaurant(
     val name: String,
     val thumbnail: String,
     val address: String,
-    val rating: Int = 0,
-    val ratingCount: Int = 0
+    val averageRating: Float = 0f,
+    val ratingCount: Int = 0,
+    val userRating: Int = 0
 )
 
 sealed interface RestaurantsAction {

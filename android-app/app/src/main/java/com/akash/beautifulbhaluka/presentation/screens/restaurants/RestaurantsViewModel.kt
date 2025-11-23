@@ -28,7 +28,7 @@ class RestaurantsViewModel : ViewModel() {
                 _uiState.update { currentState ->
                     val updatedRestaurants = currentState.restaurants.map { restaurant ->
                         if (restaurant == action.restaurant) {
-                            restaurant.copy(rating = action.rating)
+                            restaurant.copy(userRating = action.rating)
                         } else {
                             restaurant
                         }
@@ -49,64 +49,73 @@ class RestaurantsViewModel : ViewModel() {
                         name = "হোটেল সেভেন স্টার",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/FB_IMG_1734854329560.jpg",
                         address = "ভালুকা",
-                        rating = 4,
-                        ratingCount = 25
+                        averageRating = 4.2f,
+                        ratingCount = 25,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "হোটেল স্বাদ",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2021-02-26.jpg",
                         address = "ভালুকা",
-                        rating = 5,
-                        ratingCount = 42
+                        averageRating = 4.8f,
+                        ratingCount = 42,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "ডক্টরস ক্যাফে",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/IMG_20210215_165147.jpg",
                         address = "ভালুকা",
-                        rating = 3,
-                        ratingCount = 18
+                        averageRating = 3.7f,
+                        ratingCount = 18,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "সিটি গার্ডেন ২",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2024-05-16.jpg",
                         address = "ভালুকা",
-                        rating = 4,
-                        ratingCount = 31
+                        averageRating = 4.5f,
+                        ratingCount = 31,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "সারাবেলা ফুড গার্ডেন",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2024-01-09-2.jpg",
                         address = "ভালুকা",
-                        rating = 5,
-                        ratingCount = 56
+                        averageRating = 4.9f,
+                        ratingCount = 56,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "মাটির হোটেল",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2024-11-22.jpg",
                         address = "ভালুকা কলেজের পশ্চিম পাশে",
-                        rating = 4,
-                        ratingCount = 12
+                        averageRating = 4.1f,
+                        ratingCount = 12,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "স্বপ্ন বিলাস রেস্টুরেন্ট",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2023-12-16.jpg",
                         address = "ভালুকা হাজির বাজার\n01722-582593",
-                        rating = 3,
-                        ratingCount = 8
+                        averageRating = 3.5f,
+                        ratingCount = 8,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "হোটেল রাজধানী",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2024/12/2022-02-28-1.jpg",
                         address = "ভালুকা",
-                        rating = 4,
-                        ratingCount = 37
+                        averageRating = 4.3f,
+                        ratingCount = 37,
+                        userRating = 0
                     ),
                     Restaurant(
                         name = "ফুড প্যারাডাইস রেস্টুরেন্ট এন্ড বিরিয়ানি হাউস",
                         thumbnail = "https://beautifulbhaluka.com/wp-content/uploads/2025/01/IMG-20250109-WA00872.jpg",
                         address = "ভালুকা গফরগাঁও রোড",
-                        rating = 5,
-                        ratingCount = 63
+                        averageRating = 4.7f,
+                        ratingCount = 63,
+                        userRating = 0
                     )
                 )
 
