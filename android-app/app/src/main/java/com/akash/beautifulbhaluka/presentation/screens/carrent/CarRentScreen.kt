@@ -2,6 +2,7 @@ package com.akash.beautifulbhaluka.presentation.screens.carrent
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,10 +15,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.TwoWheeler
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.AirportShuttle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -214,57 +223,19 @@ fun CarRentContent(
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(CarCategory.categories) { category ->
-                                        FilterChip(
-                                            selected = uiState.selectedCategory == category,
+                                        CategoryFilterCard(
+                                            category = category,
                                             onClick = {
-                                                onAction(
-                                                    CarRentAction.OnCategoryChange(
-                                                        category
-                                                    )
-                                                )
-                                            },
-                                            label = {
-                                                Text(
-                                                    text = category,
-                                                    style = MaterialTheme.typography.labelLarge.copy(
-                                                        fontWeight = if (uiState.selectedCategory == category)
-                                                            FontWeight.Bold
-                                                        else
-                                                            FontWeight.Medium
-                                                    )
-                                                )
-                                            },
-                                            colors = FilterChipDefaults.filterChipColors(
-                                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                            ),
-                                            border = FilterChipDefaults.filterChipBorder(
-                                                enabled = true,
-                                                selected = uiState.selectedCategory == category,
-                                                borderColor = if (uiState.selectedCategory == category)
-                                                    MaterialTheme.colorScheme.primary
-                                                else
-                                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                                                selectedBorderColor = MaterialTheme.colorScheme.primary,
-                                                borderWidth = 1.dp,
-                                                selectedBorderWidth = 2.dp
-                                            ),
-                                            shape = RoundedCornerShape(12.dp)
+                                                navigateToCategory(category)
+                                            }
                                         )
                                     }
                                 }
                             }
                         }
 
-                        val filteredCategories = if (uiState.selectedCategory == CarCategory.ALL) {
-                            CarCategory.categories.filter { it != CarCategory.ALL }
-                        } else {
-                            listOf(uiState.selectedCategory)
-                        }
-
-                        filteredCategories.forEach { category ->
+                        // Show all categories with their cars
+                        CarCategory.categories.forEach { category ->
                             val categoryCars = uiState.cars.filter { it.category == category }
                             if (categoryCars.isNotEmpty()) {
                                 item {
@@ -354,6 +325,83 @@ private fun CategorySection(
                 onPhoneClick = onPhoneClick
             )
         }
+    }
+}
+
+@Composable
+private fun CategoryFilterCard(
+    category: String,
+    onClick: () -> Unit
+) {
+    val icon = getCategoryIcon(category)
+
+    Box(
+        modifier = Modifier
+            .width(100.dp)
+            .aspectRatio(3f / 4f)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+    ) {
+        // Background with icon
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize(0.6f)
+                    .offset(y = (-8).dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)
+            )
+        }
+
+        // Gradient overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.6f),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
+
+        // Category text
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Text(
+                text = category,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                color = Color.White,
+                textAlign = TextAlign.Start
+            )
+        }
+    }
+}
+
+private fun getCategoryIcon(category: String): ImageVector {
+    return when (category) {
+        CarCategory.PRIVATE_CAR -> Icons.Default.DirectionsCar
+        CarCategory.HIACE -> Icons.Default.AirportShuttle
+        CarCategory.NOAH -> Icons.Default.DirectionsCar
+        CarCategory.BUS -> Icons.Default.DirectionsBus
+        CarCategory.TRUCK -> Icons.Default.LocalShipping
+        CarCategory.MOTORCYCLE -> Icons.Default.TwoWheeler
+        CarCategory.BEKU -> Icons.Default.TwoWheeler
+        else -> Icons.Default.DirectionsCar
     }
 }
 

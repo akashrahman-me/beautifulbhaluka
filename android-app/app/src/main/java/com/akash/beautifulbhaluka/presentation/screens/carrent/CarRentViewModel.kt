@@ -26,9 +26,6 @@ class CarRentViewModel : ViewModel() {
             is CarRentAction.OnPhoneClick -> {
             }
 
-            is CarRentAction.OnCategoryChange -> {
-                _uiState.update { it.copy(selectedCategory = action.category) }
-            }
 
             is CarRentAction.OnShowMore -> {
             }

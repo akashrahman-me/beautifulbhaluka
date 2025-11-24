@@ -3,7 +3,6 @@ package com.akash.beautifulbhaluka.presentation.screens.carrent
 data class CarRentUiState(
     val isLoading: Boolean = false,
     val cars: List<Car> = emptyList(),
-    val selectedCategory: String = "সব",
     val error: String? = null
 )
 
@@ -25,7 +24,6 @@ data class Car(
 )
 
 object CarCategory {
-    const val ALL = "সব"
     const val PRIVATE_CAR = "প্রাইভেটকার"
     const val HIACE = "হায়েস"
     const val NOAH = "নোয়া"
@@ -34,13 +32,12 @@ object CarCategory {
     const val MOTORCYCLE = "মোটরসাইকেল"
     const val BEKU = "বেকু"
 
-    val categories = listOf(ALL, PRIVATE_CAR, HIACE, NOAH, BUS, TRUCK, MOTORCYCLE, BEKU)
+    val categories = listOf(PRIVATE_CAR, HIACE, NOAH, BUS, TRUCK, MOTORCYCLE, BEKU)
 }
 
 sealed interface CarRentAction {
     data object LoadData : CarRentAction
     data class OnCarClick(val car: Car) : CarRentAction
     data class OnPhoneClick(val phoneNumber: String) : CarRentAction
-    data class OnCategoryChange(val category: String) : CarRentAction
     data class OnShowMore(val category: String) : CarRentAction
 }
