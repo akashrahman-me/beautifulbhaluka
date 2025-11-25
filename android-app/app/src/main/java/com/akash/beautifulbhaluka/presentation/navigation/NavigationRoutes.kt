@@ -132,6 +132,7 @@ object NavigationRoutes {
     // Utility Services
     const val BROADBAND = "broadband"
     const val ELECTRICITY = "electricity"
+    const val PUBLISH_ELECTRICITY = "publish_electricity"
     const val CLEANER = "cleaner"
     const val PUBLISH_CLEANER = "publish_cleaner"
 
@@ -139,6 +140,7 @@ object NavigationRoutes {
     const val LADIES_PARLOUR = "ladies_parlour"
     const val GENTS_PARLOUR = "gents_parlour"
     const val GYM = "gym"
+    const val PUBLISH_GYM = "publish_gym"
 
     // Professional Services
     const val CRAFTSMAN = "craftsman"

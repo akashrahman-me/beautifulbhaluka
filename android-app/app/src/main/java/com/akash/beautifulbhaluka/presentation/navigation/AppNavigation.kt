@@ -43,6 +43,7 @@ import com.akash.beautifulbhaluka.presentation.screens.cyberexpert.CyberExpertSc
 import com.akash.beautifulbhaluka.presentation.screens.directory.DirectoryScreen
 import com.akash.beautifulbhaluka.presentation.screens.doctor.DoctorScreen
 import com.akash.beautifulbhaluka.presentation.screens.electricity.ElectricityScreen
+import com.akash.beautifulbhaluka.presentation.screens.electricity.publish.PublishElectricityScreen
 import com.akash.beautifulbhaluka.presentation.screens.emergency.EmergencyScreen
 import com.akash.beautifulbhaluka.presentation.screens.entertainment.EntertainmentScreen
 import com.akash.beautifulbhaluka.presentation.screens.events.EventsScreen
@@ -56,6 +57,7 @@ import com.akash.beautifulbhaluka.presentation.screens.gallery.GalleryScreen
 import com.akash.beautifulbhaluka.presentation.screens.gentsparlour.GentsParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.guides.GuidesScreen
 import com.akash.beautifulbhaluka.presentation.screens.gym.GymScreen
+import com.akash.beautifulbhaluka.presentation.screens.gym.publish.PublishGymScreen
 import com.akash.beautifulbhaluka.presentation.screens.help.HelpScreen
 import com.akash.beautifulbhaluka.presentation.screens.heritage.HeritageScreen
 import com.akash.beautifulbhaluka.presentation.screens.history.HistoryScreen
@@ -114,7 +116,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.CLEANER
+    startDestination: String = NavigationRoutes.GYM
 ) {
     NavHost(
         navController = navController,
@@ -595,7 +597,21 @@ fun AppNavigation(
             BroadbandScreen()
         }
         composable(NavigationRoutes.ELECTRICITY) {
-            ElectricityScreen()
+            ElectricityScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_ELECTRICITY) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_ELECTRICITY) {
+            PublishElectricityScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.CLEANER) {
             CleanerScreen(
@@ -623,7 +639,21 @@ fun AppNavigation(
             GentsParlourScreen()
         }
         composable(NavigationRoutes.GYM) {
-            GymScreen()
+            GymScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_GYM) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_GYM) {
+            PublishGymScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
 
         // Professional Services

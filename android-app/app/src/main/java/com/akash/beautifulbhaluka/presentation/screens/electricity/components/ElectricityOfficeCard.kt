@@ -1,14 +1,28 @@
 package com.akash.beautifulbhaluka.presentation.screens.electricity.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,12 +55,12 @@ fun ElectricityOfficeCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Left-aligned thumbnail
             Box(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(64.dp),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -56,7 +70,7 @@ fun ElectricityOfficeCard(
                         .build(),
                     contentDescription = office.name,
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(64.dp)
                         .clip(CircleShape)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -66,7 +80,7 @@ fun ElectricityOfficeCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             // Right side card information
             Column(
@@ -131,25 +145,14 @@ fun ElectricityOfficeCard(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    FilledTonalButton(
+                    FilledTonalIconButton(
                         onClick = { onCallClick(office.phone) },
-                        modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(18.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                        modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Call,
-                            contentDescription = "Call",
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "কল করুন",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium
-                            )
+                            contentDescription = "কল করুন",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
