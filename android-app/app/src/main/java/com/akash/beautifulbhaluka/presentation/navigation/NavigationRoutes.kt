@@ -46,6 +46,7 @@ object NavigationRoutes {
 
     // Commerce & Media
     const val SHOPPING = "shopping"
+    const val PUBLISH_MARKET = "publish_market"
     const val GALLERY = "gallery"
     const val REVIEWS = "reviews"
     const val BOOKINGS = "bookings"

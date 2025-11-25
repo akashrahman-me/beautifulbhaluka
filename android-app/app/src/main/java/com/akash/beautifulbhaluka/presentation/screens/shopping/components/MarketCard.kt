@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -27,6 +28,8 @@ fun MarketCard(
     market: Market,
     modifier: Modifier = Modifier
 ) {
+    val hasImage = market.image.isNotBlank()
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -35,16 +38,9 @@ fun MarketCard(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            // Left-aligned avatar image
-            Box(
-                modifier = Modifier.size(80.dp),
-                contentAlignment = Alignment.Center
+        if (hasImage) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -53,78 +49,107 @@ fun MarketCard(
                         .build(),
                     contentDescription = market.title,
                     modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth()
+                        .aspectRatio((4f / 3f))
                         .background(
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            RoundedCornerShape(12.dp)
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         ),
                     contentScale = ContentScale.Crop
                 )
+
+                MarketContent(market = market, modifier = Modifier.padding(16.dp))
             }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Right side market information
-            Column(
-                modifier = Modifier.weight(1f)
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                // Market title
-                Text(
-                    text = market.title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Market type indicator with icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Store,
                         contentDescription = "Market",
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(40.dp),
                         tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "হাট বাজার",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-                // Market schedule with icon
-                Row(
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Schedule,
-                        contentDescription = "Schedule",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = market.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 20.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                MarketContent(
+                    market = market,
+                    modifier = Modifier.weight(1f),
+                    extraSpacing = 10.dp
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun MarketContent(
+    market: Market,
+    modifier: Modifier = Modifier,
+    extraSpacing: Dp = 8.dp
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = market.title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Store,
+                contentDescription = "Market",
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "হাট বাজার",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Spacer(modifier = Modifier.height(extraSpacing))
+
+        Row(
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(
+                imageVector = Icons.Default.Schedule,
+                contentDescription = "Schedule",
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = market.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = 20.sp
+            )
         }
     }
 }

@@ -14,4 +14,5 @@ data class Market(
 
 sealed interface ShoppingAction {
     object LoadData : ShoppingAction
+    object NavigateToPublish : ShoppingAction
 }

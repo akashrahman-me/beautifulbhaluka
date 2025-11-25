@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.KAZI_OFFICE
+    startDestination: String = NavigationRoutes.SHOPPING
 ) {
     NavHost(
         navController = navController,
@@ -339,7 +339,21 @@ fun AppNavigation(
 
         // Commerce & Media
         composable(NavigationRoutes.SHOPPING) {
-            ShoppingScreen()
+            ShoppingScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_MARKET) },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_MARKET) {
+            com.akash.beautifulbhaluka.presentation.screens.shopping.publish.PublishMarketScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.GALLERY) {
             GalleryScreen()
