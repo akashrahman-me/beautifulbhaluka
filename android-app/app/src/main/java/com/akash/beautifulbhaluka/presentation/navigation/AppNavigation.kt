@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.CRAFTSMAN
+    startDestination: String = NavigationRoutes.ENTERTAINMENT
 ) {
     NavHost(
         navController = navController,
@@ -306,7 +306,21 @@ fun AppNavigation(
             ActivitiesScreen()
         }
         composable(NavigationRoutes.ENTERTAINMENT) {
-            EntertainmentScreen()
+            EntertainmentScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_ENTERTAINMENT) },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_ENTERTAINMENT) {
+            com.akash.beautifulbhaluka.presentation.screens.entertainment.publish.PublishEntertainmentScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
 
         // Practical Information

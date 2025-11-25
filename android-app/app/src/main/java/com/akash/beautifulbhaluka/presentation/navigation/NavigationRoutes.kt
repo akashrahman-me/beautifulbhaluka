@@ -36,6 +36,7 @@ object NavigationRoutes {
     const val EVENTS = "events"
     const val ACTIVITIES = "activities"
     const val ENTERTAINMENT = "entertainment"
+    const val PUBLISH_ENTERTAINMENT = "publish_entertainment"
 
     // Practical Information
     const val TRANSPORT = "transport"
