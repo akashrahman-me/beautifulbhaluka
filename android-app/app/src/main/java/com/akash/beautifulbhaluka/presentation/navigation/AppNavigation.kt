@@ -725,7 +725,21 @@ fun AppNavigation(
 
         // Professional Services
         composable(NavigationRoutes.CRAFTSMAN) {
-            CraftsmanScreen()
+            CraftsmanScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_CRAFTSMAN) },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_CRAFTSMAN) {
+            com.akash.beautifulbhaluka.presentation.screens.craftsman.publish.PublishCraftsmanScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.BUTCHER_COOK) {
             ButcherCookScreen(
