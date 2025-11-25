@@ -68,9 +68,14 @@ fun DonorCard(
         modifier = modifier
             .scale(scale)
             .shadow(
-                elevation = 2.dp,
+                elevation = 4.dp,
                 shape = RoundedCornerShape(24.dp),
                 spotColor = Color(0xFF272731).copy(alpha = 0.9f)
+            )
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(24.dp)
             )
             .animateContentSize(),
         shape = RoundedCornerShape(24.dp),
@@ -216,7 +221,7 @@ fun DonorCard(
                                     imageVector = Lucide.Droplet,
                                     contentDescription = "Blood Type",
                                     modifier = Modifier.size(28.dp),
-                                    tint = Color(0xFFDC143C)
+                                    tint = Color(0xFFE53935) // Red color for blood icon
                                 )
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -235,6 +240,35 @@ fun DonorCard(
                                     )
                                 }
                             }
+
+                            // Total Donations Display
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "মোট রক্তদান",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Surface(
+                                    color = Color(0xFFE53935).copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = toBengaliNumber(donor.totalDonations),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = Color(0xFFE53935),
+                                        fontWeight = FontWeight.ExtraBold,
+                                        modifier = Modifier.padding(
+                                            horizontal = 12.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
+                                }
+                            }
+
                             // Social Links (if available)
                             if (!donor.facebookLink.isNullOrEmpty() || !donor.whatsappNumber.isNullOrEmpty()) {
                                 Column(
@@ -572,5 +606,24 @@ private fun generateAvatarUrl(name: String): String {
     // Use name as seed for consistent images per donor
     val seed = name.replace(" ", "-").lowercase()
     return "https://picsum.photos/seed/$seed/256/256"
+}
+
+// Helper function to convert numbers to Bengali numerals
+private fun toBengaliNumber(number: Int): String {
+    return number.toString().map { char ->
+        when (char) {
+            '0' -> '০'
+            '1' -> '১'
+            '2' -> '২'
+            '3' -> '৩'
+            '4' -> '৪'
+            '5' -> '৫'
+            '6' -> '৬'
+            '7' -> '৭'
+            '8' -> '৮'
+            '9' -> '৯'
+            else -> char
+        }
+    }.joinToString("")
 }
 

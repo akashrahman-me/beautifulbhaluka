@@ -116,7 +116,7 @@ fun BloodBankContent(
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Text(
-                                text = "${uiState.donors.size} জন উপলব্ধ",
+                                text = "মোট ${toBengaliNumber(uiState.totalDonors)} জন",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -163,6 +163,8 @@ fun BloodBankContent(
                     availabilityStatuses = availabilityStatuses,
                     selectedBloodGroup = uiState.selectedBloodGroup,
                     selectedAvailability = uiState.selectedAvailability,
+                    bloodGroupCounts = uiState.bloodGroupCounts,
+                    totalDonors = uiState.totalDonors,
                     onBloodGroupSelected = { onAction(BloodBankAction.FilterByBloodGroup(it)) },
                     onAvailabilitySelected = { onAction(BloodBankAction.FilterByAvailability(it)) }
                 )
@@ -586,6 +588,8 @@ private fun FiltersSection(
     availabilityStatuses: List<String>,
     selectedBloodGroup: String?,
     selectedAvailability: String?,
+    bloodGroupCounts: Map<String, Int>,
+    totalDonors: Int,
     onBloodGroupSelected: (String?) -> Unit,
     onAvailabilitySelected: (String?) -> Unit
 ) {
@@ -603,7 +607,7 @@ private fun FiltersSection(
                 Icon(
                     imageVector = Lucide.Droplet,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color(0xFFE53935), // Red color for blood icon
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
@@ -621,7 +625,7 @@ private fun FiltersSection(
                     FilterChip(
                         selected = selectedBloodGroup == null,
                         onClick = { onBloodGroupSelected(null) },
-                        label = { Text("সকল") },
+                        label = { Text("সকল (${toBengaliNumber(totalDonors)})") },
                         leadingIcon = if (selectedBloodGroup == null) {
                             {
                                 Icon(
@@ -639,12 +643,13 @@ private fun FiltersSection(
                 }
 
                 items(bloodGroups) { bloodGroup ->
+                    val count = bloodGroupCounts[bloodGroup] ?: 0
                     FilterChip(
                         selected = selectedBloodGroup == bloodGroup,
                         onClick = {
                             onBloodGroupSelected(if (selectedBloodGroup == bloodGroup) null else bloodGroup)
                         },
-                        label = { Text(bloodGroup) },
+                        label = { Text("$bloodGroup (${toBengaliNumber(count)})") },
                         leadingIcon = if (selectedBloodGroup == bloodGroup) {
                             {
                                 Icon(
@@ -748,3 +753,23 @@ private fun FiltersSection(
         }
     }
 }
+
+// Helper function to convert numbers to Bengali numerals
+private fun toBengaliNumber(number: Int): String {
+    return number.toString().map { char ->
+        when (char) {
+            '0' -> '০'
+            '1' -> '১'
+            '2' -> '২'
+            '3' -> '৩'
+            '4' -> '৪'
+            '5' -> '৫'
+            '6' -> '৬'
+            '7' -> '৭'
+            '8' -> '৮'
+            '9' -> '৯'
+            else -> char
+        }
+    }.joinToString("")
+}
+

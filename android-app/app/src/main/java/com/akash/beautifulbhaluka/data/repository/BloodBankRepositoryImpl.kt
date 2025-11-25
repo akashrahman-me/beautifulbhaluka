@@ -35,7 +35,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 location = "মাসতালবেড়ি, বালুকা",
                 lastDonationDate = LocalDate.now().minusMonths(3),
                 facebookLink = "https://facebook.com/kibriya",
-                whatsappNumber = "০১৭২৬৭৮৮৮৮"
+                whatsappNumber = "০১৭২৬৭৮৮৮৮",
+                totalDonations = 15
             ),
             Donor(
                 id = "my-2",
@@ -45,7 +46,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 location = "ভালুকা পৌরসভা",
                 lastDonationDate = LocalDate.now().minusMonths(1),
                 facebookLink = null,
-                whatsappNumber = "০১৮১২৩৪৫৬৭৮"
+                whatsappNumber = "০১৮১২৩৪৫৬৭৮",
+                totalDonations = 8
             )
         )
     }
@@ -155,7 +157,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 lastDonationDate = now.minusMonths(5)
                     .minusDays(24), // ~5 months 24 days ago - Eligible
                 facebookLink = "https://facebook.com/kibriya",
-                whatsappNumber = "০১৭২৬৭৮৮৮৮"
+                whatsappNumber = "০১৭২৬৭৮৮৮৮",
+                totalDonations = 15
             ),
             Donor(
                 id = "2",
@@ -166,7 +169,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 lastDonationDate = now.minusMonths(1)
                     .minusDays(10), // ~1 month 10 days ago - Not eligible
                 facebookLink = "https://facebook.com/rakib",
-                whatsappNumber = null
+                whatsappNumber = null,
+                totalDonations = 8
             ),
             Donor(
                 id = "3",
@@ -177,7 +181,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 lastDonationDate = now.minusMonths(4)
                     .minusDays(5), // ~4 months 5 days ago - Eligible
                 facebookLink = null,
-                whatsappNumber = "০১৭১৫৬৭৮৯০১"
+                whatsappNumber = "০১৭১৫৬৭৮৯০১",
+                totalDonations = 22
             ),
             Donor(
                 id = "4",
@@ -188,7 +193,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 lastDonationDate = now.minusMonths(2)
                     .minusDays(15), // ~2 months 15 days ago - Not eligible
                 facebookLink = "https://facebook.com/tanvir",
-                whatsappNumber = "০১৯২৩৪৫৬৭৮৯"
+                whatsappNumber = "০১৯২৩৪৫৬৭৮৯",
+                totalDonations = 5
             ),
             Donor(
                 id = "5",
@@ -199,7 +205,8 @@ class BloodBankRepositoryImpl @Inject constructor() : BloodBankRepository {
                 lastDonationDate = now.minusMonths(5)
                     .minusDays(2), // ~5 months 2 days ago - Eligible
                 facebookLink = "https://facebook.com/farhan",
-                whatsappNumber = "০১৩১২৩৪৫৬৭৮"
+                whatsappNumber = "০১৩১২৩৪৫৬৭৮",
+                totalDonations = 12
             )
         )
     }

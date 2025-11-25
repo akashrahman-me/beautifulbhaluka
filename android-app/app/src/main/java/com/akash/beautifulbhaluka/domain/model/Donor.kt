@@ -16,7 +16,8 @@ data class Donor(
     val location: String,
     val lastDonationDate: LocalDate,
     val facebookLink: String? = null,
-    val whatsappNumber: String? = null
+    val whatsappNumber: String? = null,
+    val totalDonations: Int = 0
 ) {
     /**
      * Calculate if donor is eligible to donate (3+ months since last donation)

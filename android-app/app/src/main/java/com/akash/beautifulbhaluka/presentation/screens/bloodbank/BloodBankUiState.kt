@@ -7,7 +7,9 @@ data class BloodBankUiState(
     val error: String? = null,
     val donors: List<DonorInfo> = emptyList(),
     val selectedBloodGroup: String? = null,
-    val selectedAvailability: String? = null
+    val selectedAvailability: String? = null,
+    val bloodGroupCounts: Map<String, Int> = emptyMap(),
+    val totalDonors: Int = 0
 )
 
 data class DonorInfo(
@@ -20,7 +22,8 @@ data class DonorInfo(
     val lastDonation: String,
     val lastDonationDate: String,
     val facebookLink: String? = null,
-    val whatsappNumber: String? = null
+    val whatsappNumber: String? = null,
+    val totalDonations: Int = 0
 )
 
 sealed class BloodBankAction {
@@ -44,7 +47,8 @@ fun Donor.toDonorInfo(): DonorInfo {
         lastDonation = lastDonationTimeAgo,
         lastDonationDate = lastDonationDateFormatted,
         facebookLink = facebookLink,
-        whatsappNumber = whatsappNumber
+        whatsappNumber = whatsappNumber,
+        totalDonations = totalDonations
     )
 }
 

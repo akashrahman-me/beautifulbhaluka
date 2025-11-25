@@ -51,10 +51,17 @@ class BloodBankViewModel @Inject constructor(
 
                 result.onSuccess { donors ->
                     allDonors = donors
+
+                    // Calculate blood group counts
+                    val bloodGroupCounts = donors.groupBy { it.bloodGroup }
+                        .mapValues { it.value.size }
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             donors = getFilteredDonors(),
+                            bloodGroupCounts = bloodGroupCounts,
+                            totalDonors = donors.size,
                             error = null
                         )
                     }
