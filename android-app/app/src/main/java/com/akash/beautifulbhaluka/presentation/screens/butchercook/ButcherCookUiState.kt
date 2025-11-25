@@ -30,4 +30,5 @@ sealed interface ButcherCookAction {
     data class TypeFilterChanged(val type: ButcherCookType) : ButcherCookAction
     data class SearchExpandedChanged(val expanded: Boolean) : ButcherCookAction
     data class CallNumber(val number: String) : ButcherCookAction
+    object NavigateToPublish : ButcherCookAction
 }

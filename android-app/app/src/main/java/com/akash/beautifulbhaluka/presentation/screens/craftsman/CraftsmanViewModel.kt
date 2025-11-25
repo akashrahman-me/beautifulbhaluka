@@ -26,6 +26,10 @@ class CraftsmanViewModel : ViewModel() {
             is CraftsmanAction.CallNumber -> {
                 // Handle phone call action - can be implemented later
             }
+
+            is CraftsmanAction.NavigateToPublish -> {
+                // Navigation is handled in the UI layer
+            }
         }
     }
 

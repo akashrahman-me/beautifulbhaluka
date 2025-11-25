@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.SHOPPING
+    startDestination: String = NavigationRoutes.CRAFTSMAN
 ) {
     NavHost(
         navController = navController,
@@ -728,7 +728,21 @@ fun AppNavigation(
             CraftsmanScreen()
         }
         composable(NavigationRoutes.BUTCHER_COOK) {
-            ButcherCookScreen()
+            ButcherCookScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_BUTCHER_COOK) },
+                navigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_BUTCHER_COOK) {
+            com.akash.beautifulbhaluka.presentation.screens.butchercook.publish.PublishButcherCookScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.PRESS_GRAPHICS) {
             PressGraphicsScreen()

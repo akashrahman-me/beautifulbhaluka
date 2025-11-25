@@ -148,7 +148,9 @@ object NavigationRoutes {
 
     // Professional Services
     const val CRAFTSMAN = "craftsman"
+    const val PUBLISH_CRAFTSMAN = "publish_craftsman"
     const val BUTCHER_COOK = "butcher_cook"
+    const val PUBLISH_BUTCHER_COOK = "publish_butcher_cook"
     const val PRESS_GRAPHICS = "press_graphics"
     const val CYBER_EXPERT = "cyber_expert"
     const val CAR_RENT = "car_rent"

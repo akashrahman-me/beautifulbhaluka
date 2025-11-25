@@ -26,6 +26,10 @@ class ButcherCookViewModel : ViewModel() {
             is ButcherCookAction.CallNumber -> {
                 // Handle phone call action - can be implemented later
             }
+
+            is ButcherCookAction.NavigateToPublish -> {
+                // Navigation is handled in the UI layer
+            }
         }
     }
 

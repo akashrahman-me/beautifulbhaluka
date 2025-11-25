@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
@@ -23,13 +24,19 @@ import com.akash.beautifulbhaluka.presentation.screens.craftsman.components.Craf
 
 @Composable
 fun CraftsmanScreen(
-    viewModel: CraftsmanViewModel = viewModel()
+    viewModel: CraftsmanViewModel = viewModel(),
+    navigateBack: () -> Unit = {},
+    navigateToPublish: () -> Unit = {},
+    navigateHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     CraftsmanContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        navigateBack = navigateBack,
+        navigateToPublish = navigateToPublish,
+        navigateHome = navigateHome
     )
 }
 
@@ -37,64 +44,40 @@ fun CraftsmanScreen(
 @Composable
 fun CraftsmanContent(
     uiState: CraftsmanUiState,
-    onAction: (CraftsmanAction) -> Unit
+    onAction: (CraftsmanAction) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToPublish: () -> Unit,
+    navigateHome: () -> Unit
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = PaddingValues(24.dp)
-        ) {
-            // Modern Header Section
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Minimalist Title
-                    Text(
-                        text = "সকল মিস্ত্রি",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 36.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Clean underline accent
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(2.dp)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(1.dp)
-                            )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Subtitle with refined typography
-                    Text(
-                        text = "কারিগরি সেবা ও দক্ষ কারিগর",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
+    Scaffold(
+        topBar = {
+            com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar(
+                title = "মিস্ত্রি",
+                onNavigateBack = navigateBack,
+                onNavigateHome = navigateHome
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToPublish,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "নতুন মিস্ত্রি যোগ করুন"
+                )
             }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
 
             // Search and Filter Section
             item {

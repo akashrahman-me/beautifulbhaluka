@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -21,13 +22,19 @@ import com.akash.beautifulbhaluka.presentation.screens.butchercook.components.Bu
 
 @Composable
 fun ButcherCookScreen(
-    viewModel: ButcherCookViewModel = viewModel()
+    viewModel: ButcherCookViewModel = viewModel(),
+    navigateBack: () -> Unit = {},
+    navigateToPublish: () -> Unit = {},
+    navigateHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     ButcherCookContent(
         uiState = uiState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        navigateBack = navigateBack,
+        navigateToPublish = navigateToPublish,
+        navigateHome = navigateHome
     )
 }
 
@@ -35,62 +42,38 @@ fun ButcherCookScreen(
 @Composable
 fun ButcherCookContent(
     uiState: ButcherCookUiState,
-    onAction: (ButcherCookAction) -> Unit
+    onAction: (ButcherCookAction) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToPublish: () -> Unit,
+    navigateHome: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = PaddingValues(24.dp)
-        ) {
-            // Modern Header Section
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Minimalist Title
-                    Text(
-                        text = "কসাই ও বাবুর্চি",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 36.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Clean underline accent
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(2.dp)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(1.dp)
-                            )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Subtitle with refined typography
-                    Text(
-                        text = "রান্না ও খাদ্য প্রস্তুতির সেবা",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
+    Scaffold(
+        topBar = {
+            com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar(
+                title = "কসাই ও বাবুর্চি",
+                onNavigateBack = navigateBack,
+                onNavigateHome = navigateHome
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToPublish,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "নতুন যোগ করুন"
+                )
             }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
 
             // Search and Filter Section
             item {

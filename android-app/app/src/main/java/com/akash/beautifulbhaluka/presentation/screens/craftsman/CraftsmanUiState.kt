@@ -48,4 +48,5 @@ sealed interface CraftsmanAction {
     data class TypeFilterChanged(val type: CraftsmanType) : CraftsmanAction
     data class SearchExpandedChanged(val expanded: Boolean) : CraftsmanAction
     data class CallNumber(val number: String) : CraftsmanAction
+    object NavigateToPublish : CraftsmanAction
 }
