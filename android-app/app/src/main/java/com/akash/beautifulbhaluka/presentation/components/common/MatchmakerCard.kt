@@ -79,7 +79,7 @@ fun MatchmakerCard(
                         if (matchmaker.profileImageUrl != null) {
                             AsyncImage(
                                 model = matchmaker.profileImageUrl,
-                                contentDescription = "${matchmaker.name}'s profile photo",
+                                contentDescription = "${matchmaker.name}-এর প্রোফাইল ছবি",
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clip(CircleShape),
@@ -120,7 +120,7 @@ fun MatchmakerCard(
                             }
                         }
                         Text(
-                            text = "${matchmaker.experience} Experience",
+                            text = "${matchmaker.experience} বছরের অভিজ্ঞতা",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White.copy(alpha = 0.9f)
                         )
@@ -167,7 +167,7 @@ fun MatchmakerCard(
                             tint = Color(0xFFE91E63)
                         )
                         Text(
-                            text = "${matchmaker.successfulMatches} Matches",
+                            text = "${matchmaker.successfulMatches} টি সফল ম্যাচ",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
@@ -271,7 +271,7 @@ fun MatchmakerCard(
                                         .background(Color(0xFF4CAF50))
                                 )
                                 Text(
-                                    text = "Available",
+                                    text = "উপলভ্য",
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFF2E7D32)
@@ -305,4 +305,3 @@ fun MatchmakerCard(
         }
     }
 }
-

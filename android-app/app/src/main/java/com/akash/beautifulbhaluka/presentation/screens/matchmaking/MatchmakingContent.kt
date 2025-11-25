@@ -123,9 +123,9 @@ fun MatchmakingContent(
                 Icon(
                     imageVector = Lucide.Plus,
                     contentDescription = if (uiState.selectedTab == MatchmakingTab.PROFILES)
-                        "Create Profile"
+                        "প্রোফাইল তৈরি করুন"
                     else
-                        "Create Matchmaker Profile"
+                        "ম্যাচমেকার প্রোফাইল তৈরি করুন"
                 )
             }
         }
@@ -153,7 +153,7 @@ fun MatchmakingTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "💍 Matchmaking",
+                text = "💍 ম্যাচমেকিং",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -169,7 +169,7 @@ fun MatchmakingTopBar(
                 ) {
                     Icon(
                         imageVector = Lucide.CircleUserRound,
-                        contentDescription = "My Profiles",
+                        contentDescription = "আমার প্রোফাইল",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -185,7 +185,7 @@ fun MatchmakingTopBar(
                 ) {
                     Icon(
                         imageVector = Lucide.ListFilter,
-                        contentDescription = "Filters",
+                        contentDescription = "ফিল্টার",
                         tint = if (showFilters)
                             MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurface
@@ -209,7 +209,7 @@ fun SearchBar(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         placeholder = {
             Text(
-                text = "Search by name, occupation, location...",
+                text = "নাম, পেশা, স্থান দিয়ে খুঁজুন...",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -217,7 +217,7 @@ fun SearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Lucide.Search,
-                contentDescription = "Search"
+                contentDescription = "অনুসন্ধান"
             )
         },
         trailingIcon = {
@@ -225,7 +225,7 @@ fun SearchBar(
                 IconButton(onClick = { onSearchChange("") }) {
                     Icon(
                         imageVector = Lucide.X,
-                        contentDescription = "Clear"
+                        contentDescription = "মুছে ফেলুন"
                     )
                 }
             }
@@ -243,8 +243,8 @@ fun TabSelector(
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
-        MatchmakingTab.PROFILES to "Bride & Groom",
-        MatchmakingTab.MATCHMAKERS to "Matchmakers"
+        MatchmakingTab.PROFILES to "বর ও কনে",
+        MatchmakingTab.MATCHMAKERS to "ম্যাচমেকার"
     )
     val selectedTabIndex = tabs.indexOfFirst { it.first == selectedTab }
 
@@ -286,4 +286,3 @@ fun TabSelector(
         }
     }
 }
-

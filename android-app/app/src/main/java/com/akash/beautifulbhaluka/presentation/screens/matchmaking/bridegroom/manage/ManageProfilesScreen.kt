@@ -67,7 +67,7 @@ fun ManageProfilesScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Create Profile"
+                        contentDescription = "প্রোফাইল তৈরি করুন"
                     )
                 }
             }
@@ -116,7 +116,7 @@ private fun ModernTopAppBar(
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = "ফিরে যান",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -126,7 +126,7 @@ private fun ModernTopAppBar(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "My Profiles",
+                        text = "আমার প্রোফাইল",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -229,7 +229,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
             strokeWidth = 4.dp
         )
         Text(
-            text = "Loading profiles...",
+            text = "প্রোফাইল লোড হচ্ছে...",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -270,7 +270,7 @@ private fun GradientHeaderCard(profileCount: Int) {
                     tint = Color.White
                 )
                 Text(
-                    text = "Your Matchmaking Journey",
+                    text = "আপনার ম্যাচমেকিং যাত্রা",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -280,7 +280,7 @@ private fun GradientHeaderCard(profileCount: Int) {
                     color = Color.White.copy(alpha = 0.2f)
                 ) {
                     Text(
-                        text = "$profileCount Profile${if (profileCount != 1) "s" else ""} Published",
+                        text = "$profileCount টি প্রোফাইল প্রকাশিত",
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -330,7 +330,7 @@ private fun ModernEmptyState(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "No Profiles Yet",
+            text = "এখনও কোনো প্রোফাইল নেই",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -339,7 +339,7 @@ private fun ModernEmptyState(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Start your matchmaking journey by creating your first profile",
+            text = "আপনার প্রথম প্রোফাইল তৈরি করে ম্যাচমেকিং যাত্রা শুরু করুন",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -365,7 +365,7 @@ private fun ModernEmptyState(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Create Your First Profile",
+                text = "আপনার প্রথম প্রোফাইল তৈরি করুন",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -379,15 +379,15 @@ private fun ModernEmptyState(
         ) {
             FeatureHighlight(
                 icon = Icons.Outlined.Verified,
-                text = "Get verified and stand out"
+                text = "যাচাইকৃত হয়ে আলাদা হয়ে উঠুন"
             )
             FeatureHighlight(
                 icon = Icons.Outlined.Visibility,
-                text = "Reach thousands of potential matches"
+                text = "হাজারো সম্ভাব্য সঙ্গীর কাছে পৌঁছান"
             )
             FeatureHighlight(
                 icon = Icons.Outlined.Security,
-                text = "Your privacy is our priority"
+                text = "আপনার গোপনীয়তাই আমাদের অগ্রাধিকার"
             )
         }
     }
@@ -449,7 +449,7 @@ private fun ModernDeleteDialog(
         },
         title = {
             Text(
-                text = "Delete Profile?",
+                text = "প্রোফাইল মুছবেন?",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -460,7 +460,7 @@ private fun ModernDeleteDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "This action cannot be undone. Your profile will be permanently removed from the matchmaking platform.",
+                    text = "এই কাজটি বাতিল করা যাবে না। আপনার প্রোফাইল স্থায়ীভাবে মুছে যাবে।",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -484,7 +484,7 @@ private fun ModernDeleteDialog(
                             tint = MaterialTheme.colorScheme.error
                         )
                         Text(
-                            text = "All interested connections will be lost",
+                            text = "সব আগ্রহী যোগাযোগ হারিয়ে যাবে",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -508,7 +508,7 @@ private fun ModernDeleteDialog(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Delete Profile",
+                    text = "প্রোফাইল মুছুন",
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -520,7 +520,7 @@ private fun ModernDeleteDialog(
                 modifier = Modifier.height(48.dp)
             ) {
                 Text(
-                    text = "Cancel",
+                    text = "বাতিল",
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -535,4 +535,3 @@ private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
-

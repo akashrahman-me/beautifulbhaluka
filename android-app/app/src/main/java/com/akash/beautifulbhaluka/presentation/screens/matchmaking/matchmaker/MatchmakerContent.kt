@@ -78,13 +78,13 @@ fun MatchmakerContent(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Connect with Matchmakers",
+                        text = "ম্যাচমেকারের সাথে সংযুক্ত হোন",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = "${filteredMatchmakers.size} Matchmakers Available",
+                        text = "${filteredMatchmakers.size} জন ম্যাচমেকার উপলভ্য",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f)
                     )
@@ -158,12 +158,12 @@ private fun MatchmakerFiltersSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Filters",
+                    text = "ফিল্টার",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 TextButton(onClick = onClearFilters) {
-                    Text("Clear All")
+                    Text("সব মুছুন")
                 }
             }
 
@@ -171,7 +171,7 @@ private fun MatchmakerFiltersSection(
 
             // Specialization Filter
             Text(
-                text = "Specialization",
+                text = "বিশেষ দক্ষতা",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -185,12 +185,19 @@ private fun MatchmakerFiltersSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     listOf("All", "Elite Families", "Doctors", "Engineers").forEach { spec ->
+                        val specLabel = when (spec) {
+                            "All" -> "সকল"
+                            "Elite Families" -> "এলিট পরিবার"
+                            "Doctors" -> "ডাক্তার"
+                            "Engineers" -> "ইঞ্জিনিয়ার"
+                            else -> spec
+                        }
                         FilterChip(
                             selected = selectedSpecialization == spec,
                             onClick = { onSpecializationChange(spec) },
                             label = {
                                 Text(
-                                    text = spec,
+                                    text = specLabel,
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             },
@@ -203,12 +210,18 @@ private fun MatchmakerFiltersSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     listOf("Business", "Overseas", "General").forEach { spec ->
+                        val specLabel = when (spec) {
+                            "Business" -> "ব্যবসায়ী"
+                            "Overseas" -> "প্রবাসী"
+                            "General" -> "সাধারণ"
+                            else -> spec
+                        }
                         FilterChip(
                             selected = selectedSpecialization == spec,
                             onClick = { onSpecializationChange(spec) },
                             label = {
                                 Text(
-                                    text = spec,
+                                    text = specLabel,
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             },
@@ -290,16 +303,15 @@ private fun EmptyState() {
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
             Text(
-                text = "No matchmakers found",
+                text = "কোনো ম্যাচমেকার পাওয়া যায়নি",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Try adjusting your filters",
+                text = "আপনার ফিল্টার পরিবর্তন করে দেখুন",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
     }
 }
-

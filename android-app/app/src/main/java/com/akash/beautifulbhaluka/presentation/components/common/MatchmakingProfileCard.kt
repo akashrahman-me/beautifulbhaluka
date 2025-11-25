@@ -114,7 +114,7 @@ fun MatchmakingProfileCard(
                                 }
                             }
                             Text(
-                                text = "${profile.age} years • ${profile.height}",
+                                text = "${profile.age} বছর • ${profile.height}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
@@ -126,7 +126,7 @@ fun MatchmakingProfileCard(
                         imageVector = if (profile.gender == "Male")
                             Icons.Default.Male
                         else Icons.Default.Female,
-                        contentDescription = profile.gender,
+                        contentDescription = if (profile.gender == "Male") "পুরুষ" else "মহিলা",
                         tint = if (profile.gender == "Male")
                             Color(0xFF2196F3)
                         else Color(0xFFE91E63),
@@ -223,11 +223,11 @@ fun MatchmakingProfileCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Edit,
-                                contentDescription = "Edit",
+                                contentDescription = "সম্পাদনা",
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Edit", style = MaterialTheme.typography.labelLarge)
+                            Text("সম্পাদনা", style = MaterialTheme.typography.labelLarge)
                         }
 
                         OutlinedButton(
@@ -242,11 +242,11 @@ fun MatchmakingProfileCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Delete",
+                                contentDescription = "মুছে ফেলুন",
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Delete", style = MaterialTheme.typography.labelLarge)
+                            Text("মুছে ফেলুন", style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 } else {
@@ -261,11 +261,11 @@ fun MatchmakingProfileCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.RemoveRedEye,
-                            contentDescription = null,
+                            contentDescription = "সম্পূর্ণ প্রোফাইল দেখুন",
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("View Full Profile")
+                        Text("সম্পূর্ণ প্রোফাইল দেখুন")
                     }
                 }
             }
@@ -309,4 +309,3 @@ private fun InfoChip(
         }
     }
 }
-

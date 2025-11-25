@@ -85,13 +85,13 @@ fun BridegroomContent(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Find Your Perfect Match",
+                        text = "আপনার উপযুক্ত সঙ্গী খুঁজুন",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = "${filteredProfiles.size} Profiles Available",
+                        text = "${filteredProfiles.size} টি প্রোফাইল উপলভ্য",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f)
                     )
@@ -174,10 +174,10 @@ private fun CategoryChip(
     }
 
     val label = when (category) {
-        ProfileCategory.ALL -> "All"
-        ProfileCategory.RECENT -> "Recent"
-        ProfileCategory.VERIFIED -> "Verified"
-        ProfileCategory.PREMIUM -> "Premium"
+        ProfileCategory.ALL -> "সকল"
+        ProfileCategory.RECENT -> "সাম্প্রতিক"
+        ProfileCategory.VERIFIED -> "যাচাইকৃত"
+        ProfileCategory.PREMIUM -> "প্রিমিয়াম"
     }
 
     FilterChip(
@@ -231,12 +231,12 @@ private fun BridegroomFiltersSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Filters",
+                    text = "ফিল্টার",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 TextButton(onClick = onClearFilters) {
-                    Text("Clear All")
+                    Text("সব মুছুন")
                 }
             }
 
@@ -244,7 +244,7 @@ private fun BridegroomFiltersSection(
 
             // Gender Filter
             Text(
-                text = "Gender",
+                text = "লিঙ্গ",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -253,10 +253,16 @@ private fun BridegroomFiltersSection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf("All", "Male", "Female").forEach { gender ->
+                    val genderLabel = when (gender) {
+                        "All" -> "সকল"
+                        "Male" -> "পুরুষ"
+                        "Female" -> "মহিলা"
+                        else -> gender
+                    }
                     FilterChip(
                         selected = selectedGender == gender,
                         onClick = { onGenderChange(gender) },
-                        label = { Text(gender) }
+                        label = { Text(genderLabel) }
                     )
                 }
             }
@@ -265,7 +271,7 @@ private fun BridegroomFiltersSection(
 
             // Age Range Filter
             Text(
-                text = "Age Range: ${selectedAgeRange.first} - ${selectedAgeRange.last}",
+                text = "বয়স সীমা: ${selectedAgeRange.first} - ${selectedAgeRange.last}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -355,16 +361,15 @@ private fun EmptyState() {
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
             Text(
-                text = "No profiles found",
+                text = "কোনো প্রোফাইল পাওয়া যায়নি",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Try adjusting your filters",
+                text = "আপনার ফিল্টার পরিবর্তন করে দেখুন",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
     }
 }
-

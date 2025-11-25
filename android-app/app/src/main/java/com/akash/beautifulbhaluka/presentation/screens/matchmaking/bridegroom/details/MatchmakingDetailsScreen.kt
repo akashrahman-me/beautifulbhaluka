@@ -80,7 +80,7 @@ fun MatchmakingDetailsScreen(
                                 IconButton(onClick = onNavigateBack) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Back",
+                                        contentDescription = "ফিরে যান",
                                         tint = Color.White
                                     )
                                 }
@@ -94,7 +94,7 @@ fun MatchmakingDetailsScreen(
                                             Icons.Filled.Favorite
                                         else
                                             Icons.Outlined.FavoriteBorder,
-                                        contentDescription = "Favorite",
+                                        contentDescription = "পছন্দ",
                                         tint = Color.White
                                     )
                                 }
@@ -632,4 +632,3 @@ private fun ContactInfoRow(
         }
     }
 }
-

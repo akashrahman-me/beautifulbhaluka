@@ -35,12 +35,12 @@ fun MatchmakerDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Matchmaker Profile") },
+                title = { Text("ম্যাচমেকার প্রোফাইল") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Lucide.ArrowLeft,
-                            contentDescription = "Back"
+                            contentDescription = "ফিরে যান"
                         )
                     }
                 }
@@ -148,7 +148,7 @@ fun MatchmakerDetailsContent(
                     }
 
                     Text(
-                        text = "${matchmaker.experience} Experience • ${matchmaker.age} years",
+                        text = "${matchmaker.experience} অভিজ্ঞতা • ${matchmaker.age} বছর",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White.copy(alpha = 0.9f)
                     )
@@ -167,21 +167,21 @@ fun MatchmakerDetailsContent(
                 StatCard(
                     icon = Lucide.Star,
                     value = String.format(Locale.getDefault(), "%.1f", matchmaker.rating),
-                    label = "Rating",
+                    label = "রেটিং",
                     color = Color(0xFFFFC107),
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
                     icon = Lucide.Heart,
                     value = matchmaker.successfulMatches.toString(),
-                    label = "Matches",
+                    label = "ম্যাচ",
                     color = Color(0xFFE91E63),
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
                     icon = if (matchmaker.available) Lucide.Check else Lucide.X,
-                    value = if (matchmaker.available) "Yes" else "No",
-                    label = "Available",
+                    value = if (matchmaker.available) "হ্যাঁ" else "না",
+                    label = "উপলভ্য",
                     color = if (matchmaker.available) Color(0xFF4CAF50) else Color(0xFFF44336),
                     modifier = Modifier.weight(1f)
                 )
@@ -190,7 +190,7 @@ fun MatchmakerDetailsContent(
 
         // About Section
         item {
-            SectionCard(title = "About", icon = Lucide.FileText) {
+            SectionCard(title = "আমার সম্পর্কে", icon = Lucide.FileText) {
                 Text(
                     text = matchmaker.bio,
                     style = MaterialTheme.typography.bodyLarge,
@@ -201,38 +201,38 @@ fun MatchmakerDetailsContent(
 
         // Contact Information
         item {
-            SectionCard(title = "Contact Information", icon = Lucide.Phone) {
+            SectionCard(title = "যোগাযোগের তথ্য", icon = Lucide.Phone) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     InfoRow(
                         icon = Lucide.Phone,
-                        label = "Phone",
+                        label = "ফোন",
                         value = matchmaker.contactNumber
                     )
                     matchmaker.whatsapp?.let {
                         InfoRow(
                             icon = Lucide.MessageCircle,
-                            label = "WhatsApp",
+                            label = "হোয়াটসঅ্যাপ",
                             value = it
                         )
                     }
                     matchmaker.email?.let {
                         InfoRow(
                             icon = Lucide.Mail,
-                            label = "Email",
+                            label = "ইমেইল",
                             value = it
                         )
                     }
                     InfoRow(
                         icon = Lucide.MapPin,
-                        label = "Location",
+                        label = "ঠিকানা",
                         value = matchmaker.location
                     )
                     matchmaker.workingHours?.let {
                         InfoRow(
                             icon = Lucide.Clock,
-                            label = "Working Hours",
+                            label = "কর্মঘন্টা",
                             value = it
                         )
                     }
@@ -242,7 +242,7 @@ fun MatchmakerDetailsContent(
 
         // Specializations
         item {
-            SectionCard(title = "Specializations", icon = Lucide.Award) {
+            SectionCard(title = "বিশেষ দক্ষতা", icon = Lucide.Award) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -262,7 +262,7 @@ fun MatchmakerDetailsContent(
 
         // Services Offered
         item {
-            SectionCard(title = "Services Offered", icon = Lucide.Briefcase) {
+            SectionCard(title = "প্রদত্ত সেবা", icon = Lucide.Briefcase) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -289,7 +289,7 @@ fun MatchmakerDetailsContent(
 
         // Languages
         item {
-            SectionCard(title = "Languages", icon = Lucide.Languages) {
+            SectionCard(title = "ভাষা", icon = Lucide.Languages) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -306,7 +306,7 @@ fun MatchmakerDetailsContent(
         // Consultation Fee
         matchmaker.consultationFee?.let { fee ->
             item {
-                SectionCard(title = "Consultation Fee", icon = Lucide.Wallet) {
+                SectionCard(title = "পরামর্শ ফি", icon = Lucide.Wallet) {
                     Text(
                         text = fee,
                         style = MaterialTheme.typography.titleMedium,
@@ -320,7 +320,7 @@ fun MatchmakerDetailsContent(
         // Testimonials
         if (matchmaker.testimonials.isNotEmpty()) {
             item {
-                SectionCard(title = "Testimonials", icon = Lucide.MessageSquare) {
+                SectionCard(title = "প্রশংসাপত্র", icon = Lucide.MessageSquare) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
@@ -335,21 +335,21 @@ fun MatchmakerDetailsContent(
         // Social Media
         matchmaker.socialMedia?.let { social ->
             item {
-                SectionCard(title = "Social Media", icon = Lucide.Share2) {
+                SectionCard(title = "সোশ্যাল মিডিয়া", icon = Lucide.Share2) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         social.facebook?.let {
-                            InfoRow(icon = Lucide.Facebook, label = "Facebook", value = it)
+                            InfoRow(icon = Lucide.Facebook, label = "ফেসবুক", value = it)
                         }
                         social.instagram?.let {
-                            InfoRow(icon = Lucide.Instagram, label = "Instagram", value = it)
+                            InfoRow(icon = Lucide.Instagram, label = "ইনস্টাগ্রাম", value = it)
                         }
                         social.linkedin?.let {
-                            InfoRow(icon = Lucide.Linkedin, label = "LinkedIn", value = it)
+                            InfoRow(icon = Lucide.Linkedin, label = "লিংকডইন", value = it)
                         }
                         social.website?.let {
-                            InfoRow(icon = Lucide.Globe, label = "Website", value = it)
+                            InfoRow(icon = Lucide.Globe, label = "ওয়েবসাইট", value = it)
                         }
                     }
                 }
@@ -387,7 +387,7 @@ fun MatchmakerDetailsContent(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Call")
+                    Text("কল করুন")
                 }
 
                 Button(
@@ -403,7 +403,7 @@ fun MatchmakerDetailsContent(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("WhatsApp")
+                    Text("হোয়াটসঅ্যাপ")
                 }
             }
         }
@@ -573,4 +573,3 @@ fun TestimonialCard(
         }
     }
 }
-
