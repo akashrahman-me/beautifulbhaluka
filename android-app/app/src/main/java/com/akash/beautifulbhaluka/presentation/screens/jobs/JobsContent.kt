@@ -45,7 +45,11 @@ fun JobsContent(
     val showHeader = rememberScrollHeaderState(scrollState = listState)
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
             // Animated Top Bar
             ScrollAnimatedHeader(visible = showHeader) {
                 ModernJobsTopBar(currentTab = uiState.currentTab)
@@ -77,10 +81,12 @@ fun JobsContent(
                             listState = listState,
                             onAction = onAction
                         )
+
                         JobTab.MY_APPLICATIONS -> ApplicationsContent(
                             applications = uiState.appliedJobs,
                             onJobClick = { jobId -> onAction(JobsAction.ViewJobDetails(jobId)) }
                         )
+
                         JobTab.FAVORITES -> FavoritesContent(
                             jobs = uiState.jobs,
                             favoriteJobIds = uiState.favoriteJobIds,
@@ -475,7 +481,8 @@ fun FeaturedJobCard(
         Box(modifier = Modifier.fillMaxSize()) {
             // Background Image with Gradient Overlay
             AsyncImage(
-                model = job.imageUrl ?: "https://via.placeholder.com/300x200/6366F1/FFFFFF?text=${job.title.take(1)}",
+                model = job.imageUrl
+                    ?: "https://via.placeholder.com/300x200/6366F1/FFFFFF?text=${job.title.take(1)}",
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -723,7 +730,8 @@ fun ModernJobCard(
                     .height(120.dp)
             ) {
                 AsyncImage(
-                    model = job.imageUrl ?: "https://via.placeholder.com/400x120/6366F1/FFFFFF?text=${job.company.firstOrNull() ?: 'C'}",
+                    model = job.imageUrl
+                        ?: "https://via.placeholder.com/400x120/6366F1/FFFFFF?text=${job.company.firstOrNull() ?: 'C'}",
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop

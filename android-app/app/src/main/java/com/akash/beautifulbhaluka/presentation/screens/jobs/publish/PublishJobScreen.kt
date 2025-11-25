@@ -60,7 +60,11 @@ fun PublishJobScreen(
             .fillMaxSize()
             .background(gradientBrush)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
             // Modern Header
             ModernPublishHeader(onNavigateBack = onNavigateBack)
 
@@ -109,7 +113,13 @@ fun PublishJobScreen(
 
                         ModernTextField(
                             value = uiState.description,
-                            onValueChange = { viewModel.onAction(PublishJobAction.UpdateDescription(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishJobAction.UpdateDescription(
+                                        it
+                                    )
+                                )
+                            },
                             label = "কাজের বিবরণ",
                             placeholder = "চাকরির দায়িত্ব ও কাজের বিস্তারিত লিখুন...",
                             leadingIcon = Icons.Outlined.Description,
@@ -138,7 +148,13 @@ fun PublishJobScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             ModernTextField(
                                 value = uiState.salary,
-                                onValueChange = { viewModel.onAction(PublishJobAction.UpdateSalary(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishJobAction.UpdateSalary(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "বেতন",
                                 placeholder = "৳৫০,০০০ - ৳৭০,০০০",
                                 leadingIcon = Icons.Outlined.AttachMoney,
@@ -148,7 +164,13 @@ fun PublishJobScreen(
 
                             ModernTextField(
                                 value = uiState.positionCount,
-                                onValueChange = { viewModel.onAction(PublishJobAction.UpdatePositionCount(it)) },
+                                onValueChange = {
+                                    viewModel.onAction(
+                                        PublishJobAction.UpdatePositionCount(
+                                            it
+                                        )
+                                    )
+                                },
                                 label = "পদ সংখ্যা",
                                 placeholder = "৫",
                                 leadingIcon = Icons.Outlined.Groups,
@@ -185,7 +207,13 @@ fun PublishJobScreen(
 
                         ModernTextField(
                             value = uiState.experience,
-                            onValueChange = { viewModel.onAction(PublishJobAction.UpdateExperience(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishJobAction.UpdateExperience(
+                                        it
+                                    )
+                                )
+                            },
                             label = "অভিজ্ঞতা",
                             placeholder = "যেমন: ৩-৫ বছর",
                             leadingIcon = Icons.AutoMirrored.Outlined.TrendingUp,
@@ -210,7 +238,13 @@ fun PublishJobScreen(
 
                         ModernTextField(
                             value = uiState.workingHours,
-                            onValueChange = { viewModel.onAction(PublishJobAction.UpdateWorkingHours(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishJobAction.UpdateWorkingHours(
+                                        it
+                                    )
+                                )
+                            },
                             label = "কাজের সময়",
                             placeholder = "যেমন: ৮ ঘন্টা",
                             leadingIcon = Icons.Outlined.Schedule
@@ -218,7 +252,13 @@ fun PublishJobScreen(
 
                         ModernTextField(
                             value = uiState.workLocation,
-                            onValueChange = { viewModel.onAction(PublishJobAction.UpdateWorkLocation(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishJobAction.UpdateWorkLocation(
+                                        it
+                                    )
+                                )
+                            },
                             label = "কাজের ধরন",
                             placeholder = "যেমন: অন-সাইট / রিমোট",
                             leadingIcon = Icons.Outlined.Place
@@ -234,7 +274,13 @@ fun PublishJobScreen(
                     ) {
                         ModernTextField(
                             value = uiState.phoneNumber,
-                            onValueChange = { viewModel.onAction(PublishJobAction.UpdatePhoneNumber(it)) },
+                            onValueChange = {
+                                viewModel.onAction(
+                                    PublishJobAction.UpdatePhoneNumber(
+                                        it
+                                    )
+                                )
+                            },
                             label = "ফোন নম্বর",
                             placeholder = "+৮৮০ ১XXX XXXXXX",
                             leadingIcon = Icons.Outlined.Phone,

@@ -71,7 +71,9 @@ fun JobDetailsScreen(
             uiState.job != null -> {
                 val job = uiState.job!!
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Hero Section with Company Banner
