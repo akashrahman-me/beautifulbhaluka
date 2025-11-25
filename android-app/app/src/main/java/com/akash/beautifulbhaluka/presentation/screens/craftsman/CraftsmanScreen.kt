@@ -1,24 +1,19 @@
 package com.akash.beautifulbhaluka.presentation.screens.craftsman
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.screens.craftsman.components.CraftsmanCard
 
@@ -49,8 +44,6 @@ fun CraftsmanContent(
     navigateToPublish: () -> Unit,
     navigateHome: () -> Unit
 ) {
-    var dropdownExpanded by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar(
@@ -83,7 +76,7 @@ fun CraftsmanContent(
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Search Bar
                     OutlinedTextField(
@@ -101,73 +94,13 @@ fun CraftsmanContent(
                         singleLine = true
                     )
 
-                    // Type Filter Dropdown
-                    ExposedDropdownMenuBox(
-                        expanded = dropdownExpanded,
-                        onExpandedChange = { dropdownExpanded = !dropdownExpanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = uiState.selectedType.displayName,
-                            onValueChange = { },
-                            readOnly = true,
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = uiState.selectedType.icon,
-                                    contentDescription = "কারিগরি ধরন আইকন",
-                                    modifier = Modifier.size(20.dp),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "ড্রপডাউন"
-                                )
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = { dropdownExpanded = false }
-                        ) {
-                            CraftsmanType.values().forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(type.displayName) },
-                                    onClick = {
-                                        onAction(CraftsmanAction.TypeFilterChanged(type))
-                                        dropdownExpanded = false
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = type.icon,
-                                            contentDescription = "${type.displayName} আইকন",
-                                            tint = if (type == uiState.selectedType)
-                                                MaterialTheme.colorScheme.primary
-                                            else
-                                                MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        if (type == uiState.selectedType) {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "নির্বাচিত",
-                                                tint = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                    }
-                                )
-                            }
+                    // Filter Chips (Horizontally Scrollable)
+                    FilterChipsRow(
+                        selectedType = uiState.selectedType,
+                        onTypeSelected = { type ->
+                            onAction(CraftsmanAction.TypeFilterChanged(type))
                         }
-                    }
+                    )
                 }
             }
 
@@ -299,3 +232,50 @@ fun CraftsmanContent(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterChipsRow(
+    selectedType: CraftsmanType,
+    onTypeSelected: (CraftsmanType) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 0.dp)
+    ) {
+        items(CraftsmanType.entries.size) { index ->
+            val type = CraftsmanType.entries[index]
+            val isSelected = type == selectedType
+
+            FilterChip(
+                selected = isSelected,
+                onClick = { onTypeSelected(type) },
+                label = { Text(type.displayName) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = type.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isSelected,
+                    borderColor = if (isSelected)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    selectedBorderColor = MaterialTheme.colorScheme.primary,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.dp
+                )
+            )
+        }
+    }
+}
+
