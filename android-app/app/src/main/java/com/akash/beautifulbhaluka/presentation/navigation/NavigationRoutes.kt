@@ -133,6 +133,7 @@ object NavigationRoutes {
     const val BROADBAND = "broadband"
     const val ELECTRICITY = "electricity"
     const val CLEANER = "cleaner"
+    const val PUBLISH_CLEANER = "publish_cleaner"
 
     // Beauty & Wellness
     const val LADIES_PARLOUR = "ladies_parlour"

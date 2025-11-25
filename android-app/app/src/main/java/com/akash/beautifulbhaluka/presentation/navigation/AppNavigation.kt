@@ -34,6 +34,7 @@ import com.akash.beautifulbhaluka.presentation.screens.carrent.CarRentScreen
 import com.akash.beautifulbhaluka.presentation.screens.carrent.category.CategoryCarsScreen
 import com.akash.beautifulbhaluka.presentation.screens.carrent.publish.PublishCarScreen
 import com.akash.beautifulbhaluka.presentation.screens.cleaner.CleanerScreen
+import com.akash.beautifulbhaluka.presentation.screens.cleaner.publish.PublishCleanerScreen
 import com.akash.beautifulbhaluka.presentation.screens.courier.CourierScreen
 import com.akash.beautifulbhaluka.presentation.screens.courier.publish.PublishCourierScreen
 import com.akash.beautifulbhaluka.presentation.screens.craftsman.CraftsmanScreen
@@ -113,7 +114,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.CAR_RENT
+    startDestination: String = NavigationRoutes.HOME
 ) {
     NavHost(
         navController = navController,
@@ -597,7 +598,21 @@ fun AppNavigation(
             ElectricityScreen()
         }
         composable(NavigationRoutes.CLEANER) {
-            CleanerScreen()
+            CleanerScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_CLEANER) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_CLEANER) {
+            PublishCleanerScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
 
         // Beauty & Wellness
