@@ -40,12 +40,12 @@ fun CleanerCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Left-aligned thumbnail
             Box(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(64.dp),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -55,7 +55,7 @@ fun CleanerCard(
                         .build(),
                     contentDescription = cleaner.name,
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(64.dp)
                         .clip(CircleShape)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -65,7 +65,7 @@ fun CleanerCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             // Right side card information
             Column(
@@ -130,25 +130,14 @@ fun CleanerCard(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    FilledTonalButton(
+                    FilledTonalIconButton(
                         onClick = { onCallClick(cleaner.phone) },
-                        modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(18.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                        modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Call,
-                            contentDescription = "Call",
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "কল করুন",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium
-                            )
+                            contentDescription = "কল করুন",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }

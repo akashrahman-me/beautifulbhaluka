@@ -1,5 +1,7 @@
 package com.akash.beautifulbhaluka.presentation.screens.cleaner
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
@@ -46,10 +49,22 @@ fun CleanerScreen(
     navigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     CleanerContent(
         uiState = uiState,
-        onAction = viewModel::onAction,
+        onAction = { action ->
+            when (action) {
+                is CleanerAction.CallCleaner -> {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${action.phone}")
+                    }
+                    context.startActivity(intent)
+                }
+
+                else -> viewModel.onAction(action)
+            }
+        },
         navigateToPublish = navigateToPublish,
         navigateBack = navigateBack,
         navigateToHome = navigateToHome
