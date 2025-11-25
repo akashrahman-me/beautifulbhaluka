@@ -55,6 +55,7 @@ import com.akash.beautifulbhaluka.presentation.screens.food.FoodScreen
 import com.akash.beautifulbhaluka.presentation.screens.freedomfighter.FreedomFighterScreen
 import com.akash.beautifulbhaluka.presentation.screens.gallery.GalleryScreen
 import com.akash.beautifulbhaluka.presentation.screens.gentsparlour.GentsParlourScreen
+import com.akash.beautifulbhaluka.presentation.screens.gentsparlour.publish.PublishGentsParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.guides.GuidesScreen
 import com.akash.beautifulbhaluka.presentation.screens.gym.GymScreen
 import com.akash.beautifulbhaluka.presentation.screens.gym.publish.PublishGymScreen
@@ -117,7 +118,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.LADIES_PARLOUR
+    startDestination: String = NavigationRoutes.GENTS_PARLOUR
 ) {
     NavHost(
         navController = navController,
@@ -651,7 +652,21 @@ fun AppNavigation(
             )
         }
         composable(NavigationRoutes.GENTS_PARLOUR) {
-            GentsParlourScreen()
+            GentsParlourScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_GENTS_PARLOUR) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_GENTS_PARLOUR) {
+            PublishGentsParlourScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.GYM) {
             GymScreen(

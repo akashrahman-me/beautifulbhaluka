@@ -140,6 +140,7 @@ object NavigationRoutes {
     const val LADIES_PARLOUR = "ladies_parlour"
     const val PUBLISH_LADIES_PARLOUR = "publish_ladies_parlour"
     const val GENTS_PARLOUR = "gents_parlour"
+    const val PUBLISH_GENTS_PARLOUR = "publish_gents_parlour"
     const val GYM = "gym"
     const val PUBLISH_GYM = "publish_gym"
 

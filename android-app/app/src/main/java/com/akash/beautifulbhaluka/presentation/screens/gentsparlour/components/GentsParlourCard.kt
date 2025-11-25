@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.akash.beautifulbhaluka.presentation.components.common.RatingSection
 import com.akash.beautifulbhaluka.presentation.screens.gentsparlour.GentsParlour
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +28,7 @@ import com.akash.beautifulbhaluka.presentation.screens.gentsparlour.GentsParlour
 fun GentsParlourCard(
     parlour: GentsParlour,
     onCallClick: (String) -> Unit,
+    onRatingChange: (String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -75,7 +77,7 @@ fun GentsParlourCard(
                 )
 
                 // Description (if available)
-                if (!parlour.description.isNullOrBlank()) {
+                if (parlour.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = parlour.description,
@@ -88,7 +90,7 @@ fun GentsParlourCard(
                 }
 
                 // Address (if available)
-                if (!parlour.address.isNullOrBlank()) {
+                if (parlour.address.isNotBlank()) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -184,6 +186,15 @@ fun GentsParlourCard(
                         )
                     }
                 }
+
+                // Rating section
+                Spacer(modifier = Modifier.height(16.dp))
+                RatingSection(
+                    averageRating = parlour.averageRating,
+                    ratingCount = parlour.ratingCount,
+                    userRating = parlour.userRating,
+                    onRatingChange = { rating -> onRatingChange(parlour.id, rating) }
+                )
             }
         }
     }
