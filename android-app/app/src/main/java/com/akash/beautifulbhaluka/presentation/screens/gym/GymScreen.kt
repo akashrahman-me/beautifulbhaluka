@@ -173,6 +173,9 @@ fun GymContent(
                                 gym = gym,
                                 onCallClick = { phone ->
                                     onAction(GymAction.CallGym(phone))
+                                },
+                                onRatingChange = { gymId, rating ->
+                                    onAction(GymAction.RateGym(gymId, rating))
                                 }
                             )
                         }
