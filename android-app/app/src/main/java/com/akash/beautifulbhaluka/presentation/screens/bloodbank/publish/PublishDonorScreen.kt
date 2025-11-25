@@ -1,6 +1,11 @@
 package com.akash.beautifulbhaluka.presentation.screens.bloodbank.publish
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -10,20 +15,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,6 +136,12 @@ fun PublishDonorContent(
                 )
             }
 
+            // Photo Upload Section
+            PhotoUploadSection(
+                photoUri = uiState.photoUri,
+                onPhotoSelected = { uri -> onAction(PublishDonorAction.UpdatePhotoUri(uri)) }
+            )
+
             // Personal Information Section
             SectionCard(
                 title = "ব্যক্তিগত তথ্য",
@@ -180,16 +197,34 @@ fun PublishDonorContent(
                         error = uiState.validationErrors.address
                     )
 
-                    ModernTextField(
+                    DatePickerField(
                         value = uiState.lastDonationDate,
-                        onValueChange = { onAction(PublishDonorAction.UpdateLastDonationDate(it)) },
                         label = "সর্বশেষ রক্তদান তারিখ",
-                        placeholder = "DD/MM/YYYY",
+                        placeholder = "তারিখ নির্বাচন করুন",
                         leadingIcon = Icons.Outlined.CalendarToday,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onClick = { onAction(PublishDonorAction.SetShowDatePicker(true)) },
                         error = uiState.validationErrors.lastDonationDate
                     )
+
+                    ModernTextField(
+                        value = uiState.totalDonations,
+                        onValueChange = { onAction(PublishDonorAction.UpdateTotalDonations(it)) },
+                        label = "মোট রক্তদান সংখ্যা",
+                        placeholder = "যেমন: ৫",
+                        leadingIcon = Icons.Outlined.Numbers,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        error = uiState.validationErrors.totalDonations
+                    )
                 }
+            }
+
+            // Date Picker Dialog
+            if (uiState.showDatePicker) {
+                DatePickerDialog(
+                    selectedDate = uiState.selectedDate,
+                    onDateSelected = { date -> onAction(PublishDonorAction.SelectDate(date)) },
+                    onDismiss = { onAction(PublishDonorAction.SetShowDatePicker(false)) }
+                )
             }
 
             // Social Links Section
@@ -228,7 +263,8 @@ fun PublishDonorContent(
                         uiState.mobileNumber.isNotEmpty() &&
                         uiState.bloodGroup.isNotEmpty() &&
                         uiState.address.isNotEmpty() &&
-                        uiState.lastDonationDate.isNotEmpty(),
+                        uiState.lastDonationDate.isNotEmpty() &&
+                        uiState.totalDonations.isNotEmpty(),
                 onClick = { onAction(PublishDonorAction.Submit) }
             )
 
@@ -545,7 +581,7 @@ private fun BloodGroupDropdown(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
@@ -592,4 +628,233 @@ private fun BloodGroupDropdown(
     }
 }
 
+@Composable
+private fun PhotoUploadSection(
+    photoUri: Uri?,
+    onPhotoSelected: (Uri?) -> Unit
+) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        onPhotoSelected(uri)
+    }
 
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(
+                            brush = Brush.linearGradient(
+                                listOf(Color(0xFF9C27B0), Color(0xFFBA68C8))
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PhotoCamera,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                Text(
+                    text = "ছবি আপলোড করুন (ঐচ্ছিক)",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 3.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF9C27B0), Color(0xFFBA68C8))
+                        ),
+                        shape = CircleShape
+                    )
+                    .clickable { launcher.launch("image/*") }
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (photoUri != null) {
+                    AsyncImage(
+                        model = photoUri,
+                        contentDescription = "Selected photo",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CameraAlt,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "ছবি নির্বাচন করুন",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            if (photoUri != null) {
+                TextButton(
+                    onClick = { onPhotoSelected(null) },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color(0xFFE53935)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("ছবি মুছুন")
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerField(
+    value: String,
+    label: String,
+    placeholder: String,
+    leadingIcon: ImageVector,
+    onClick: () -> Unit,
+    error: String?
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {},
+            label = { Text(label) },
+            placeholder = { Text(placeholder) },
+            leadingIcon = {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.CalendarMonth,
+                    contentDescription = "Open calendar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
+            enabled = false,
+            readOnly = true,
+            isError = error != null,
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.primary,
+                disabledLabelColor = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            shape = RoundedCornerShape(16.dp)
+        )
+
+        if (error != null) {
+            Text(
+                text = error,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerDialog(
+    selectedDate: LocalDate?,
+    onDateSelected: (LocalDate) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate?.atStartOfDay(java.time.ZoneId.systemDefault())
+            ?.toInstant()?.toEpochMilli()
+            ?: System.currentTimeMillis()
+    )
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val instant = java.time.Instant.ofEpochMilli(millis)
+                        val date = instant.atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                        onDateSelected(date)
+                    }
+                }
+            ) {
+                Text("নির্বাচন করুন")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("বাতিল করুন")
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState,
+            title = {
+                Text(
+                    text = "সর্বশেষ রক্তদান তারিখ নির্বাচন করুন",
+                    modifier = Modifier.padding(16.dp)
+                )
+            },
+            headline = null,
+            showModeToggle = false
+        )
+    }
+}

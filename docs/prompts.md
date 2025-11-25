@@ -33,3 +33,9 @@ be sure you follow our architecture I attached and ensure design it ultra-modern
 2. The blood icon should be colored red.
 3. The profile card is blending into the background, so add a light border color to the card or increase the shadow.\*\*
 4. There is a lot of empty space between the blood group and the Facebook/WhatsApp icons on the profile card. In that empty space, show the total number of blood donations. When the donation date is updated, the number of total donations should increase accordingly.
+
+---
+
+1. **There is no option to add a photo. Please add a photo upload option.**
+2. **For the last blood donation date, the date has to be typed manually. But clicking there should open a calendar so the date can be selected from it.**
+3. **Add a field for total blood donations.**

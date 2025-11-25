@@ -28,6 +28,9 @@ class PublishDonorViewModel : ViewModel() {
             is PublishDonorAction.UpdateLastDonationDate -> updateLastDonationDate(action.date)
             is PublishDonorAction.UpdateFacebookLink -> updateFacebookLink(action.link)
             is PublishDonorAction.UpdateWhatsAppNumber -> updateWhatsAppNumber(action.number)
+            is PublishDonorAction.UpdateTotalDonations -> updateTotalDonations(action.count)
+            is PublishDonorAction.UpdatePhotoUri -> updatePhotoUri(action.uri)
+            is PublishDonorAction.SelectDate -> selectDate(action.date)
             is PublishDonorAction.SetBloodGroupDropdownExpanded -> setDropdownExpanded(action.expanded)
             is PublishDonorAction.SetShowDatePicker -> setShowDatePicker(action.show)
             is PublishDonorAction.Submit -> submitDonor()
@@ -61,6 +64,28 @@ class PublishDonorViewModel : ViewModel() {
 
     private fun updateWhatsAppNumber(number: String) {
         _uiState.update { it.copy(whatsappNumber = number) }
+    }
+
+    private fun updateTotalDonations(count: String) {
+        // Only allow digits
+        val filtered = count.filter { it.isDigit() }
+        _uiState.update { it.copy(totalDonations = filtered) }
+    }
+
+    private fun updatePhotoUri(uri: android.net.Uri?) {
+        _uiState.update { it.copy(photoUri = uri) }
+    }
+
+    private fun selectDate(date: java.time.LocalDate) {
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val dateString = date.format(formatter)
+        _uiState.update {
+            it.copy(
+                selectedDate = date,
+                lastDonationDate = dateString,
+                showDatePicker = false
+            )
+        }
     }
 
     private fun setDropdownExpanded(expanded: Boolean) {
@@ -139,12 +164,18 @@ class PublishDonorViewModel : ViewModel() {
             },
             lastDonationDate = if (state.lastDonationDate.isBlank()) {
                 "সর্বশেষ রক্তদান তারিখ প্রয়োজন"
-            } else null
+            } else null,
+            totalDonations = when {
+                state.totalDonations.isBlank() -> "মোট রক্তদান সংখ্যা প্রয়োজন"
+                state.totalDonations.toIntOrNull() == null -> "সঠিক সংখ্যা দিন"
+                state.totalDonations.toInt() < 0 -> "সংখ্যা ০ বা তার বেশি হতে হবে"
+                else -> null
+            }
         )
     }
 }
 
 private fun ValidationErrors.hasErrors(): Boolean {
-    return fullName != null || mobileNumber != null || bloodGroup != null || address != null || lastDonationDate != null
+    return fullName != null || mobileNumber != null || bloodGroup != null || address != null || lastDonationDate != null || totalDonations != null
 }
 
