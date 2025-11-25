@@ -15,10 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.TwoWheeler
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.AirportShuttle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.carrent.components.CarCard
 
@@ -333,7 +330,7 @@ private fun CategoryFilterCard(
     category: String,
     onClick: () -> Unit
 ) {
-    val icon = getCategoryIcon(category)
+    val imageUrl = getCategoryImageUrl(category)
 
     Box(
         modifier = Modifier
@@ -342,22 +339,13 @@ private fun CategoryFilterCard(
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
     ) {
-        // Background with icon
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize(0.6f)
-                    .offset(y = (-8).dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)
-            )
-        }
+        // Background image
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = category,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
         // Gradient overlay
         Box(
@@ -392,16 +380,16 @@ private fun CategoryFilterCard(
     }
 }
 
-private fun getCategoryIcon(category: String): ImageVector {
+private fun getCategoryImageUrl(category: String): String {
     return when (category) {
-        CarCategory.PRIVATE_CAR -> Icons.Default.DirectionsCar
-        CarCategory.HIACE -> Icons.Default.AirportShuttle
-        CarCategory.NOAH -> Icons.Default.DirectionsCar
-        CarCategory.BUS -> Icons.Default.DirectionsBus
-        CarCategory.TRUCK -> Icons.Default.LocalShipping
-        CarCategory.MOTORCYCLE -> Icons.Default.TwoWheeler
-        CarCategory.BEKU -> Icons.Default.TwoWheeler
-        else -> Icons.Default.DirectionsCar
+        CarCategory.PRIVATE_CAR -> "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=400&h=600&fit=crop"
+        CarCategory.HIACE -> "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=600&fit=crop"
+        CarCategory.NOAH -> "https://images.unsplash.com/photo-1527786356703-4b100091cd2c?w=400&h=600&fit=crop"
+        CarCategory.BUS -> "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=600&fit=crop"
+        CarCategory.TRUCK -> "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=400&h=600&fit=crop"
+        CarCategory.MOTORCYCLE -> "https://images.unsplash.com/photo-1558981852-426c6c22a060?w=400&h=600&fit=crop"
+        CarCategory.BEKU -> "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=400&h=600&fit=crop"
+        else -> "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=600&fit=crop"
     }
 }
 

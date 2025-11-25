@@ -54,8 +54,7 @@ fun PublishCarContent(
         topBar = {
             ScreenTopBar(
                 title = "গাড়ি ভাড়া যোগ করুন",
-                onNavigateBack = navigateBack,
-                onNavigateHome = navigateHome
+                onNavigateBack = navigateBack
             )
         }
     ) { paddingValues ->
