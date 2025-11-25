@@ -42,6 +42,7 @@ object NavigationRoutes {
     const val WEATHER = "weather"
     const val EMERGENCY = "emergency"
     const val DIRECTORY = "directory"
+    const val PUBLISH_DIRECTORY = "publish_directory"
 
     // Commerce & Media
     const val SHOPPING = "shopping"

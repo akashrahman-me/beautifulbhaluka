@@ -41,6 +41,7 @@ import com.akash.beautifulbhaluka.presentation.screens.craftsman.CraftsmanScreen
 import com.akash.beautifulbhaluka.presentation.screens.culture.CultureScreen
 import com.akash.beautifulbhaluka.presentation.screens.cyberexpert.CyberExpertScreen
 import com.akash.beautifulbhaluka.presentation.screens.directory.DirectoryScreen
+import com.akash.beautifulbhaluka.presentation.screens.directory.publish.PublishDirectoryScreen
 import com.akash.beautifulbhaluka.presentation.screens.doctor.DoctorScreen
 import com.akash.beautifulbhaluka.presentation.screens.electricity.ElectricityScreen
 import com.akash.beautifulbhaluka.presentation.screens.electricity.publish.PublishElectricityScreen
@@ -118,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.GENTS_PARLOUR
+    startDestination: String = NavigationRoutes.DIRECTORY
 ) {
     NavHost(
         navController = navController,
@@ -319,7 +320,21 @@ fun AppNavigation(
             EmergencyScreen()
         }
         composable(NavigationRoutes.DIRECTORY) {
-            DirectoryScreen()
+            DirectoryScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_DIRECTORY) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_DIRECTORY) {
+            PublishDirectoryScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
 
         // Commerce & Media
