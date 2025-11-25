@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.DIRECTORY
+    startDestination: String = NavigationRoutes.KAZI_OFFICE
 ) {
     NavHost(
         navController = navController,
@@ -516,7 +516,15 @@ fun AppNavigation(
             )
         }
         composable(NavigationRoutes.KAZI_OFFICE) {
-            KaziOfficeScreen()
+            KaziOfficeScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         // Educational Services

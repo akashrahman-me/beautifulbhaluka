@@ -45,7 +45,7 @@ fun KaziCard(
         ) {
             // Left-aligned avatar image
             Box(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(64.dp),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -55,7 +55,7 @@ fun KaziCard(
                         .build(),
                     contentDescription = kazi.name,
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(64.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -155,23 +155,14 @@ fun KaziCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    FilledTonalButton(
+                    FilledTonalIconButton(
                         onClick = { onCallClick(kazi.phone) },
-                        modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(18.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                        modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Call,
-                            contentDescription = "Call",
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "কল করুন",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium
-                            )
+                            contentDescription = "কল করুন",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
