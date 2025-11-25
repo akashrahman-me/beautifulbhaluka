@@ -71,6 +71,7 @@ import com.akash.beautifulbhaluka.presentation.screens.jobs.JobsScreen
 import com.akash.beautifulbhaluka.presentation.screens.jobs.details.JobDetailsScreen
 import com.akash.beautifulbhaluka.presentation.screens.kazioffice.KaziOfficeScreen
 import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.LadiesParlourScreen
+import com.akash.beautifulbhaluka.presentation.screens.ladiesparlour.publish.PublishLadiesParlourScreen
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.LawyerScreen
 import com.akash.beautifulbhaluka.presentation.screens.lawyer.publish.PublishLawyerScreen
 import com.akash.beautifulbhaluka.presentation.screens.maps.MapsScreen
@@ -116,7 +117,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.GYM
+    startDestination: String = NavigationRoutes.LADIES_PARLOUR
 ) {
     NavHost(
         navController = navController,
@@ -633,7 +634,21 @@ fun AppNavigation(
 
         // Beauty & Wellness
         composable(NavigationRoutes.LADIES_PARLOUR) {
-            LadiesParlourScreen()
+            LadiesParlourScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToPublish = { navController.navigate(NavigationRoutes.PUBLISH_LADIES_PARLOUR) },
+                navigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(NavigationRoutes.PUBLISH_LADIES_PARLOUR) {
+            PublishLadiesParlourScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavigationRoutes.GENTS_PARLOUR) {
             GentsParlourScreen()
