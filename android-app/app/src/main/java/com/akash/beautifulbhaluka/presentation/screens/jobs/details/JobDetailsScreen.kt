@@ -1,6 +1,5 @@
 package com.akash.beautifulbhaluka.presentation.screens.jobs.details
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,10 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.Job
+import com.akash.beautifulbhaluka.presentation.screens.jobs.components.ApplicationDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -73,7 +71,8 @@ fun JobDetailsScreen(
             uiState.job != null -> {
                 val job = uiState.job!!
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Hero Section with Company Banner
                     item {
@@ -124,7 +123,7 @@ fun JobDetailsScreen(
 
     // Application Dialog
     if (uiState.showApplicationDialog) {
-        ModernApplicationDialog(
+        ApplicationDialog(
             uiState = uiState,
             onAction = viewModel::onAction
         )
@@ -196,7 +195,8 @@ private fun HeroJobSection(
     ) {
         // Company Image
         AsyncImage(
-            model = job.imageUrl ?: "https://via.placeholder.com/600x300/6366F1/FFFFFF?text=${job.company.firstOrNull() ?: "C"}",
+            model = job.imageUrl
+                ?: "https://via.placeholder.com/600x300/6366F1/FFFFFF?text=${job.company.firstOrNull() ?: "C"}",
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -403,6 +403,7 @@ private fun QuickStatItem(
                     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale("bn"))
                     sdf.format(Date(value))
                 }
+
                 is Int -> value.toString()
                 else -> value.toString()
             },
@@ -437,7 +438,10 @@ private fun ModernJobDescription(job: Job) {
                 color = Color(0xFF6366F1)
             )
 
-            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
 
             Text(
                 text = job.description,
@@ -467,7 +471,10 @@ private fun ModernRequirementsCard(job: Job) {
                 color = Color(0xFF10B981)
             )
 
-            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
 
             DetailRow(
                 icon = Icons.Outlined.School,
@@ -511,7 +518,10 @@ private fun ModernCompanyCard(job: Job) {
                 color = Color(0xFF8B5CF6)
             )
 
-            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
 
             DetailRow(
                 icon = Icons.Outlined.Business,
@@ -687,80 +697,3 @@ private fun ModernErrorState(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ModernApplicationDialog(
-    uiState: JobDetailsUiState,
-    onAction: (JobDetailsAction) -> Unit
-) {
-    Dialog(onDismissRequest = { onAction(JobDetailsAction.DismissApplicationDialog) }) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                Text(
-                    text = "আবেদন করুন",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                OutlinedTextField(
-                    value = uiState.applicantName,
-                    onValueChange = { onAction(JobDetailsAction.UpdateApplicantName(it)) },
-                    label = { Text("আপনার নাম") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = uiState.applicantEmail,
-                    onValueChange = { onAction(JobDetailsAction.UpdateApplicantEmail(it)) },
-                    label = { Text("ইমেইল") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = uiState.applicantPhone,
-                    onValueChange = { onAction(JobDetailsAction.UpdateApplicantPhone(it)) },
-                    label = { Text("ফোন নম্বর") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = { onAction(JobDetailsAction.DismissApplicationDialog) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp)
-                    ) {
-                        Text("বাতিল")
-                    }
-
-                    Button(
-                        onClick = { onAction(JobDetailsAction.SubmitApplication) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp),
-                        enabled = !uiState.isSubmitting
-                    ) {
-                        if (uiState.isSubmitting) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp,
-                                color = Color.White
-                            )
-                        } else {
-                            Text("সাবমিট")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
