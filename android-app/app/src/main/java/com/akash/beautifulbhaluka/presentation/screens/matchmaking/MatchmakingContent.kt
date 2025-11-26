@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -171,9 +172,15 @@ fun MatchmakingTopBar(
                 )
                 Text(
                     text = "পাত্রপাত্রী",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color(0xFFFF6B9D),
+                                Color(0xFFC06C84)
+                            )
+                        )
+                    ),
+                    fontWeight = FontWeight.Bold
                 )
             }
 
