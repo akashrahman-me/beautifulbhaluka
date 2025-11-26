@@ -70,45 +70,49 @@ fun BuySellContent(
                 onFilterClick = { showFilterSheet = true }
             )
 
+            // Main content with LazyColumn that always shows controls
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Search Field below TopBar - always visible
+                item {
+                    SearchField(
+                        searchQuery = uiState.searchQuery,
+                        onSearchQueryChange = { onAction(BuySellAction.UpdateSearchQuery(it)) }
+                    )
+                }
 
-            // Items List with modern cards
-            if (uiState.isLoading) {
-                LoadingShimmer()
-            } else if (uiState.filteredItems.isEmpty()) {
-                EmptyStateView()
-            } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                // Category Pills Row - always visible
+                item {
+                    CategoryPillsRow(
+                        categories = uiState.categories,
+                        selectedCategory = uiState.selectedCategory,
+                        onCategorySelected = { onAction(BuySellAction.SelectCategory(it)) }
+                    )
+                }
 
-                    // Search Field below TopBar
-                    item {
+                // Filter Chips Row - always visible
+                item {
+                    FilterChipsRow(
+                        selectedFilter = uiState.selectedFilter,
+                        onFilterSelected = { onAction(BuySellAction.SelectFilter(it)) }
+                    )
+                }
 
-                        SearchField(
-                            searchQuery = uiState.searchQuery,
-                            onSearchQueryChange = { onAction(BuySellAction.UpdateSearchQuery(it)) }
-                        )
+                // Content based on state
+                if (uiState.isLoading) {
+                    items(3) {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            ShimmerCard()
+                        }
                     }
-
-                    // Category Pills Row - scrollable
+                } else if (uiState.filteredItems.isEmpty()) {
                     item {
-                        CategoryPillsRow(
-                            categories = uiState.categories,
-                            selectedCategory = uiState.selectedCategory,
-                            onCategorySelected = { onAction(BuySellAction.SelectCategory(it)) }
-                        )
+                        EmptyStateView()
                     }
-
-                    // Filter Chips Row - scrollable
-                    item {
-                        FilterChipsRow(
-                            selectedFilter = uiState.selectedFilter,
-                            onFilterSelected = { onAction(BuySellAction.SelectFilter(it)) }
-                        )
-                    }
-
+                } else {
                     // Stats Card
                     item {
                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -127,11 +131,11 @@ fun BuySellContent(
                             )
                         }
                     }
+                }
 
-                    // Bottom spacing
-                    item {
-                        Spacer(modifier = Modifier.height(80.dp))
-                    }
+                // Bottom spacing
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }
@@ -922,20 +926,6 @@ fun FilterBottomSheet(
 }
 
 @Composable
-fun LoadingShimmer() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        repeat(3) {
-            ShimmerCard()
-        }
-    }
-}
-
-@Composable
 fun ShimmerCard() {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val alpha by infiniteTransition.animateFloat(
@@ -966,8 +956,9 @@ fun ShimmerCard() {
 fun EmptyStateView() {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
+            .fillMaxWidth()
+            .padding(32.dp)
+            .padding(top = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
