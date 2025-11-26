@@ -77,20 +77,6 @@ fun WritingCard(
                         contentScale = ContentScale.Crop
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
-                                    )
-                                )
-                            )
-                    )
-
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
