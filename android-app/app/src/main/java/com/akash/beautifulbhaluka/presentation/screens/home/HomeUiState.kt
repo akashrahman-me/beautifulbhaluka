@@ -125,13 +125,7 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     route = NavigationRoutes.NEWS,
                     description = "খবর ও সংবাদ"
                 ),
-                LinkItem(
-                    id = "book_buddy",
-                    title = "লেখক বন্ধু",
-                    icon = R.drawable.y1735022072408,
-                    route = NavigationRoutes.BOOK_BUDDY,
-                    description = "গল্প, কবিতা, উপন্যাস"
-                ),
+
                 LinkItem(
                     id = "lawyer",
                     title = "আইনজীবী",
@@ -383,7 +377,7 @@ private fun getDefaultLinkSections(): List<LinkSection> {
             )
         ),
         LinkSection(
-            name = "বিবাহ",
+            name = "জীবনধারা",
             values = listOf(
                 LinkItem(
                     id = "marriage",
@@ -400,11 +394,11 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     description = "ভাড়া বাসা"
                 ),
                 LinkItem(
-                    id = "kazi_office2",
-                    title = "কাজী অফিস",
-                    icon = R.drawable.p234098230984,
-                    route = NavigationRoutes.KAZI_OFFICE,
-                    description = "বিবাহ নিবন্ধন"
+                    id = "book_buddy",
+                    title = "লেখক বন্ধু",
+                    icon = R.drawable.article_3660717,
+                    route = NavigationRoutes.BOOK_BUDDY,
+                    description = "গল্প, কবিতা, উপন্যাস"
                 )
             )
         ),

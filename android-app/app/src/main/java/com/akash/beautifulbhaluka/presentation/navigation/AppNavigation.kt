@@ -1105,6 +1105,14 @@ fun AppNavigation(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
+                onNavigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 onNavigateToDetail = { writingId ->
                     navController.navigate(NavigationRoutes.writingDetail(writingId))
                 },
