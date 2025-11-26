@@ -26,11 +26,11 @@ class ProductDetailsViewModel : ViewModel() {
             description = "একদম নতুন কন্ডিশনে স্যামসাং গ্যালাক্সি A54। সব ফিচার সহ। ৬GB RAM, ১২৮GB স্টোরেজ। সাথে অরিজিনাল চার্জার ও ইয়ারফোন দেওয়া হবে।",
             price = 35000.0,
             originalPrice = 40000.0,
-            imageUrl = "https://via.placeholder.com/300",
+            imageUrl = "https://picsum.photos/600/400?random=1",
             imageUrls = listOf(
-                "https://via.placeholder.com/300x300/FF0000",
-                "https://via.placeholder.com/300x300/00FF00",
-                "https://via.placeholder.com/300x300/0000FF"
+                "https://picsum.photos/600/400?random=1",
+                "https://picsum.photos/600/400?random=2",
+                "https://picsum.photos/600/400?random=3"
             ),
             category = ProductCategory(
                 "5",
@@ -54,8 +54,8 @@ class ProductDetailsViewModel : ViewModel() {
             name = "হোন্ডা মোটরসাইকেল",
             description = "২০২২ মডেল হোন্ডা বাইক, খুবই ভালো কন্ডিশন। নিয়মিত সার্ভিসিং করা হয়েছে। কোনো দুর্ঘটনার ইতিহাস নেই।",
             price = 125000.0,
-            imageUrl = "https://via.placeholder.com/300",
-            imageUrls = listOf("https://via.placeholder.com/300"),
+            imageUrl = "https://picsum.photos/600/400?random=4",
+            imageUrls = listOf("https://picsum.photos/600/400?random=4"),
             category = ProductCategory(
                 "6",
                 "যানবাহন",
@@ -77,8 +77,8 @@ class ProductDetailsViewModel : ViewModel() {
             description = "Dell Inspiron 15 3000 সিরিজ। Intel Core i5 প্রসেসর, 8GB RAM, 1TB HDD। অফিস ও পড়াশোনার জন্য পারফেক্ট।",
             price = 45000.0,
             originalPrice = 55000.0,
-            imageUrl = "https://via.placeholder.com/300",
-            imageUrls = listOf("https://via.placeholder.com/300"),
+            imageUrl = "https://picsum.photos/600/400?random=5",
+            imageUrls = listOf("https://picsum.photos/600/400?random=5"),
             category = ProductCategory(
                 "7",
                 "কম্পিউটার",

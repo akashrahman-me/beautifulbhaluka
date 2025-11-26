@@ -1,5 +1,6 @@
 package com.akash.beautifulbhaluka.presentation.screens.shops.details
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -240,9 +241,9 @@ private fun HeroImageSection(
             .fillMaxWidth()
             .height(400.dp)
     ) {
-        // Product Image
+
         AsyncImage(
-            model = product.imageUrl.ifBlank { "https://via.placeholder.com/600x400/E8F5E8/10B981?text=${product.name.first()}" },
+            model = product.imageUrl,
             contentDescription = product.name,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

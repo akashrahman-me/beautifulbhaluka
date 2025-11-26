@@ -643,9 +643,8 @@ fun ModernProductCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val placeholderChar = product.name.firstOrNull()?.uppercaseChar() ?: 'P'
     val imageModel = product.imageUrl.ifBlank {
-        "https://via.placeholder.com/400x300/E8F5E8/10B981?text=$placeholderChar"
+        "https://picsum.photos/400/300?random=${product.id}"
     }
 
     Card(
