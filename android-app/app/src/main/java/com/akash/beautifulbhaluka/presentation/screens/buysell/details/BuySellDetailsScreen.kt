@@ -75,6 +75,7 @@ fun BuySellDetailsScreen(
                     onRetry = { viewModel.onAction(BuySellDetailsAction.LoadItem(itemId)) },
                     onNavigateBack = onNavigateBack
                 )
+
                 uiState.item != null -> BuySellDetailsContent(
                     item = uiState.item!!,
                     uiState = uiState,
@@ -270,8 +271,9 @@ fun BuySellDetailsContent(
             }
         }
 
-        // Bottom Action Bar
+        // Bottom Action Bar - Sticky at bottom
         BottomActionBar(
+            modifier = Modifier.align(Alignment.BottomCenter),
             item = item,
             isContactingSeller = uiState.isContactingSeller,
             onAction = onAction
@@ -1026,16 +1028,17 @@ fun SafetyTipsSection() {
 
 @Composable
 fun BottomActionBar(
+    modifier: Modifier = Modifier,
     item: BuySellItem,
     isContactingSeller: Boolean,
     onAction: (BuySellDetailsAction) -> Unit
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .shadow(8.dp),
+            .shadow(0.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp
+        tonalElevation = 1.dp
     ) {
         Row(
             modifier = Modifier

@@ -46,7 +46,7 @@ fun PublishBuySellScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
@@ -158,8 +158,20 @@ fun PublishBuySellScreen(
                         priceError = uiState.priceError,
                         isNegotiable = uiState.isNegotiable,
                         onPriceChange = { viewModel.onAction(PublishBuySellAction.UpdatePrice(it)) },
-                        onOriginalPriceChange = { viewModel.onAction(PublishBuySellAction.UpdateOriginalPrice(it)) },
-                        onNegotiableToggle = { viewModel.onAction(PublishBuySellAction.ToggleNegotiable(it)) }
+                        onOriginalPriceChange = {
+                            viewModel.onAction(
+                                PublishBuySellAction.UpdateOriginalPrice(
+                                    it
+                                )
+                            )
+                        },
+                        onNegotiableToggle = {
+                            viewModel.onAction(
+                                PublishBuySellAction.ToggleNegotiable(
+                                    it
+                                )
+                            )
+                        }
                     )
                 }
 
@@ -167,7 +179,13 @@ fun PublishBuySellScreen(
                 item {
                     ModernTextField(
                         value = uiState.description,
-                        onValueChange = { viewModel.onAction(PublishBuySellAction.UpdateDescription(it)) },
+                        onValueChange = {
+                            viewModel.onAction(
+                                PublishBuySellAction.UpdateDescription(
+                                    it
+                                )
+                            )
+                        },
                         label = "বিবরণ *",
                         placeholder = "পণ্যের বিস্তারিত বিবরণ লিখুন...",
                         icon = Icons.Outlined.Description,
@@ -208,7 +226,13 @@ fun PublishBuySellScreen(
                         isUrgent = uiState.isUrgent,
                         isFeatured = uiState.isFeatured,
                         onUrgentToggle = { viewModel.onAction(PublishBuySellAction.ToggleUrgent(it)) },
-                        onFeaturedToggle = { viewModel.onAction(PublishBuySellAction.ToggleFeatured(it)) }
+                        onFeaturedToggle = {
+                            viewModel.onAction(
+                                PublishBuySellAction.ToggleFeatured(
+                                    it
+                                )
+                            )
+                        }
                     )
                 }
 
@@ -268,11 +292,11 @@ fun PublishTopBar(
     isPublishing: Boolean
 ) {
     TopAppBar(
-        title = { 
+        title = {
             Text(
                 "বিজ্ঞাপন প্রকাশ করুন",
                 fontWeight = FontWeight.Bold
-            ) 
+            )
         },
         navigationIcon = {
             IconButton(
@@ -307,6 +331,7 @@ fun PublishHeader() {
             .padding(24.dp)
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -546,10 +571,10 @@ fun TypeChip(
             .height(56.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer 
-                else MaterialTheme.colorScheme.surfaceVariant,
-        border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
-                else null,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant,
+        border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        else null,
         shadowElevation = if (isSelected) 4.dp else 0.dp
     ) {
         Column(
@@ -561,16 +586,16 @@ fun TypeChip(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = if (isSelected) MaterialTheme.colorScheme.primary 
-                       else MaterialTheme.colorScheme.onSurfaceVariant
+                tint = if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) MaterialTheme.colorScheme.primary 
-                       else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -1192,8 +1217,8 @@ fun CategoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        color = if (isSelected) Color(category.color).copy(alpha = 0.1f) 
-               else Color.Transparent
+        color = if (isSelected) Color(category.color).copy(alpha = 0.1f)
+        else Color.Transparent
     ) {
         Row(
             modifier = Modifier
