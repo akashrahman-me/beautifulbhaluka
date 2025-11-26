@@ -1,14 +1,13 @@
 package com.akash.beautifulbhaluka.presentation.screens.shops
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,8 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.akash.beautifulbhaluka.presentation.components.common.ScrollAnimatedHeader
-import com.akash.beautifulbhaluka.presentation.components.common.rememberScrollHeaderState
 import java.text.NumberFormat
 import java.util.*
 
@@ -46,13 +43,11 @@ fun ShopsContent(
     filteredProducts: List<Product>,
     onAction: (ShopsAction) -> Unit,
     onNavigateToDetails: ((String) -> Unit)?,
-    onNavigateToPublish: (() -> Unit)?
+    onNavigateToPublish: (() -> Unit)?,
+    onNavigateHome: (() -> Unit)? = null
 ) {
     var showSortSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-
-    // Use reusable scroll header state hook
-    val showHeader = rememberScrollHeaderState(scrollState = listState)
 
     // Modern gradient background
     val gradientBrush = Brush.verticalGradient(
@@ -67,15 +62,16 @@ fun ShopsContent(
             .fillMaxSize()
             .background(gradientBrush)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Modern Top Bar with reusable scroll animation
-            ScrollAnimatedHeader(visible = showHeader) {
-                ShopsTopBar(
-                    onAction = onAction,
-                    uiState = uiState,
-                    onSortClick = { showSortSheet = true }
-                )
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Modern Top Bar
+            ShopsTopBar(
+                onSortClick = { showSortSheet = true },
+                onNavigateHome = onNavigateHome
+            )
+
 
             // Main content
             when {
@@ -97,6 +93,50 @@ fun ShopsContent(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        // Search Bar
+                        item {
+                            OutlinedTextField(
+                                value = uiState.searchQuery,
+                                onValueChange = { onAction(ShopsAction.SearchProducts(it)) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .shadow(4.dp, RoundedCornerShape(28.dp)),
+                                placeholder = {
+                                    Text(
+                                        "পণ্য খুঁজুন...",
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Search,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                trailingIcon = {
+                                    if (uiState.searchQuery.isNotEmpty()) {
+                                        IconButton(
+                                            onClick = { onAction(ShopsAction.SearchProducts("")) }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Close,
+                                                contentDescription = "মুছুন"
+                                            )
+                                        }
+                                    }
+                                },
+                                shape = RoundedCornerShape(28.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent
+                                ),
+                                singleLine = true
+                            )
+                        }
+
                         // Stats Card
                         item {
                             ShopsStatsCard(
@@ -123,14 +163,49 @@ fun ShopsContent(
                             )
                         }
 
-                        // Products Grid or Empty State
-                        item {
-                            if (filteredProducts.isNotEmpty()) {
-                                ModernProductGrid(
-                                    products = filteredProducts,
-                                    onProductClick = { onNavigateToDetails?.invoke(it.id) }
-                                )
-                            } else {
+                        // Products by Category or Empty State
+                        if (uiState.selectedCategory == null && uiState.searchQuery.isEmpty()) {
+                            // Show all categories with their products in horizontal scrollable rows
+                            val productsByCategory = uiState.products.groupBy { it.category }
+
+                            productsByCategory.forEach { (category, products) ->
+                                item {
+                                    CategoryProductSection(
+                                        category = category,
+                                        products = products,
+                                        onProductClick = { onNavigateToDetails?.invoke(it.id) },
+                                        onSeeMoreClick = {
+                                            onAction(
+                                                ShopsAction.NavigateToCategory(
+                                                    category
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        } else if (filteredProducts.isNotEmpty()) {
+                            // Show filtered products in a single category section
+                            val productsByCategory = filteredProducts.groupBy { it.category }
+
+                            productsByCategory.forEach { (category, products) ->
+                                item {
+                                    CategoryProductSection(
+                                        category = category,
+                                        products = products,
+                                        onProductClick = { onNavigateToDetails?.invoke(it.id) },
+                                        onSeeMoreClick = {
+                                            onAction(
+                                                ShopsAction.NavigateToCategory(
+                                                    category
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        } else {
+                            item {
                                 ModernEmptyState(
                                     onAddProductClick = { onNavigateToPublish?.invoke() }
                                 )
@@ -193,9 +268,8 @@ fun ShopsContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopsTopBar(
-    onAction: (ShopsAction) -> Unit,
-    uiState: ShopsUiState,
-    onSortClick: () -> Unit
+    onSortClick: () -> Unit,
+    onNavigateHome: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -208,15 +282,17 @@ fun ShopsTopBar(
                     )
                 )
             )
-            .padding(16.dp)
+            .statusBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
     ) {
+
         // Title Row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "দোকান পাট",
                     style = MaterialTheme.typography.headlineMedium,
@@ -230,63 +306,40 @@ fun ShopsTopBar(
                 )
             }
 
-            IconButton(
-                onClick = onSortClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
+
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.Sort,
-                    contentDescription = "সাজান",
-                    tint = Color.White
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Modern Search Bar
-        OutlinedTextField(
-            value = uiState.searchQuery,
-            onValueChange = { onAction(ShopsAction.SearchProducts(it)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(28.dp)),
-            placeholder = {
-                Text(
-                    "পণ্য খুঁজুন...",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            trailingIcon = {
-                if (uiState.searchQuery.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onAction(ShopsAction.SearchProducts("")) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = "মুছুন"
-                        )
-                    }
+                IconButton(
+                    onClick = onSortClick,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Sort,
+                        contentDescription = "সাজান",
+                        tint = Color.White
+                    )
                 }
-            },
-            shape = RoundedCornerShape(28.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            singleLine = true
-        )
+
+                IconButton(
+                    onClick = { onNavigateHome?.invoke() },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = "হোম",
+                        tint = Color.White
+                    )
+                }
+            }
+
+        }
     }
 }
 
@@ -498,22 +551,88 @@ fun FilterChipsRow(hasFilters: Boolean) {
 }
 
 @Composable
-fun ModernProductGrid(
+fun CategoryProductSection(
+    category: ProductCategory,
     products: List<Product>,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onSeeMoreClick: () -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.heightIn(max = 5000.dp),
-        userScrollEnabled = false
+        modifier = Modifier.fillMaxWidth()
     ) {
-        items(products, key = { it.id }) { product ->
-            ModernProductCard(
-                product = product,
-                onClick = { onProductClick(product) }
-            )
+        // Category Header with See More button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Category,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+                Column {
+                    Text(
+                        text = category.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "${products.size} টি পণ্য",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            TextButton(
+                onClick = onSeeMoreClick,
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "আরও দেখুন",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+
+        // Horizontal scrollable products row (max 6 items)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        ) {
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                products.take(6).forEach { product ->
+                    ModernProductCard(
+                        product = product,
+                        onClick = { onProductClick(product) },
+                        modifier = Modifier
+                            .width(180.dp)
+                            .fillMaxHeight()
+                    )
+                }
+            }
         }
     }
 }
@@ -521,7 +640,8 @@ fun ModernProductGrid(
 @Composable
 fun ModernProductCard(
     product: Product,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val placeholderChar = product.name.firstOrNull()?.uppercaseChar() ?: 'P'
     val imageModel = product.imageUrl.ifBlank {
@@ -530,16 +650,14 @@ fun ModernProductCard(
 
     Card(
         onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize(),
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
             pressedElevation = 8.dp
         )
     ) {
-        Column {
+        Column(modifier = Modifier.fillMaxHeight()) {
             // Product Image with badges
             Box {
                 AsyncImage(
@@ -647,7 +765,10 @@ fun ModernProductCard(
                 ) {
                     Column {
                         Text(
-                            text = "৳${NumberFormat.getNumberInstance(Locale("bn", "BD")).format(product.price.toInt())}",
+                            text = "৳${
+                                NumberFormat.getNumberInstance(Locale.forLanguageTag("bn-BD"))
+                                    .format(product.price.toInt())
+                            }",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF10B981)
@@ -683,7 +804,7 @@ fun ModernProductCard(
                                 tint = Color(0xFFF59E0B)
                             )
                             Text(
-                                text = String.format("%.1f", product.rating),
+                                text = String.format(Locale.US, "%.1f", product.rating),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant

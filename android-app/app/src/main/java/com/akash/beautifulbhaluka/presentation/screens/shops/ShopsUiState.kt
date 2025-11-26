@@ -60,6 +60,7 @@ enum class SortOption {
 sealed class ShopsAction {
     data class SearchProducts(val query: String) : ShopsAction()
     data class SelectCategory(val category: ProductCategory?) : ShopsAction()
+    data class NavigateToCategory(val category: ProductCategory) : ShopsAction()
     data class ToggleFavorite(val productId: String) : ShopsAction()
     data class SortProducts(val sortOption: SortOption) : ShopsAction()
     object Refresh : ShopsAction()

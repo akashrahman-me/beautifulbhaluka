@@ -9,15 +9,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun ShopsScreen(
     viewModel: ShopsViewModel = viewModel(),
     onNavigateToDetails: ((String) -> Unit)? = null,
-    onNavigateToPublish: (() -> Unit)? = null
+    onNavigateToPublish: (() -> Unit)? = null,
+    onNavigateToCategory: ((String) -> Unit)? = null,
+    onNavigateHome: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     ShopsContent(
         uiState = uiState,
         filteredProducts = uiState.filteredProducts,
-        onAction = viewModel::onAction,
+        onAction = { action ->
+            when (action) {
+                is ShopsAction.NavigateToCategory -> {
+                    onNavigateToCategory?.invoke(action.category.id)
+                }
+
+                else -> viewModel.onAction(action)
+            }
+        },
         onNavigateToDetails = onNavigateToDetails,
-        onNavigateToPublish = onNavigateToPublish
+        onNavigateToPublish = onNavigateToPublish,
+        onNavigateHome = onNavigateHome
     )
 }

@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.JOBS
+    startDestination: String = NavigationRoutes.SHOPS
 ) {
     NavHost(
         navController = navController,
@@ -409,6 +409,33 @@ fun AppNavigation(
                 },
                 onNavigateToPublish = {
                     navController.navigate(NavigationRoutes.PRODUCT_PUBLISH)
+                },
+                onNavigateToCategory = { categoryId ->
+                    navController.navigate(NavigationRoutes.categoryProducts(categoryId))
+                },
+                onNavigateHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.CATEGORY_PRODUCTS,
+            arguments = listOf(
+                navArgument("categoryId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: return@composable
+            com.akash.beautifulbhaluka.presentation.screens.shops.category.CategoryProductsScreen(
+                categoryId = categoryId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDetails = { productId ->
+                    navController.navigate(NavigationRoutes.productDetails(productId))
                 }
             )
         }

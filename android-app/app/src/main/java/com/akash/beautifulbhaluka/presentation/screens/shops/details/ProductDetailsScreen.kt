@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -75,7 +76,8 @@ fun ProductDetailsScreen(
 
             uiState.product != null -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Hero Image with Overlay Controls
                     item {
@@ -266,7 +268,9 @@ private fun HeroImageSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
                 .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -283,7 +287,7 @@ private fun HeroImageSection(
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 IconButton(
                     onClick = onShare,
                     modifier = Modifier
@@ -399,7 +403,10 @@ private fun ProductInfoCard(product: com.akash.beautifulbhaluka.presentation.scr
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "৳${NumberFormat.getNumberInstance(Locale("bn", "BD")).format(product.price.toInt())}",
+                    text = "৳${
+                        NumberFormat.getNumberInstance(Locale("bn", "BD"))
+                            .format(product.price.toInt())
+                    }",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF10B981)
@@ -414,7 +421,8 @@ private fun ProductInfoCard(product: com.akash.beautifulbhaluka.presentation.scr
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        val discount = ((product.originalPrice - product.price) / product.originalPrice * 100).toInt()
+                        val discount =
+                            ((product.originalPrice - product.price) / product.originalPrice * 100).toInt()
                         Surface(
                             shape = RoundedCornerShape(6.dp),
                             color = Color(0xFFEF4444).copy(alpha = 0.1f)

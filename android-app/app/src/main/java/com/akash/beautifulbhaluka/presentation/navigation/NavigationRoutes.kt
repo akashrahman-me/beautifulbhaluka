@@ -87,8 +87,15 @@ object NavigationRoutes {
     // Pattern route with argument placeholder
     const val JOB_DETAILS = "job_details/{jobId}"
     const val SHOPS = "shops"
+    const val CATEGORY_PRODUCTS = "category_products/{categoryId}"
     const val PRODUCT_DETAILS = "product_details/{productId}"
     const val PRODUCT_PUBLISH = "product_publish"
+
+    // Helper function for category navigation
+    fun categoryProducts(categoryId: String): String {
+        return "category_products/$categoryId"
+    }
+
     const val SOCIAL = "social"
     const val SETTINGS = "settings"
     const val ABOUT = "about"
