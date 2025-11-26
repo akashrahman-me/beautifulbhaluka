@@ -65,21 +65,6 @@ fun NavigationDrawer(
                 icon = Icons.Default.AccountCircle
             ),
             DrawerItem(
-                route = NavigationRoutes.MATCHMAKING,
-                label = "💍 Matchmaking (বিবাহ)",
-                icon = Icons.Default.Favorite
-            ),
-            DrawerItem(
-                route = NavigationRoutes.BUY_SELL,
-                label = "ক্রয়-বিক্রয় (Buy & Sell)",
-                icon = Icons.Default.ShoppingBag
-            ),
-            DrawerItem(
-                route = NavigationRoutes.BLOOD_BANK,
-                label = "🩸 রক্তদান (Blood Donate)",
-                icon = Icons.Default.WaterDrop
-            ),
-            DrawerItem(
                 route = NavigationRoutes.SETTINGS,
                 label = "Settings",
                 icon = Icons.Default.Settings

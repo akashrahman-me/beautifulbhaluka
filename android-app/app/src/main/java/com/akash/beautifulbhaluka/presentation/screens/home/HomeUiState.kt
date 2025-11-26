@@ -383,7 +383,7 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     id = "marriage",
                     title = "পাত্রপাত্রী",
                     icon = R.drawable.p284234908328,
-                    route = NavigationRoutes.SOCIAL,
+                    route = NavigationRoutes.MATCHMAKING,
                     description = "বিবাহের জন্য"
                 ),
                 LinkItem(
@@ -442,8 +442,8 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     id = "buy_sell",
                     title = "ক্রয়বিক্রয়",
                     icon = R.drawable.shopping_cart,
-                    route = NavigationRoutes.SHOPS,
-                    description = "কিনাকাটা"
+                    route = NavigationRoutes.BUY_SELL,
+                    description = "ক্রয়বিক্রয়"
                 ),
                 LinkItem(
                     id = "jobs",

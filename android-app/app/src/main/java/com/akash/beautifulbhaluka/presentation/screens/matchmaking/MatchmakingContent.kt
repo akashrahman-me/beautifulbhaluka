@@ -153,7 +153,7 @@ fun MatchmakingTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "💍 ম্যাচমেকিং",
+                text = "ম্যাচমেকিং",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

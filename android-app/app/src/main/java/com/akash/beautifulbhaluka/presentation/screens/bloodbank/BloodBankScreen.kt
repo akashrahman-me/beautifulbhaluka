@@ -109,7 +109,7 @@ fun BloodBankContent(
                         }
                         Column {
                             Text(
-                                text = "রক্তদাতা",
+                                text = "রক্তদান",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = (-0.5).sp,

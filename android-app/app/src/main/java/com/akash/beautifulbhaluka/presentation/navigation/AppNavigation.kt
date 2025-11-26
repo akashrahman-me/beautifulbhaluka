@@ -491,6 +491,14 @@ fun AppNavigation(
                 },
                 onNavigateToManage = {
                     navController.navigate(NavigationRoutes.BLOOD_BANK_MANAGE)
+                },
+                onNavigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo(NavigationRoutes.HOME) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
