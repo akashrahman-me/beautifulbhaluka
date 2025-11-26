@@ -65,28 +65,11 @@ fun BuySellContent(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Modern Top Bar with reusable scroll animation
-            ScrollAnimatedHeader(visible = showHeader) {
-                BuySellTopBar(
-                    onAction = onAction,
-                    uiState = uiState,
-                    onSortClick = { showSortSheet = true },
-                    onFilterClick = { showFilterSheet = true }
-                )
-            }
-
-            // Animated Category Pills
-            CategoryPillsRow(
-                categories = uiState.categories,
-                selectedCategory = uiState.selectedCategory,
-                onCategorySelected = { onAction(BuySellAction.SelectCategory(it)) }
+            BuySellTopBar(
+                onSortClick = { showSortSheet = true },
+                onFilterClick = { showFilterSheet = true }
             )
 
-            // Filter Chips Row
-            FilterChipsRow(
-                selectedFilter = uiState.selectedFilter,
-                onFilterSelected = { onAction(BuySellAction.SelectFilter(it)) }
-            )
 
             // Items List with modern cards
             if (uiState.isLoading) {
@@ -97,22 +80,52 @@ fun BuySellContent(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Stats Card at top
+
+                    // Search Field below TopBar
                     item {
-                        StatsCard(itemCount = uiState.filteredItems.size)
+
+                        SearchField(
+                            searchQuery = uiState.searchQuery,
+                            onSearchQueryChange = { onAction(BuySellAction.UpdateSearchQuery(it)) }
+                        )
+                    }
+
+                    // Category Pills Row - scrollable
+                    item {
+                        CategoryPillsRow(
+                            categories = uiState.categories,
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = { onAction(BuySellAction.SelectCategory(it)) }
+                        )
+                    }
+
+                    // Filter Chips Row - scrollable
+                    item {
+                        FilterChipsRow(
+                            selectedFilter = uiState.selectedFilter,
+                            onFilterSelected = { onAction(BuySellAction.SelectFilter(it)) }
+                        )
+                    }
+
+                    // Stats Card
+                    item {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            StatsCard(itemCount = uiState.filteredItems.size)
+                        }
                     }
 
                     items(
                         items = uiState.filteredItems,
                         key = { it.id }
                     ) { item ->
-                        ModernBuySellCard(
-                            item = item,
-                            onClick = { onNavigateToDetails?.invoke(item.id) }
-                        )
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            ModernBuySellCard(
+                                item = item,
+                                onClick = { onNavigateToDetails?.invoke(item.id) }
+                            )
+                        }
                     }
 
                     // Bottom spacing
@@ -183,12 +196,10 @@ fun BuySellContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuySellTopBar(
-    onAction: (BuySellAction) -> Unit,
-    uiState: BuySellUiState,
     onSortClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
@@ -199,109 +210,111 @@ fun BuySellTopBar(
                     )
                 )
             )
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(vertical = 16.dp)
+            .statusBarsPadding(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Title Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "ক্রয়-বিক্রয়",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = "Buy & Sell Marketplace",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.9f)
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconButton(
-                    onClick = onFilterClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            Color.White.copy(alpha = 0.2f),
-                            CircleShape
-                        )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.FilterList,
-                        contentDescription = "ফিল্টার",
-                        tint = Color.White
-                    )
-                }
-
-                IconButton(
-                    onClick = onSortClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            Color.White.copy(alpha = 0.2f),
-                            CircleShape
-                        )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Sort,
-                        contentDescription = "সাজান",
-                        tint = Color.White
-                    )
-                }
-            }
+        Column {
+            Text(
+                text = "ক্রয়-বিক্রয়",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "Buy & Sell Marketplace",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.9f)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Modern Search Bar
-        OutlinedTextField(
-            value = uiState.searchQuery,
-            onValueChange = { onAction(BuySellAction.UpdateSearchQuery(it)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(28.dp)),
-            placeholder = {
-                Text(
-                    "খুঁজুন...",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            },
-            leadingIcon = {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            IconButton(
+                onClick = onFilterClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        Color.White.copy(alpha = 0.2f),
+                        CircleShape
+                    )
+            ) {
                 Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    imageVector = Icons.Outlined.FilterList,
+                    contentDescription = "ফিল্টার",
+                    tint = Color.White
                 )
-            },
-            trailingIcon = {
-                if (uiState.searchQuery.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onAction(BuySellAction.UpdateSearchQuery("")) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = "মুছুন"
-                        )
-                    }
-                }
-            },
-            shape = RoundedCornerShape(28.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            singleLine = true
-        )
+            }
+
+            IconButton(
+                onClick = onSortClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        Color.White.copy(alpha = 0.2f),
+                        CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Sort,
+                    contentDescription = "সাজান",
+                    tint = Color.White
+                )
+            }
+        }
     }
+}
+
+@Composable
+fun SearchField(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchQueryChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+            .shadow(4.dp, RoundedCornerShape(28.dp)),
+        placeholder = {
+            Text(
+                "খুঁজুন...",
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        trailingIcon = {
+            if (searchQuery.isNotEmpty()) {
+                IconButton(
+                    onClick = { onSearchQueryChange("") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = "মুছুন"
+                    )
+                }
+            }
+        },
+        shape = RoundedCornerShape(28.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent
+        ),
+        singleLine = true
+    )
 }
 
 @Composable
@@ -312,7 +325,7 @@ fun CategoryPillsRow(
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         // All category pill
@@ -404,7 +417,7 @@ fun FilterChipsRow(
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(BuySellFilter.entries) { filter ->
@@ -625,7 +638,8 @@ fun ModernBuySellCard(
                             }
                         }
                         if (item.originalPrice != null && item.originalPrice > item.price) {
-                            val discount = ((item.originalPrice - item.price) / item.originalPrice * 100).toInt()
+                            val discount =
+                                ((item.originalPrice - item.price) / item.originalPrice * 100).toInt()
                             Text(
                                 text = "$discount% ছাড়",
                                 style = MaterialTheme.typography.bodySmall,

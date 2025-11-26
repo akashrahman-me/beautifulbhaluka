@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.SHOPS
+    startDestination: String = NavigationRoutes.BUY_SELL
 ) {
     NavHost(
         navController = navController,
