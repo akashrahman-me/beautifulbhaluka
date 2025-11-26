@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.domain.model.WritingCategory
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.CategoryChip
-import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.CreateWritingDialog
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.WritingCard
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.BookOpen
@@ -60,7 +59,8 @@ fun BookBuddyScreen(
     viewModel: BookBuddyViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToDetail: (String) -> Unit = {},
-    onNavigateToAuthor: (String) -> Unit = {}
+    onNavigateToAuthor: (String) -> Unit = {},
+    onNavigateToPublish: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
@@ -77,7 +77,8 @@ fun BookBuddyScreen(
         showFab = showFab,
         onNavigateBack = onNavigateBack,
         onNavigateToDetail = onNavigateToDetail,
-        onNavigateToAuthor = onNavigateToAuthor
+        onNavigateToAuthor = onNavigateToAuthor,
+        onNavigateToPublish = onNavigateToPublish
     )
 }
 
@@ -90,7 +91,8 @@ fun BookBuddyContent(
     showFab: Boolean,
     onNavigateBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToAuthor: (String) -> Unit
+    onNavigateToAuthor: (String) -> Unit,
+    onNavigateToPublish: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -159,7 +161,7 @@ fun BookBuddyContent(
                 exit = scaleOut() + fadeOut()
             ) {
                 FloatingActionButton(
-                    onClick = { onAction(BookBuddyAction.ShowCreateDialog) },
+                    onClick = onNavigateToPublish,
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(20.dp),
@@ -326,15 +328,6 @@ fun BookBuddyContent(
                 }
             }
         }
-    }
-
-    if (uiState.showCreateDialog) {
-        CreateWritingDialog(
-            onDismiss = { onAction(BookBuddyAction.HideCreateDialog) },
-            onConfirm = { title, content, category ->
-                onAction(BookBuddyAction.HideCreateDialog)
-            }
-        )
     }
 }
 

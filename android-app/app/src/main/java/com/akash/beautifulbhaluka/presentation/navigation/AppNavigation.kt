@@ -1110,6 +1110,9 @@ fun AppNavigation(
                 },
                 onNavigateToAuthor = { authorId ->
                     navController.navigate(NavigationRoutes.authorWritings(authorId))
+                },
+                onNavigateToPublish = {
+                    navController.navigate(NavigationRoutes.PUBLISH_WRITING)
                 }
             )
         }
@@ -1146,6 +1149,19 @@ fun AppNavigation(
                 },
                 onNavigateToDetail = { writingId ->
                     navController.navigate(NavigationRoutes.writingDetail(writingId))
+                }
+            )
+        }
+
+        composable(NavigationRoutes.PUBLISH_WRITING) {
+            com.akash.beautifulbhaluka.presentation.screens.bookbuddy.publish.PublishWritingScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDetail = { writingId ->
+                    navController.navigate(NavigationRoutes.writingDetail(writingId)) {
+                        popUpTo(NavigationRoutes.BOOK_BUDDY) { inclusive = false }
+                    }
                 }
             )
         }

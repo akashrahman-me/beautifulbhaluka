@@ -181,6 +181,7 @@ object NavigationRoutes {
     const val BOOK_BUDDY = "book_buddy"
     const val WRITING_DETAIL = "writing_detail/{writingId}"
     const val AUTHOR_WRITINGS = "author_writings/{authorId}"
+    const val PUBLISH_WRITING = "publish_writing"
 
     fun writingDetail(writingId: String) = "writing_detail/$writingId"
     fun authorWritings(authorId: String) = "author_writings/$authorId"
