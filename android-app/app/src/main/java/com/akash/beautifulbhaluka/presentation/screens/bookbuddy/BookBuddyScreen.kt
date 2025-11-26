@@ -23,7 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +53,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.domain.model.WritingCategory
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.CategoryChip
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.WritingCard
-import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.BookOpen
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PenLine
@@ -82,7 +81,6 @@ fun BookBuddyScreen(
         onAction = viewModel::onAction,
         listState = listState,
         showFab = showFab,
-        onNavigateBack = onNavigateBack,
         onNavigateHome = onNavigateHome,
         onNavigateToDetail = onNavigateToDetail,
         onNavigateToAuthor = onNavigateToAuthor,
@@ -97,7 +95,6 @@ fun BookBuddyContent(
     onAction: (BookBuddyAction) -> Unit,
     listState: androidx.compose.foundation.lazy.LazyListState,
     showFab: Boolean,
-    onNavigateBack: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToAuthor: (String) -> Unit,
@@ -107,7 +104,6 @@ fun BookBuddyContent(
         topBar = {
             BookBuddyTopBar(
                 totalWritings = uiState.writings.size,
-                onNavigateBack = onNavigateBack,
                 onNavigateHome = onNavigateHome,
                 onNavigateToMyProfile = {
                     // Navigate to current user's author profile
@@ -297,7 +293,6 @@ fun BookBuddyContent(
 @Composable
 fun BookBuddyTopBar(
     totalWritings: Int,
-    onNavigateBack: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateToMyProfile: () -> Unit
 ) {
@@ -350,33 +345,19 @@ fun BookBuddyTopBar(
                     }
                 }
             },
-            navigationIcon = {
-                IconButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Lucide.ArrowLeft,
-                        contentDescription = "ফিরে যান",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
             actions = {
                 // My Profile Button
                 IconButton(
                     onClick = onNavigateToMyProfile,
                     modifier = Modifier
-                        .padding(end = 4.dp)
+                        .padding(end = 8.dp)
                         .size(40.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(0.25f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -392,14 +373,23 @@ fun BookBuddyTopBar(
                 IconButton(
                     onClick = onNavigateHome,
                     modifier = Modifier
-                        .padding(end = 4.dp)
+                        .padding(end = 8.dp)
                         .size(40.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "হোম পেজে যান",
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(0.25f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "হোম পেজে যান",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
