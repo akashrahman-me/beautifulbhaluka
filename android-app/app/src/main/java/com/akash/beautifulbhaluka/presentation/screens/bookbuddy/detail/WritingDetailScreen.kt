@@ -47,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.akash.beautifulbhaluka.domain.model.Comment
 import com.akash.beautifulbhaluka.domain.model.Reaction
-import com.composables.icons.lucide.ArrowLeft
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MessageCircle
@@ -84,26 +84,9 @@ fun WritingDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = uiState.writing?.title ?: "লেখা",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Lucide.ArrowLeft,
-                            contentDescription = "Back",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+            ScreenTopBar(
+                title = uiState.writing?.title ?: "লেখা",
+                onNavigateBack = onNavigateBack
             )
         }
     ) { paddingValues ->

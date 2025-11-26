@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,12 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,15 +36,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.akash.beautifulbhaluka.domain.model.WritingCategory
+import com.akash.beautifulbhaluka.presentation.components.common.ScreenTopBar
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.CategoryChip
 import com.akash.beautifulbhaluka.presentation.screens.bookbuddy.components.WritingCard
-import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.BookOpen
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PenLine
@@ -58,6 +52,7 @@ import com.composables.icons.lucide.PenLine
 fun BookBuddyScreen(
     viewModel: BookBuddyViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
+    onNavigateHome: () -> Unit = {},
     onNavigateToDetail: (String) -> Unit = {},
     onNavigateToAuthor: (String) -> Unit = {},
     onNavigateToPublish: () -> Unit = {}
@@ -76,6 +71,7 @@ fun BookBuddyScreen(
         listState = listState,
         showFab = showFab,
         onNavigateBack = onNavigateBack,
+        onNavigateHome = onNavigateHome,
         onNavigateToDetail = onNavigateToDetail,
         onNavigateToAuthor = onNavigateToAuthor,
         onNavigateToPublish = onNavigateToPublish
@@ -90,68 +86,17 @@ fun BookBuddyContent(
     listState: androidx.compose.foundation.lazy.LazyListState,
     showFab: Boolean,
     onNavigateBack: () -> Unit,
+    onNavigateHome: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToAuthor: (String) -> Unit,
     onNavigateToPublish: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.tertiary
-                                        )
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Lucide.BookOpen,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-
-                        Column {
-                            Text(
-                                text = "Book Buddy",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            if (uiState.writings.isNotEmpty()) {
-                                Text(
-                                    text = "${uiState.writings.size} লেখা",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Lucide.ArrowLeft,
-                            contentDescription = "Back",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+            ScreenTopBar(
+                title = "Book Buddy",
+                onNavigateBack = onNavigateBack,
+                onNavigateHome = onNavigateHome
             )
         },
         floatingActionButton = {
