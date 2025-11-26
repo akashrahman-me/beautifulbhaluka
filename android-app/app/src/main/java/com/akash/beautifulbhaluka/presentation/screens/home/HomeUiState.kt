@@ -384,7 +384,7 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     title = "পাত্রপাত্রী",
                     icon = R.drawable.p284234908328,
                     route = NavigationRoutes.MATCHMAKING,
-                    description = "বিবাহের জন্য"
+                    description = "পাত্রপাত্রী"
                 ),
                 LinkItem(
                     id = "house_rent",
