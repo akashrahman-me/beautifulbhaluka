@@ -1,6 +1,5 @@
 package com.akash.beautifulbhaluka.presentation.screens.shops
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -21,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -150,8 +148,11 @@ fun ShopsContent(
                             item {
                                 ModernCategorySection(
                                     categories = uiState.categories,
-                                    selectedCategory = uiState.selectedCategory,
-                                    onCategorySelected = { onAction(ShopsAction.SelectCategory(it)) }
+                                    onCategorySelected = { category ->
+                                        category?.let {
+                                            onAction(ShopsAction.NavigateToCategory(it))
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -421,7 +422,6 @@ fun StatItem(
 @Composable
 fun ModernCategorySection(
     categories: List<ProductCategory>,
-    selectedCategory: ProductCategory?,
     onCategorySelected: (ProductCategory?) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -436,22 +436,10 @@ fun ModernCategorySection(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 4.dp)
         ) {
-            item {
-                CategoryChip(
-                    text = "সব",
-                    icon = Icons.Outlined.GridView,
-                    isSelected = selectedCategory == null,
-                    onClick = { onCategorySelected(null) }
-                )
-            }
-
             items(categories) { category ->
-                CategoryChip(
-                    text = category.name,
-                    icon = Icons.Outlined.Category,
-                    isSelected = selectedCategory == category,
-                    onClick = { onCategorySelected(category) },
-                    count = category.productCount
+                CategoryBox(
+                    category = category,
+                    onClick = { onCategorySelected(category) }
                 )
             }
         }
@@ -459,72 +447,60 @@ fun ModernCategorySection(
 }
 
 @Composable
-fun CategoryChip(
-    text: String,
-    icon: ImageVector,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    count: Int? = null
+fun CategoryBox(
+    category: ProductCategory,
+    onClick: () -> Unit
 ) {
-    val animatedScale by animateFloatAsState(
-        targetValue = if (isSelected) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "scale"
-    )
-
-    Surface(
+    Card(
         onClick = onClick,
-        modifier = Modifier.scale(animatedScale),
-        shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-        tonalElevation = if (isSelected) 8.dp else 2.dp,
-        shadowElevation = if (isSelected) 4.dp else 0.dp
+        modifier = Modifier
+            .width(140.dp)
+            .aspectRatio(4f / 3f),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+            pressedElevation = 6.dp
+        )
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Background Image
+            AsyncImage(
+                model = category.imageUrl,
+                contentDescription = category.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
 
+            // Gradient Overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    )
+            )
+
+            // Category Name
             Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
+                text = category.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(12.dp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
-
-            if (count != null && count > 0) {
-                Text(
-                    text = "($count)",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
-            }
         }
     }
 }
+
 
 @Composable
 fun FilterChipsRow(hasFilters: Boolean) {

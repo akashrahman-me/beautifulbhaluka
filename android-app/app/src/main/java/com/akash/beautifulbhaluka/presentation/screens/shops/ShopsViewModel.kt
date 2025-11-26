@@ -20,44 +20,64 @@ class ShopsViewModel : ViewModel() {
             "ইলেকট্রনিক্স",
             "Electronics",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=101"
         ),
         ProductCategory(
             "2",
             "পোশাক",
             "Clothing",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=102"
         ),
-        ProductCategory("3", "খাবার", "Food", R.drawable.ic_launcher_foreground, productCount = 7),
-        ProductCategory("4", "বই", "Books", R.drawable.ic_launcher_foreground, productCount = 7),
+        ProductCategory(
+            "3",
+            "খাবার",
+            "Food",
+            R.drawable.ic_launcher_foreground,
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=103"
+        ),
+        ProductCategory(
+            "4",
+            "বই",
+            "Books",
+            R.drawable.ic_launcher_foreground,
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=104"
+        ),
         ProductCategory(
             "5",
             "মোবাইল",
             "Mobile",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=105"
         ),
         ProductCategory(
             "6",
             "গাড়ি",
             "Vehicles",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=106"
         ),
         ProductCategory(
             "7",
             "আসবাবপত্র",
             "Furniture",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=107"
         ),
         ProductCategory(
             "8",
             "স্বাস্থ্য",
             "Health",
             R.drawable.ic_launcher_foreground,
-            productCount = 7
+            productCount = 7,
+            imageUrl = "https://picsum.photos/400/300?random=108"
         )
     )
 

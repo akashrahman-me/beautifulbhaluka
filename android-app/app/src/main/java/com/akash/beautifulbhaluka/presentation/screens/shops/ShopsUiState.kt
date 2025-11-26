@@ -39,7 +39,8 @@ data class ProductCategory(
     val name: String,
     val nameEn: String,
     val icon: Int,
-    val productCount: Int = 0 // Add productCount property
+    val productCount: Int = 0,
+    val imageUrl: String = ""
 )
 
 // Add ProductCondition enum
