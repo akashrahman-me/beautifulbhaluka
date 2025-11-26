@@ -177,6 +177,14 @@ object NavigationRoutes {
     const val ACHIEVER = "achiever"
     const val CALCULATOR = "calculator"
 
+    // Book Buddy (Writing Platform)
+    const val BOOK_BUDDY = "book_buddy"
+    const val WRITING_DETAIL = "writing_detail/{writingId}"
+    const val AUTHOR_WRITINGS = "author_writings/{authorId}"
+
+    fun writingDetail(writingId: String) = "writing_detail/$writingId"
+    fun authorWritings(authorId: String) = "author_writings/$authorId"
+
     // Menu route for bottombar
     const val MENU = "menu"
 

@@ -119,7 +119,7 @@ import com.akash.beautifulbhaluka.presentation.screens.weather.WeatherScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.BUY_SELL
+    startDestination: String = NavigationRoutes.HOME
 ) {
     NavHost(
         navController = navController,
@@ -1095,6 +1095,57 @@ fun AppNavigation(
                 },
                 onNavigateToWebView = { url, title ->
                     navController.navigate(NavigationRoutes.webview(url, title))
+                }
+            )
+        }
+
+        // Book Buddy Routes
+        composable(NavigationRoutes.BOOK_BUDDY) {
+            com.akash.beautifulbhaluka.presentation.screens.bookbuddy.BookBuddyScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDetail = { writingId ->
+                    navController.navigate(NavigationRoutes.writingDetail(writingId))
+                },
+                onNavigateToAuthor = { authorId ->
+                    navController.navigate(NavigationRoutes.authorWritings(authorId))
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.WRITING_DETAIL,
+            arguments = listOf(
+                navArgument("writingId") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            com.akash.beautifulbhaluka.presentation.screens.bookbuddy.detail.WritingDetailScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToAuthor = { authorId ->
+                    navController.navigate(NavigationRoutes.authorWritings(authorId))
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.AUTHOR_WRITINGS,
+            arguments = listOf(
+                navArgument("authorId") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            com.akash.beautifulbhaluka.presentation.screens.bookbuddy.author.AuthorWritingsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDetail = { writingId ->
+                    navController.navigate(NavigationRoutes.writingDetail(writingId))
                 }
             )
         }

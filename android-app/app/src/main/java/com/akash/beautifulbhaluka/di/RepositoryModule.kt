@@ -3,9 +3,11 @@ package com.akash.beautifulbhaluka.di
 import com.akash.beautifulbhaluka.data.repository.BloodBankRepositoryImpl
 import com.akash.beautifulbhaluka.data.repository.ImageRepositoryImpl
 import com.akash.beautifulbhaluka.data.repository.NewsRepositoryImpl
+import com.akash.beautifulbhaluka.data.repository.WritingRepositoryImpl
 import com.akash.beautifulbhaluka.domain.repository.BloodBankRepository
 import com.akash.beautifulbhaluka.domain.repository.ImageRepository
 import com.akash.beautifulbhaluka.domain.repository.NewsRepository
+import com.akash.beautifulbhaluka.domain.repository.WritingRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,5 +35,11 @@ abstract class RepositoryModule {
     abstract fun bindNewsRepository(
         newsRepositoryImpl: NewsRepositoryImpl
     ): NewsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWritingRepository(
+        writingRepositoryImpl: WritingRepositoryImpl
+    ): WritingRepository
 }
 

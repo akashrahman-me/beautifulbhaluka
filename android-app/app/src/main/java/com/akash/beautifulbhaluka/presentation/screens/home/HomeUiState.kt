@@ -126,6 +126,13 @@ private fun getDefaultLinkSections(): List<LinkSection> {
                     description = "খবর ও সংবাদ"
                 ),
                 LinkItem(
+                    id = "book_buddy",
+                    title = "Book Buddy",
+                    icon = R.drawable.y1735022072408,
+                    route = NavigationRoutes.BOOK_BUDDY,
+                    description = "গল্প, কবিতা, উপন্যাস"
+                ),
+                LinkItem(
                     id = "lawyer",
                     title = "আইনজীবী",
                     icon = R.drawable.e1735317705899,
